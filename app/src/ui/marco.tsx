@@ -17,7 +17,7 @@ export function Logo({ tam = 26, conPunto = true }: { tam?: number; conPunto?: b
 export function Marco({ children, ancho = 'normal' }: { children: ReactNode; ancho?: 'normal' | 'amplio' }) {
   return (
     <div className="min-h-dvh flex justify-center bg-exterior">
-      <div className={cx('relative w-full min-h-dvh bg-fondo overflow-x-hidden', ancho === 'amplio' ? 'max-w-[960px]' : 'max-w-[480px]')}>
+      <div className={cx('relative w-full min-h-dvh bg-fondo overflow-x-clip', ancho === 'amplio' ? 'max-w-[960px]' : 'max-w-[480px]')}>
         <div className="pointer-events-none absolute -top-[180px] -right-[160px] w-[460px] h-[460px] rounded-full" style={{ background: 'radial-gradient(circle,rgba(31,79,216,0.38),rgba(31,79,216,0) 68%)' }} />
         <div className="pointer-events-none fixed -bottom-[200px] -left-[180px] w-[420px] h-[420px] rounded-full" style={{ background: 'radial-gradient(circle,rgba(61,220,106,0.10),rgba(61,220,106,0) 68%)' }} />
         <div className="relative">{children}</div>
