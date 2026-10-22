@@ -54,7 +54,7 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
 | 3 | Campanita, tareas diarias, quitar Firebase | ⏳ Pendiente |
 | 4 | Publicación final en Netlify y entrega | ⏳ Pendiente |
 
-Links: GitHub: _ver abajo_ · Netlify: _pendiente_ · Supabase (proyecto): https://ebzbbwxgnfrawkhebwvw.supabase.co
+Links: GitHub: https://github.com/nicolas25jimenez-coder/pequenos-atletas · Netlify: _pendiente_ · Supabase (proyecto): https://ebzbbwxgnfrawkhebwvw.supabase.co
 
 Notas de la Fase 1 (para las siguientes ventanas):
 - Migraciones `supabase/migrations/0001` y `0002` ya aplicadas (pegadas en el SQL Editor). Cada tabla: `id`, `datos jsonb` (objeto completo) y columnas reales que el servidor deriva de `datos` con triggers.
