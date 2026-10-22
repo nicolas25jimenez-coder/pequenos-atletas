@@ -1,8 +1,7 @@
 import { ArrowRight, EnvelopeSimple, LockSimple } from '@phosphor-icons/react';
-import { browserLocalPersistence, browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { auth } from '../../lib/firebase';
+import { ingresar } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Interruptor } from '../../ui/base';
 import { CabeceraAcceso } from './CabeceraAcceso';
@@ -19,8 +18,7 @@ export function Ingresar() {
     setError('');
     setEnviando(true);
     try {
-      await setPersistence(auth, recordar ? browserLocalPersistence : browserSessionPersistence);
-      await signInWithEmailAndPassword(auth, correo.trim(), clave);
+      await ingresar(correo.trim(), clave, recordar);
     } catch (err) {
       setError(mensajeError(err));
       setEnviando(false);

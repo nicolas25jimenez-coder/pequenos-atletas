@@ -15,10 +15,14 @@
     "build": "npm run build -w functions && npm run build -w app",
     "test": "vitest run",
     "test:rules": "vitest run --config vitest.rules.config.ts",
-    "typecheck": "tsc -p shared && tsc -p app --noEmit && tsc -p functions --noEmit"
+    "typecheck": "tsc -p shared && tsc -p app --noEmit && tsc -p functions --noEmit",
+    "build:app": "npm run build -w app",
+    "test:seguridad": "vitest run --config vitest.seguridad.config.ts"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^4.0.1",
+    "@supabase/supabase-js": "^2.118.0",
+    "dotenv": "^18.0.8",
     "firebase-admin": "^13.0.2",
     "firebase-tools": "^14.0.0",
     "tsx": "^4.19.2",

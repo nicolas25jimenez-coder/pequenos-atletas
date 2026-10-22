@@ -1,10 +1,11 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useSesion } from './lib/sesion';
 import { Boton, Cargando } from './ui/base';
 import { Marco, Pantalla } from './ui/marco';
 import { Ingresar } from './pantallas/acceso/Ingresar';
 import { Registro } from './pantallas/acceso/Registro';
+import { NuevaClave } from './pantallas/acceso/NuevaClave';
 import { Recuperar } from './pantallas/acceso/Recuperar';
 import { Splash } from './pantallas/acceso/Splash';
 import { Terminos } from './pantallas/acceso/Terminos';
@@ -15,6 +16,10 @@ const AppEntrenador = lazy(() => import('./pantallas/entrenador/AppEntrenador'))
 
 export function App() {
   const { usuario, perfil, cargando, salir } = useSesion();
+
+  const { pathname } = useLocation();
+  // Enlace del correo de recuperación: se atiende aparte, con o sin sesión.
+  if (pathname === '/nueva-clave') return <Marco><NuevaClave /></Marco>;
 
   if (cargando) return <Marco><Splash /></Marco>;
 

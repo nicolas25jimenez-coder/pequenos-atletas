@@ -1,8 +1,7 @@
 import { EnvelopeSimple } from '@phosphor-icons/react';
-import { sendPasswordResetEmail } from 'firebase/auth';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { auth } from '../../lib/firebase';
+import { recuperarClave } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo } from '../../ui/base';
 import { CabeceraAcceso } from './CabeceraAcceso';
@@ -17,7 +16,7 @@ export function Recuperar() {
     e.preventDefault();
     setEnviando(true);
     setError('');
-    try { await sendPasswordResetEmail(auth, correo.trim()); setListo(true); }
+    try { await recuperarClave(correo.trim()); setListo(true); }
     catch (err) { setError(mensajeError(err)); }
     setEnviando(false);
   }

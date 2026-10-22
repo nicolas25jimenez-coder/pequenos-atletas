@@ -13,6 +13,7 @@
     "@pa/shared": "*",
     "@phosphor-icons/react": "^2.1.7",
     "@react-pdf/renderer": "^4.1.5",
+    "@supabase/supabase-js": "^2.118.0",
     "exceljs": "^4.4.0",
     "firebase": "^11.1.0",
     "react": "^18.3.1",

@@ -1,29 +1,40 @@
-// Datos de ejemplo para los emuladores locales (basados en el prototipo de design/).
-// Uso: con los emuladores corriendo → npm run seed
+// Datos de ejemplo en Supabase (basados en el prototipo de design/). Borra y recrea las cuentas de demo.
+// Uso: con app/.env.local completo (incluida SUPABASE_SERVICE_ROLE_KEY) → npm run seed
 //
 // Cuentas de prueba (contraseña de todas: Atletas2026):
 //   Entrenador: entrenador@pequenosatletas.co
 //   Acudiente:  carolina.rojas@ejemplo.co   (Sofía y Andrés)
 //   Acudiente:  jorge.rojas@ejemplo.co      (segundo acudiente de Sofía y Andrés)
 //   Acudiente con inscripción pendiente: maria.forero@ejemplo.co
-process.env.FIRESTORE_EMULATOR_HOST ??= '127.0.0.1:8080';
-process.env.FIREBASE_AUTH_EMULATOR_HOST ??= '127.0.0.1:9099';
-process.env.FIREBASE_STORAGE_EMULATOR_HOST ??= '127.0.0.1:9199';
-
-import { initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore, type WriteBatch } from 'firebase-admin/firestore';
+import { config } from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
 import {
   CATALOGO_BASE, CONFIG_POR_DEFECTO, construirPago, diaSemana, edadAnios, edadMesesExacta, evaluarImc, comparar,
   fechaCobro, hoy, periodoVigente, sumarDias, sumarMeses, valorFinal,
   type Asistencia, type Categoria, type EstadoAsistencia, type Nino, type Pago, type ResultadoPrueba, type Sesion, type Sexo,
 } from '../shared/src/index';
 
-const PROYECTO = 'demo-pequenos-atletas';
+config({ path: 'app/.env.local' });
+const URL = process.env.VITE_SUPABASE_URL;
+const CLAVE_SECRETA = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!URL || !CLAVE_SECRETA) {
+  console.error('Faltan VITE_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en app/.env.local');
+  process.exit(1);
+}
 const CLAVE = 'Atletas2026';
-initializeApp({ projectId: PROYECTO });
-const db = getFirestore();
-const auth = getAuth();
+const supabase = createClient(URL, CLAVE_SECRETA, { auth: { persistSession: false, autoRefreshToken: false } });
+
+// Colección de la app → tabla de Supabase (en orden de inserción, por las llaves foráneas).
+const TABLAS: Record<string, string> = {
+  usuarios: 'usuarios', configuracion: 'configuracion', categorias: 'categorias', pruebas: 'pruebas',
+  plantillasControl: 'plantillas_control', mediosPago: 'medios_pago', ninos: 'ninos', sesiones: 'sesiones',
+  asistencias: 'asistencias', medicionesFisicas: 'mediciones_fisicas', resultadosPruebas: 'resultados_pruebas',
+  pagos: 'pagos', eventos: 'eventos', confirmacionesEvento: 'confirmaciones_evento', anuncios: 'anuncios',
+  solicitudesCambio: 'solicitudes_cambio', invitaciones: 'invitaciones', notificaciones: 'notificaciones',
+};
+
+// Las cuentas se identifican en el código con un alias ('carolina'); en Supabase son uuid.
+const uuids = new Map<string, string>();
 
 // PRNG determinista para que los datos sean siempre iguales.
 let semilla = 20261022;
@@ -34,28 +45,42 @@ const HOY = hoy();
 const T = `${HOY}T08:00:00-05:00`;
 const aud = (uid = 'entrenador') => ({ creadoEn: T, actualizadoEn: T, creadoPor: uid });
 
-// Escritura por lotes (máx. 500 operaciones por lote).
-const lotes: WriteBatch[] = [];
-let ops = 0;
+// Se acumulan los documentos y se escriben al final, ordenados por tabla.
+const filas: { coleccion: string; id: string; datos: Record<string, unknown> }[] = [];
 function set(ruta: string, datos: object) {
-  if (!lotes.length || ops >= 450) { lotes.push(db.batch()); ops = 0; }
-  lotes[lotes.length - 1].set(db.doc(ruta), JSON.parse(JSON.stringify(datos)));
-  ops++;
+  const [coleccion, id] = ruta.split('/');
+  filas.push({ coleccion, id, datos: JSON.parse(JSON.stringify(datos)) });
+}
+
+/** Cambia los alias de cuentas por sus uuid en todo el objeto (menos el campo `rol`). */
+function conUuids(v: unknown, clave = ''): unknown {
+  if (typeof v === 'string') return clave !== 'rol' && uuids.has(v) ? uuids.get(v) : v;
+  if (Array.isArray(v)) return v.map((x) => conUuids(x));
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, conUuids(x, k)]));
+  return v;
 }
 
 async function limpiar() {
-  await fetch(`http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${PROYECTO}/databases/(default)/documents`, { method: 'DELETE' });
-  await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/emulator/v1/projects/${PROYECTO}/accounts`, { method: 'DELETE' });
+  for (const t of [...Object.values(TABLAS)].reverse()) {
+    const { error } = await supabase.from(t).delete().not('id', 'is', null);
+    if (error) throw new Error(`No pude vaciar ${t}: ${error.message}`);
+  }
+  const { data } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  for (const u of data?.users ?? []) {
+    if (u.email?.endsWith('@ejemplo.co') || u.email === 'entrenador@pequenosatletas.co') await supabase.auth.admin.deleteUser(u.id);
+  }
 }
 
-async function usuario(uid: string, correo: string, nombres: string, apellidos: string, rol: 'padre' | 'entrenador', extra: object = {}) {
-  await auth.createUser({ uid, email: correo, password: CLAVE, emailVerified: true, displayName: `${nombres} ${apellidos}` });
-  set(`usuarios/${uid}`, {
+async function usuario(alias: string, correo: string, nombres: string, apellidos: string, rol: 'padre' | 'entrenador', extra: object = {}) {
+  const { data, error } = await supabase.auth.admin.createUser({ email: correo, password: CLAVE, email_confirm: true, user_metadata: { nombre: `${nombres} ${apellidos}` } });
+  if (error || !data.user) throw new Error(`No pude crear ${correo}: ${error?.message}`);
+  uuids.set(alias, data.user.id);
+  set(`usuarios/${alias}`, {
     rol, estado: 'activo', nombres, apellidos, correo, telefono: '+573105550100', tipoDocumento: 'CC',
     numeroDocumento: String(Math.floor(entre(10000000, 99999999, 0))),
     preferenciasNotificacion: { pagoRegistrado: true, inasistencia: true, resultados: true, eventos: true, solicitudes: true },
     aceptoTerminos: { fecha: T, version: CONFIG_POR_DEFECTO.versionTerminos },
-    ...aud(uid), ...extra,
+    ...aud(alias), ...extra,
   });
 }
 
@@ -110,7 +135,7 @@ const MEDIDAS: Record<string, [number, number][]> = {
 const PRUEBAS_CONTROL = ['vel10', 'zig', 'salto', 'equi', 'viga', 'rollo', 'recep', 'lanz', 'cond', 'patear'];
 
 async function main() {
-  console.log('Limpiando emuladores…');
+  console.log('Limpiando datos anteriores…');
   await limpiar();
 
   console.log('Creando cuentas…');
@@ -352,8 +377,19 @@ async function main() {
   ];
   notis.forEach((x, i) => set(`notificaciones/seed_${i}`, { usuarioId: 'carolina', tipo: x.tipo, titulo: x.titulo, cuerpo: x.cuerpo, enlace: x.enlace, leida: i === 1, fecha: `${sumarDias(HOY, x.dias)}T07:00:00-05:00` }));
 
-  console.log(`Escribiendo ${lotes.length} lotes…`);
-  for (const l of lotes) await l.commit();
+  console.log(`Escribiendo ${filas.length} registros…`);
+  for (const [coleccion, tabla] of Object.entries(TABLAS)) {
+    // Si un documento se escribió dos veces, queda el último (como en Firestore).
+    const ultimos = new Map(filas.filter((f) => f.coleccion === coleccion).map((f) => [f.id, f]));
+    const delaTabla = [...ultimos.values()].map((f) => ({
+      id: uuids.get(f.id) ?? f.id,
+      datos: conUuids(f.datos) as Record<string, unknown>,
+    }));
+    for (let i = 0; i < delaTabla.length; i += 400) {
+      const { error } = await supabase.from(tabla).upsert(delaTabla.slice(i, i + 400));
+      if (error) throw new Error(`Error en ${tabla}: ${error.message}`);
+    }
+  }
   console.log('Listo ✅  Cuentas de prueba: ver comentario al inicio de scripts/seed.ts');
 }
 

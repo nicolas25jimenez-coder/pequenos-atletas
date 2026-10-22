@@ -1,9 +1,7 @@
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { ahoraIso, CONFIG_POR_DEFECTO, normalizarCorreo, type Parentesco, type Usuario } from '@pa/shared';
-import { auth, db } from '../../lib/firebase';
+import type { Parentesco } from '@pa/shared';
+import { registrar } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Casilla, Selector } from '../../ui/base';
 import { CabeceraAcceso } from './CabeceraAcceso';
@@ -15,6 +13,7 @@ export function Registro() {
   const [terminos, setTerminos] = useState(false);
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [confirmar, setConfirmar] = useState(false);
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
 
   async function enviar(e: FormEvent) {
@@ -26,27 +25,28 @@ export function Registro() {
     if (!terminos) return setError('Debes aceptar los Términos y la Política de Tratamiento de Datos.');
     setEnviando(true);
     try {
-      const cred = await createUserWithEmailAndPassword(auth, normalizarCorreo(f.correo), f.clave);
-      await updateProfile(cred.user, { displayName: `${f.nombres} ${f.apellidos}`.trim() });
-      const t = ahoraIso();
       const tel = f.telefono.replace(/\D/g, '');
-      const usuario: Omit<Usuario, 'id'> = {
-        rol: 'padre', estado: 'activo',
-        nombres: f.nombres.trim(), apellidos: f.apellidos.trim(),
-        correo: normalizarCorreo(f.correo),
+      const r = await registrar({
+        correo: f.correo, clave: f.clave, nombres: f.nombres, apellidos: f.apellidos,
         telefono: tel.startsWith('57') && tel.length === 12 ? `+${tel}` : `+57${tel}`,
-        parentesco: f.parentesco as Parentesco,
-        tipoDocumento: f.tipoDocumento, numeroDocumento: f.numeroDocumento.trim(),
-        aceptoTerminos: { fecha: t, version: CONFIG_POR_DEFECTO.versionTerminos },
-        preferenciasNotificacion: { pagoRegistrado: true, inasistencia: true, resultados: true, eventos: true, solicitudes: true },
-        creadoEn: t, actualizadoEn: t, creadoPor: cred.user.uid,
-      };
-      await setDoc(doc(db, 'usuarios', cred.user.uid), usuario);
-      await sendEmailVerification(cred.user);
+        parentesco: f.parentesco as Parentesco, tipoDocumento: f.tipoDocumento, numeroDocumento: f.numeroDocumento,
+      });
+      // Con sesión: la app entra sola. Sin sesión: hay que confirmar el correo primero.
+      if (!r.conSesion) { setConfirmar(true); setEnviando(false); }
     } catch (err) {
       setError(mensajeError(err));
       setEnviando(false);
     }
+  }
+
+  if (confirmar) {
+    return (
+      <CabeceraAcceso>
+        <div className="titulo text-[30px]">Revisa tu<br /><span className="text-verde">correo.</span></div>
+        <Aviso tono="exito">Te enviamos un enlace a <b>{f.correo}</b>. Ábrelo para activar tu cuenta y luego inicia sesión.</Aviso>
+        <div className="text-center text-sm text-tenue"><Link to="/ingresar" className="text-verde font-bold no-underline">Ir a iniciar sesión</Link></div>
+      </CabeceraAcceso>
+    );
   }
 
   return (
