@@ -1,0 +1,35 @@
+@import '@fontsource-variable/archivo/standard.css';
+@import '@fontsource-variable/archivo/standard-italic.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body { background: #07090D; color: #F2F4F8; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; min-height: 100dvh; }
+  a { color: #4F7BFF; }
+  button, input, select, textarea { font-family: inherit; }
+  input::placeholder, textarea::placeholder { color: #7D869A; }
+  *::-webkit-scrollbar { width: 0; height: 0; }
+  input[type='date']::-webkit-calendar-picker-indicator, input[type='time']::-webkit-calendar-picker-indicator { filter: invert(0.8); }
+}
+
+@layer components {
+  /* Títulos del prototipo: Archivo expandida, itálica, mayúsculas. */
+  .titulo { font-stretch: 125%; font-style: italic; font-weight: 850; text-transform: uppercase; line-height: 1; overflow-wrap: anywhere; }
+  .kicker { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: #8C95A8; }
+  .tarjeta { border-radius: 24px; background: #141924; border: 1px solid rgba(255,255,255,0.07); }
+  .campo { height: 52px; padding: 0 16px; border-radius: 16px; background: #141924; border: 1px solid rgba(255,255,255,0.08); color: #F2F4F8; font-size: 15px; outline: none; min-width: 0; width: 100%; }
+  .campo:focus { border-color: #4F7BFF; }
+  textarea.campo { height: auto; min-height: 96px; padding: 14px 16px; line-height: 1.45; resize: vertical; }
+  select.campo { appearance: none; padding-right: 36px; background-image: linear-gradient(45deg, transparent 50%, #8C95A8 50%), linear-gradient(135deg, #8C95A8 50%, transparent 50%); background-position: calc(100% - 20px) 23px, calc(100% - 15px) 23px; background-size: 5px 5px; background-repeat: no-repeat; }
+  .rayado { background: repeating-linear-gradient(135deg, #151B27 0 10px, #11161F 10px 20px); }
+}
+
+@layer utilities {
+  .tabular { font-variant-numeric: tabular-nums; }
+  .balance { text-wrap: balance; }
+  .pretty { text-wrap: pretty; }
+  .pb-nav { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+}
