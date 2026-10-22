@@ -123,7 +123,7 @@ service cloud.firestore {
 
     match /invitaciones/{id} {
       allow read: if esEntrenador() || (autenticado() && (resource.data.invitadoPor == uid() || resource.data.correo == request.auth.token.email));
-      allow create: if autenticado()
+      allow create: if esEntrenador() || autenticado()
         && request.resource.data.invitadoPor == uid()
         && request.resource.data.estado == 'pendiente'
         && request.resource.data.ninosIds.size() > 0

@@ -24,9 +24,15 @@ interface Familia {
   mediciones: MedicionFisica[];
   resultados: ResultadoPrueba[];
   solicitudesCambio: SolicitudCambio[];
+  /** Rutas de navegación (cambian si las vistas se reutilizan en la ficha del entrenador). */
+  rutas: { pruebas: string; prueba: (id: string) => string };
 }
 
-const Ctx = createContext<Familia | null>(null);
+export const RUTAS_PADRE: Familia['rutas'] = { pruebas: '/p/hijo/pruebas', prueba: (id) => `/p/prueba/${id}` };
+
+export const CtxFamilia = createContext<Familia | null>(null);
+const Ctx = CtxFamilia;
+export type { Familia };
 const CLAVE = 'pa:nino';
 
 function leer(): string | null { try { return localStorage.getItem(CLAVE); } catch { return null; } }
@@ -77,6 +83,7 @@ export function ProveedorFamilia({ children }: { children: ReactNode }) {
     resultados: useMemo(() => delNino(res.datos), [res.datos, nino?.id]), // eslint-disable-line react-hooks/exhaustive-deps
     solicitudesCambio: useMemo(() => delNino(sol.datos), [sol.datos, nino?.id]), // eslint-disable-line react-hooks/exhaustive-deps
     sesiones: useMemo(() => [...ses.datos].sort((a, b) => (a.fecha + a.horaInicio).localeCompare(b.fecha + b.horaInicio)), [ses.datos]),
+    rutas: RUTAS_PADRE,
   };
 
   return (

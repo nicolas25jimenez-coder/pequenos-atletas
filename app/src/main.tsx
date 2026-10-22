@@ -6,17 +6,20 @@ import './index.css';
 import { App } from './App';
 import { ProveedorSesion } from './lib/sesion';
 import { ProveedorToast } from './ui/base';
+import { LimiteError } from './ui/ErrorBoundary';
 
 registerSW({ immediate: true });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ProveedorSesion>
-        <ProveedorToast>
-          <App />
-        </ProveedorToast>
-      </ProveedorSesion>
-    </BrowserRouter>
+    <LimiteError>
+      <BrowserRouter>
+        <ProveedorSesion>
+          <ProveedorToast>
+            <App />
+          </ProveedorToast>
+        </ProveedorSesion>
+      </BrowserRouter>
+    </LimiteError>
   </React.StrictMode>,
 );

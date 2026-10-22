@@ -12,10 +12,10 @@ const MES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct
 
 export function DetallePrueba() {
   const { pruebaId } = useParams();
-  const { nino, resultados, pruebas } = useFamilia();
+  const { nino, resultados, pruebas, rutas } = useFamilia();
   const resumen = usarResumenPruebas(resultados, pruebas).find((r) => r.p.id === pruebaId);
   if (!nino) return null;
-  if (!resumen) return <Pantalla><Volver a="/p/hijo/pruebas">Pruebas de {nino.nombres}</Volver><Vacio titulo="Sin resultados para esta prueba" /></Pantalla>;
+  if (!resumen) return <Pantalla><Volver a={rutas.pruebas}>Pruebas de {nino.nombres}</Volver><Vacio titulo="Sin resultados para esta prueba" /></Pantalla>;
 
   const { p, ultimo, anterior, historial } = resumen;
   const fam = FAMILIAS.find((f) => f.id === p.familia)!;
@@ -30,7 +30,7 @@ export function DetallePrueba() {
 
   return (
     <Pantalla>
-      <Volver a="/p/hijo/pruebas">Pruebas de {nino.nombres}</Volver>
+      <Volver a={rutas.pruebas}>Pruebas de {nino.nombres}</Volver>
       <div className="flex flex-col gap-2">
         <span className="kicker" style={{ color: '#4F7BFF', letterSpacing: '0.14em' }}>{fam.corto} · {p.capacidad}</span>
         <div className="titulo text-[26px] balance" style={{ lineHeight: 1.02 }}>{p.nombre}</div>

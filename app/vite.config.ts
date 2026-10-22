@@ -10,7 +10,8 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.ts',
-      injectManifest: { maximumFileSizeToCacheInBytes: 6 * 1024 * 1024 },
+      // PDF y Excel se descargan solo cuando se usan; no se guardan para uso sin conexión.
+      injectManifest: { maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, globIgnores: ['**/exceljs*.js', '**/informe-*.js'] },
       devOptions: { enabled: false },
       manifest: {
         name: 'Pequeños Atletas',

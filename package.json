@@ -14,7 +14,7 @@
     "seed": "tsx scripts/seed.ts",
     "build": "npm run build -w functions && npm run build -w app",
     "test": "vitest run",
-    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-pequenos-atletas \"vitest run --config vitest.rules.config.ts\"",
+    "test:rules": "vitest run --config vitest.rules.config.ts",
     "typecheck": "tsc -p shared && tsc -p app --noEmit && tsc -p functions --noEmit"
   },
   "devDependencies": {

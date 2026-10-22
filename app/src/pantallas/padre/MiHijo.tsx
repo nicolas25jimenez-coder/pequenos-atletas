@@ -192,7 +192,7 @@ function SolicitarCambio({ seccion, nino, onCerrar }: { seccion: Seccion | null;
 
 /* ───────── Físico ───────── */
 
-function Fisico({ nino }: { nino: Nino }) {
+export function Fisico({ nino }: { nino: Nino }) {
   const { mediciones } = useFamilia();
   if (!mediciones.length) return <Vacio titulo="Sin mediciones todavía" texto="El entrenador registra talla y peso en los días de control." />;
   const ultima = mediciones[mediciones.length - 1];
@@ -268,9 +268,9 @@ export function tendenciaDe(p: Prueba, ant: ResultadoPrueba | undefined, ult: Re
   return { ...t, simbolo: s, color: COLOR_TENDENCIA[t.direccion] };
 }
 
-function Pruebas({ nino }: { nino: Nino }) {
+export function Pruebas({ nino }: { nino: Nino }) {
   const nav = useNavigate();
-  const { resultados, pruebas } = useFamilia();
+  const { resultados, pruebas, rutas } = useFamilia();
   const resumen = usarResumenPruebas(resultados, pruebas);
   const ultimaFecha = resultados.length ? resultados[resultados.length - 1].fecha : null;
   const perfil = perfilMultidisciplinar(resultados, pruebas, edadAnios(nino.fechaNacimiento, ultimaFecha ?? undefined), nino.sexo);
@@ -295,7 +295,7 @@ function Pruebas({ nino }: { nino: Nino }) {
             const c = comparacionDe(ultimo, p);
             const t = tendenciaDe(p, anterior, ultimo);
             return (
-              <button key={p.id} onClick={() => nav(`/p/prueba/${p.id}`)} className="flex items-center gap-3 text-left cursor-pointer rounded-[20px] px-4 py-3.5 bg-sup border border-white/[0.07] text-texto hover:bg-suph">
+              <button key={p.id} onClick={() => nav(rutas.prueba(p.id))} className="flex items-center gap-3 text-left cursor-pointer rounded-[20px] px-4 py-3.5 bg-sup border border-white/[0.07] text-texto hover:bg-suph">
                 <div className="flex-1 min-w-0 flex flex-col gap-1">
                   <span className="text-sm font-semibold leading-tight">{p.nombre}</span>
                   <Punto color={c.color}>{c.texto}</Punto>

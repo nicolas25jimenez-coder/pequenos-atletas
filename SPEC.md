@@ -1,6 +1,7 @@
 # SPEC — App de Seguimiento Deportivo Infantil (4 a 6 años)
 
-> **Versión:** 1.1 (borrador) · **Fecha:** 2026-10-22 · **Autor:** Nicolás Jiménez (entrenador)
+> **Versión:** 1.2 · **Fecha:** 2026-10-22 · **Autor:** Nicolás Jiménez (entrenador)
+> **Cambios v1.2:** la app se construyó como **web instalable (PWA)** con React + Firebase (en lugar de Flutter) y con el **diseño oscuro del prototipo** (`design/`). Ver §3 y §3.1. Implementación y forma de ejecutarla: [README.md](README.md).
 > **Nombre comercial:** **Pequeños Atletas**
 > **Enfoque:** formación multidisciplinar y predeportiva (sin especialización en un deporte)
 > **País / moneda:** Colombia · COP
@@ -11,7 +12,8 @@
 
 | Tema | Decisión |
 |---|---|
-| Plataforma | App móvil (Android + iOS) **y** web, con una sola base de código |
+| Plataforma | **App web instalable (PWA)**: funciona en navegador y se instala en Android/iPhone; una sola base de código (v1.2) |
+| Diseño | **Prototipo oscuro** de `design/Pequenos Atletas App.dc.html` (v1.2) |
 | Entrenadores | **Uno solo** (el entrenador es también el administrador) |
 | Registro | **El padre se registra solo**; el entrenador aprueba y asigna categoría |
 | Cuentas | Un padre puede tener **varios hijos**; un niño puede tener **varios acudientes** con cuenta propia |
@@ -81,11 +83,12 @@ Una app donde:
 
 ## 3. Arquitectura y tecnología recomendada
 
-> Recomendación pensada para **un solo entrenador**, bajo costo y una sola base de código para móvil y web.
+> Pensada para **un solo entrenador**, bajo costo y una sola base de código para móvil y web.
+> **v1.2:** se eligió una **PWA con React + TypeScript + Vite + Tailwind** en lugar de Flutter (requiere solo Node.js, se parece al prototipo HTML y luego puede empaquetarse para las tiendas). En desarrollo todo corre con los **emuladores de Firebase** (proyecto `demo-`, sin cuenta).
 
 | Capa | Tecnología | Motivo |
 |---|---|---|
-| App (Android, iOS, Web) | **Flutter** | Un solo código para las 3 plataformas |
+| App (Android, iOS, Web) | **React + TypeScript (PWA)** · ~~Flutter~~ | Un solo código; instalable desde el navegador |
 | Autenticación | **Firebase Authentication** (correo + contraseña, verificación de correo, recuperación de contraseña) | Gratis, simple |
 | Base de datos | **Cloud Firestore** | Tiempo real, reglas de seguridad por rol |
 | Archivos (fotos, videos, documentos) | **Firebase Storage** | Integrado con reglas de seguridad |
@@ -103,6 +106,9 @@ Una app donde:
 - *Solo cuando se decida publicar (ver §11, Fase 4):* Google Play USD 25 (pago único), Apple USD 99/año y dominio web ~COP 50.000/año.
 
 ### 3.1 Identidad visual — Pequeños Atletas
+
+> **v1.2 — paleta implementada (prototipo oscuro):** fondo `#0A0D12`, tarjetas `#141924`, texto `#F2F4F8`, verde acción `#3DDC6A`, azul marca `#1F4FD8` / azul acento `#4F7BFF`, ámbar `#F5A524`, rojo `#E5484D`, cielo `#3E9BFF`. Tipografía **Archivo** (títulos en itálica expandida y mayúsculas) e íconos **Phosphor**. La tabla siguiente queda como referencia de la propuesta original en tema claro.
+
 | Token | Color | HEX (propuesto) | Uso |
 |---|---|---|---|
 | `primario` | Azul rey | `#1F4FD8` | Barra superior, botones principales, encabezados |
@@ -648,7 +654,7 @@ Sistema: niño activo → primer ciclo de pago → notificación al padre "¡Bie
 | RNF-03 | Las fotos y videos solo se cargan si el niño tiene autorización de uso de imagen; se almacenan privados (URLs firmadas). |
 | RNF-04 | Contraseñas gestionadas por Firebase Auth; sesión con expiración; bloqueo tras intentos fallidos. |
 | RNF-05 | **Rendimiento:** pantallas principales en < 2 s con 4G; marcar la asistencia de 20 niños en < 1 min. |
-| RNF-06 | **Usabilidad:** botones grandes para usar en la cancha; modo claro; textos en español de Colombia; formato de moneda `$ 120.000`; fechas `dd/mm/aaaa`. |
+| RNF-06 | **Usabilidad:** botones grandes para usar en la cancha; modo oscuro del prototipo (v1.2); textos en español de Colombia; formato de moneda `$ 120.000`; fechas `dd/mm/aaaa`. |
 | RNF-07 | **Accesibilidad:** contraste AA, tamaño de fuente escalable. |
 | RNF-08 | **Compatibilidad:** Android 8+, iOS 14+, navegadores Chrome/Edge/Safari actuales. |
 | RNF-09 | **Respaldo:** exportación automática semanal de Firestore. |

@@ -51,6 +51,10 @@ function Linea({ valores }: { valores: number[] }) {
 }
 
 function Informe({ d }: { d: DatosInforme }) {
+  return <Document title={`Informe ${d.nino.nombres} ${d.nino.apellidos}`} author="Pequeños Atletas"><PaginaInforme d={d} /></Document>;
+}
+
+function PaginaInforme({ d }: { d: DatosInforme }) {
   const { nino, categoria } = d;
   const med = d.mediciones.filter((m) => m.fecha >= d.desde && m.fecha <= d.hasta);
   const res = d.resultados.filter((r) => r.fecha >= d.desde && r.fecha <= d.hasta && !r.noRealizada && r.valorFinal !== null);
@@ -72,7 +76,6 @@ function Informe({ d }: { d: DatosInforme }) {
   const perfil = perfilMultidisciplinar(res, d.pruebas, edadAnios(nino.fechaNacimiento, fUlt ?? hoy()), nino.sexo);
 
   return (
-    <Document title={`Informe ${nino.nombres} ${nino.apellidos}`} author="Pequeños Atletas">
       <Page size="A4" style={s.pagina}>
         <View style={s.cab}>
           <View><Text style={s.logo}>Pequeños Atletas<Text style={s.punto}> ●</Text></Text><Text style={s.tenue}>Informe de progreso</Text></View>
@@ -144,12 +147,16 @@ function Informe({ d }: { d: DatosInforme }) {
 
         <Text style={s.pie} fixed>Pequeños Atletas · formación multidisciplinar y predeportiva 4–6 años · Documento con datos de un menor: compártelo solo con quien sea necesario.</Text>
       </Page>
-    </Document>
   );
 }
 
 export async function generarInforme(d: DatosInforme): Promise<Blob> {
   return pdf(<Informe d={d} />).toBlob();
+}
+
+/** Un solo PDF con una página por niño (informes en lote por categoría). */
+export async function generarInformes(ds: DatosInforme[], titulo: string): Promise<Blob> {
+  return pdf(<Document title={titulo} author="Pequeños Atletas">{ds.map((d) => <PaginaInforme key={d.nino.id} d={d} />)}</Document>).toBlob();
 }
 
 export function descargarBlob(blob: Blob, nombre: string) {

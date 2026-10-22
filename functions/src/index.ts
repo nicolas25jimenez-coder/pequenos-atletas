@@ -70,7 +70,7 @@ export const alGuardarAsistencia = onDocumentWritten('asistencias/{id}', async (
   const tipo = sesion.tipo === 'control' ? 'al día de control' : 'al entrenamiento';
   await notificar(despues.acudientesIds, {
     tipo: 'inasistencia', titulo: `${nino.nombres} no asistió`,
-    cuerpo: `${fechaChip(sesion.fecha)}: ${nino.nombres} no asistió ${tipo} de las ${hora12(sesion.horaInicio)}. Si fue por una razón justificada, avísale al entrenador.`,
+    cuerpo: `${fechaChip(sesion.fecha)}: ${nino.nombres} no asistió ${tipo} de las ${hora12(sesion.horaInicio)} Si fue por una razón justificada, avísale al entrenador.`,
     enlace: `/p/asistencia?nino=${despues.ninoId}`,
   });
 });
@@ -83,7 +83,7 @@ export const alActualizarSesion = onDocumentUpdated('sesiones/{id}', async (e) =
     const ninos = await db().collection('ninos').where('categoriaId', '==', despues.categoriaId).where('estado', '==', 'activo').get();
     await notificar(ninos.docs.flatMap((d) => (d.data() as Nino).acudientesIds), {
       tipo: 'sesion_cancelada', titulo: 'Sesión cancelada',
-      cuerpo: `La sesión del ${fechaChip(despues.fecha)} a las ${hora12(despues.horaInicio)} fue cancelada${despues.motivoCancelacion ? `: ${despues.motivoCancelacion}` : ''}.`,
+      cuerpo: `La sesión del ${fechaChip(despues.fecha)} (${hora12(despues.horaInicio)}) fue cancelada${despues.motivoCancelacion ? `: ${despues.motivoCancelacion}` : ''}.`,
       enlace: '/p/asistencia',
     });
   }
