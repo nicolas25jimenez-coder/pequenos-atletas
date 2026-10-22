@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+body{margin:0;background:#07090D;color:#F2F4F8;font-family:Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#4F7BFF;text-decoration:none}a:hover{color:#7A9BFF}
+button{font-family:inherit}
+input,select{font-family:inherit}
+input::placeholder{color:#7D869A}
+*::-webkit-scrollbar{width:0;height:0}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:56px;padding:40px 24px;box-sizing:border-box">
+
+<sc-if value="{{ showPanel }}" hint-placeholder-val="{{ true }}">
+<aside style="width:260px;max-width:100%;display:flex;flex-direction:column;gap:28px;padding-top:24px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:flex-end;gap:4px;font-stretch:125%;font-style:italic;font-weight:900;font-size:26px;line-height:0.92;letter-spacing:-0.01em;text-transform:uppercase">
+      <div>Pequeños<br>Atletas</div><div style="width:9px;height:9px;flex:none;border-radius:50%;background:#3DDC6A;margin-bottom:4px;box-shadow:0 0 12px #3DDC6A"></div>
+    </div>
+    <div style="font-size:13px;color:#8C95A8;line-height:1.5;text-wrap:pretty">Prototipo navegable · formación predeportiva 4–6 años</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#8C95A8;font-weight:700">Rol</div>
+    <div style="display:flex;gap:6px;background:#11151E;padding:5px;border-radius:999px;border:1px solid rgba(255,255,255,0.07)">
+      <sc-for list="{{ roleTabs }}" as="r" hint-placeholder-count="2">
+        <button onClick="{{ r.onClick }}" style="flex:1;height:38px;border:0;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;background:{{ r.bg }};color:{{ r.color }}">{{ r.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#8C95A8;font-weight:700;margin-bottom:6px">Pantallas</div>
+    <sc-for list="{{ screenLinks }}" as="l" hint-placeholder-count="11">
+      <sc-if value="{{ l.isHead }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:#5E6678;margin:12px 0 4px;letter-spacing:0.08em;text-transform:uppercase">{{ l.label }}</div></sc-if>
+      <sc-if value="{{ l.isLink }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ l.onClick }}" style="display:flex;align-items:center;gap:10px;text-align:left;border:0;background:{{ l.bg }};color:{{ l.color }};padding:8px 12px;border-radius:10px;font-size:14px;cursor:pointer">
+          <span style="width:6px;height:6px;border-radius:50%;background:{{ l.dot }}"></span>{{ l.label }}
+        </button>
+      </sc-if>
+    </sc-for>
+  </div>
+  <div style="font-size:12px;color:#5E6678;line-height:1.6;text-wrap:pretty">Datos de ejemplo: Carolina Rojas (acudiente de Sofía y Andrés) · Entrenador Nicolás Jiménez. Hoy: jueves 22 de octubre de 2026.</div>
+</aside>
+</sc-if>
+
+<div style="width:414px;height:868px;flex:none;border-radius:62px;background:#000;padding:12px;box-sizing:border-box;box-shadow:0 0 0 2px #1E2430,0 40px 120px rgba(0,0,0,0.6),0 0 160px rgba(31,79,216,0.18)">
+<div style="position:relative;width:390px;height:844px;border-radius:50px;overflow:hidden;background:#0A0D12">
+
+  <sc-if value="{{ glowOn }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;top:-180px;right:-160px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(31,79,216,0.38),rgba(31,79,216,0) 68%);pointer-events:none"></div>
+    <div style="position:absolute;bottom:-200px;left:-180px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(61,220,106,0.12),rgba(61,220,106,0) 68%);pointer-events:none"></div>
+  </sc-if>
+
+  <div ref="{{ scrollRef }}" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+
+  <!-- SPLASH -->
+  <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+    <div onClick="{{ goLogin }}" style="height:844px;display:flex;flex-direction:column;justify-content:space-between;padding:120px 28px 64px;box-sizing:border-box;cursor:pointer;background:radial-gradient(120% 60% at 80% 40%,rgba(31,79,216,0.35),rgba(10,13,18,0) 60%)">
+      <div style="display:flex;align-items:flex-end;gap:6px;font-stretch:125%;font-style:italic;font-weight:900;font-size:44px;line-height:0.9;text-transform:uppercase;letter-spacing:-0.01em">
+        <div>Pequeños<br>Atletas</div><div style="width:14px;height:14px;flex:none;border-radius:50%;background:#3DDC6A;margin-bottom:6px;box-shadow:0 0 22px #3DDC6A"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;font-stretch:125%;font-style:italic;font-weight:850;font-size:46px;line-height:1;text-transform:uppercase">
+        <div>Juega.</div><div>Progresa.</div><div style="color:#3DDC6A">Crece.</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#8C95A8">
+        <span>Formación multidisciplinar · 4–6 años</span><span style="display:flex;gap:5px"><span style="width:22px;height:4px;border-radius:2px;background:#3DDC6A"></span><span style="width:8px;height:4px;border-radius:2px;background:#2A3142"></span></span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- LOGIN / REGISTRO -->
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height:844px;display:flex;flex-direction:column">
+      <div style="position:relative;height:300px;flex:none;clip-path:polygon(0 0,100% 0,100% 78%,0 100%);background:repeating-linear-gradient(135deg,#151B27 0 10px,#11161F 10px 20px)">
+        <div style="position:absolute;left:24px;bottom:96px;font:500 11px ui-monospace,Menlo,monospace;color:#5E6678;letter-spacing:0.04em">foto: niños entrenando en la cancha</div>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,13,18,0) 40%,rgba(10,13,18,0.9))"></div>
+        <div style="position:absolute;top:62px;left:24px;display:flex;align-items:flex-end;gap:4px;font-stretch:125%;font-style:italic;font-weight:900;font-size:18px;line-height:0.92;text-transform:uppercase"><div>Pequeños<br>Atletas</div><div style="width:7px;height:7px;flex:none;border-radius:50%;background:#3DDC6A;margin-bottom:3px"></div></div>
+      </div>
+      <div style="padding:0 24px 40px;margin-top:-34px;position:relative;display:flex;flex-direction:column;gap:18px">
+        <sc-if value="{{ isLoginMode }}" hint-placeholder-val="{{ true }}">
+          <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:30px;line-height:1;text-transform:uppercase">Bienvenido<br><span style="color:#3DDC6A">de vuelta.</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 18px;border-radius:18px;background:#141924;border:1px solid rgba(255,255,255,0.08)"><i class="ph-bold ph-envelope-simple" style="font-size:19px;color:#4F7BFF"></i><input type="email" placeholder="Correo electrónico" style="flex:1;background:none;border:0;outline:none;color:#F2F4F8;font-size:15px"></div>
+            <div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 18px;border-radius:18px;background:#141924;border:1px solid rgba(255,255,255,0.08)"><i class="ph-bold ph-lock-simple" style="font-size:19px;color:#4F7BFF"></i><input type="password" placeholder="Contraseña" style="flex:1;background:none;border:0;outline:none;color:#F2F4F8;font-size:15px"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+            <button onClick="{{ toggleRemember }}" style="display:flex;align-items:center;gap:8px;background:none;border:0;color:#C9CFDB;font-size:13px;cursor:pointer;padding:0">
+              <span style="width:36px;height:22px;border-radius:11px;background:{{ rememberBg }};position:relative;display:block"><span style="position:absolute;top:3px;left:{{ rememberX }};width:16px;height:16px;border-radius:50%;background:#fff"></span></span>Recordarme
+            </button>
+            <button onClick="{{ forgot }}" style="background:none;border:0;color:#4F7BFF;font-size:13px;cursor:pointer;padding:0">¿Olvidaste tu contraseña?</button>
+          </div>
+          <button onClick="{{ loginParent }}" style="height:58px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:#5BE883">Ingresar <i class="ph-bold ph-arrow-right"></i></button>
+          <button onClick="{{ loginCoach }}" style="height:52px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:#F2F4F8;font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,0.05)">Demo: entrar como entrenador</button>
+          <div style="text-align:center;font-size:14px;color:#8C95A8">¿Primera vez? <button onClick="{{ toRegister }}" style="background:none;border:0;color:#3DDC6A;font-weight:700;font-size:14px;cursor:pointer;padding:0">Crear cuenta</button></div>
+        </sc-if>
+        <sc-if value="{{ isRegisterMode }}" hint-placeholder-val="{{ false }}">
+          <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:30px;line-height:1;text-transform:uppercase">Crea tu<br><span style="color:#3DDC6A">cuenta.</span></div>
+          <div style="font-size:13px;color:#8C95A8;line-height:1.5;margin-top:-8px">Regístrate como acudiente. Luego inscribes a tu hijo y el entrenador aprueba la inscripción.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input placeholder="Nombres" style="height:52px;padding:0 16px;border-radius:16px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;font-size:15px;outline:none;min-width:0">
+            <input placeholder="Apellidos" style="height:52px;padding:0 16px;border-radius:16px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;font-size:15px;outline:none;min-width:0">
+            <input placeholder="Correo electrónico" style="grid-column:1 / -1;height:52px;padding:0 16px;border-radius:16px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;font-size:15px;outline:none">
+            <input placeholder="+57 Teléfono" style="height:52px;padding:0 16px;border-radius:16px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;font-size:15px;outline:none;min-width:0">
+            <select style="height:52px;padding:0 14px;border-radius:16px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#C9CFDB;font-size:15px;outline:none;min-width:0"><option>Parentesco</option><option>Madre</option><option>Padre</option><option>Abuelo/a</option><option>Tío/a</option><option>Otro</option></select>
+            <input type="password" placeholder="Contraseña (mín. 8 caracteres)" style="grid-column:1 / -1;height:52px;padding:0 16px;border-radius:16px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;font-size:15px;outline:none">
+          </div>
+          <button onClick="{{ toggleTerms }}" style="display:flex;gap:12px;align-items:flex-start;text-align:left;background:none;border:0;color:#C9CFDB;font-size:13px;line-height:1.45;cursor:pointer;padding:0">
+            <span style="width:22px;height:22px;flex:none;border-radius:7px;border:1.5px solid {{ termsBorder }};background:{{ termsBg }};display:flex;align-items:center;justify-content:center;color:#06210F"><i class="ph-bold ph-check" style="font-size:13px"></i></span>
+            Acepto los Términos y la Política de Tratamiento de Datos (Ley 1581 de 2012).
+          </button>
+          <button onClick="{{ register }}" style="height:58px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer">Crear cuenta</button>
+          <div style="text-align:center;font-size:14px;color:#8C95A8">¿Ya tienes cuenta? <button onClick="{{ toLogin }}" style="background:none;border:0;color:#3DDC6A;font-weight:700;font-size:14px;cursor:pointer;padding:0">Iniciar sesión</button></div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PADRE · INICIO -->
+  <sc-if value="{{ isPInicio }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:2px"><div style="font-size:13px;color:#8C95A8">Jueves 22 de octubre</div><div style="font-size:22px;font-weight:700">Hola, Carolina</div></div>
+        <div style="display:flex;gap:8px">
+          <button onClick="{{ goEventos }}" style="width:44px;height:44px;border-radius:50%;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center"><i class="ph-bold ph-bell" style="font-size:19px"></i><span style="position:absolute;top:10px;right:11px;width:8px;height:8px;border-radius:50%;background:#3DDC6A"></span></button>
+          <div style="width:44px;height:44px;border-radius:50%;background:#1F4FD8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">CR</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <sc-for list="{{ kidChips }}" as="k" hint-placeholder-count="2">
+          <button onClick="{{ k.onClick }}" style="display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:999px;cursor:pointer;background:{{ k.bg }};border:1px solid {{ k.border }};color:{{ k.color }}">
+            <span style="width:36px;height:36px;border-radius:50%;background:{{ k.avBg }};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#F2F4F8">{{ k.ini }}</span>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.15"><span style="font-weight:700;font-size:14px">{{ k.name }}</span><span style="font-size:11px;opacity:0.75">{{ k.cat }}</span></span>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="position:relative;overflow:hidden;border-radius:28px;padding:22px;background:linear-gradient(150deg,#1F4FD8 0%,#163AA6 55%,#0F2A7A 100%);display:flex;flex-direction:column;gap:14px">
+        <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;border:28px solid rgba(255,255,255,0.06)"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#C8D5FF">Próxima sesión</span>
+          <span style="padding:5px 12px;border-radius:999px;background:#3DDC6A;color:#06210F;font-size:11px;font-weight:800;letter-spacing:0.08em">{{ kid.next.when }}</span>
+        </div>
+        <div style="font-stretch:112%;font-style:italic;font-weight:850;font-size:26px;line-height:1;text-transform:uppercase;overflow-wrap:anywhere">{{ kid.next.type }}</div>
+        <div style="font-size:14px;color:#DCE4FF;line-height:1.4">{{ kid.next.topic }}</div>
+        <div style="display:flex;gap:16px;font-size:13px;color:#F2F4F8;flex-wrap:wrap">
+          <span style="display:flex;align-items:center;gap:6px"><i class="ph-bold ph-clock"></i><span>{{ kid.next.date }} · {{ kid.next.time }}</span></span>
+          <span style="display:flex;align-items:center;gap:6px"><i class="ph-bold ph-map-pin"></i>{{ kid.place }}</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <button onClick="{{ goPagos }}" style="text-align:left;cursor:pointer;border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);color:#F2F4F8;display:flex;flex-direction:column;gap:10px" style-hover="background:#181E2B">
+          <div style="display:flex;justify-content:space-between;align-items:center;width:100%"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700;white-space:nowrap">Pago {{ kid.pay.period }}</span><i class="ph-bold ph-arrow-up-right" style="color:#8C95A8"></i></div>
+          <div style="font-size:24px;font-weight:800;letter-spacing:-0.01em">{{ payTotal }}</div>
+          <span style="align-self:flex-start;display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ payPillBg }};color:{{ payColor }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ payColor }}"></span>{{ kid.pay.status }}</span>
+          <div style="font-size:12px;color:#8C95A8">{{ kid.pay.homeNote }}</div>
+        </button>
+        <button onClick="{{ goPruebas }}" style="text-align:left;cursor:pointer;border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);color:#F2F4F8;display:flex;flex-direction:column;gap:10px" style-hover="background:#181E2B">
+          <div style="display:flex;justify-content:space-between;align-items:center;width:100%"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Último resultado</span><i class="ph-bold ph-arrow-up-right" style="color:#8C95A8"></i></div>
+          <div style="display:flex;align-items:baseline;gap:4px"><span style="font-size:24px;font-weight:800">{{ lastRes.value }}</span><span style="font-size:13px;color:#8C95A8">{{ lastRes.unit }}</span><span style="font-size:13px;font-weight:700;color:#3DDC6A;margin-left:4px">{{ lastRes.trend }}</span></div>
+          <div style="font-size:13px;line-height:1.3">{{ lastRes.name }}</div>
+          <div style="font-size:12px;color:#8C95A8">Control del 08/09/2026</div>
+        </button>
+      </div>
+
+      <button onClick="{{ goAsist }}" style="text-align:left;cursor:pointer;border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);color:#F2F4F8;display:flex;flex-direction:column;gap:14px" style-hover="background:#181E2B">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Asistencia · octubre</span><span style="font-size:12px;color:#8C95A8">{{ attTotalLabel }}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%">
+          <sc-for list="{{ attStatsMes }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:22px;font-weight:800;color:{{ s.color }}">{{ s.count }}</div>
+              <div style="height:4px;border-radius:2px;background:#232A3A;overflow:hidden"><div style="height:100%;width:{{ s.w }};background:{{ s.color }}"></div></div>
+              <div style="font-size:11px;color:#C9CFDB">{{ s.label }}<br><span style="color:#8C95A8">{{ s.pct }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </button>
+
+      <div style="border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px"><i class="ph-bold ph-megaphone-simple" style="color:#4F7BFF;font-size:16px"></i><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Anuncio · fijado</span></div>
+        <div style="font-size:16px;font-weight:700">Halloween deportivo, sábado 31</div>
+        <div style="font-size:14px;color:#C9CFDB;line-height:1.45;text-wrap:pretty">Pueden venir disfrazados. Haremos circuitos y juegos para todas las categorías. Confirma la asistencia en Eventos.</div>
+      </div>
+
+      <button onClick="{{ openWhatsApp }}" style="position:sticky;bottom:104px;align-self:flex-end;height:54px;padding:0 20px 0 16px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 10px 30px rgba(61,220,106,0.35)"><i class="ph-bold ph-whatsapp-logo" style="font-size:22px"></i>Escribir al entrenador</button>
+    </div>
+  </sc-if>
+
+  <!-- PADRE · MI HIJO -->
+  <sc-if value="{{ isPHijo }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="width:76px;height:76px;border-radius:24px;flex:none;background:repeating-linear-gradient(135deg,#1A2030 0 6px,#151A26 6px 12px);border:2px solid #3DDC6A;display:flex;align-items:center;justify-content:center;font:500 10px ui-monospace,Menlo,monospace;color:#5E6678">foto</div>
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:26px;line-height:1;text-transform:uppercase">{{ kid.name }}</div>
+          <div style="font-size:13px;color:#C9CFDB">{{ kid.age }}</div>
+          <span style="align-self:flex-start;padding:4px 10px;border-radius:999px;background:rgba(79,123,255,0.16);color:#9DB4FF;font-size:12px;font-weight:700">Categoría {{ kid.cat }}</span>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <sc-for list="{{ kidMini }}" as="k" hint-placeholder-count="2">
+            <button onClick="{{ k.onClick }}" style="width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:11px;font-weight:800;background:{{ k.bg }};color:{{ k.color }};border:1px solid {{ k.border }}">{{ k.ini }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;background:#11151E;padding:5px;border-radius:999px;border:1px solid rgba(255,255,255,0.07)">
+        <sc-for list="{{ childTabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.onClick }}" style="flex:1;height:40px;border:0;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;background:{{ t.bg }};color:{{ t.color }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isTabDatos }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ dataSections }}" as="sec" hint-placeholder-count="4">
+          <div style="border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700"><i class="ph-bold {{ sec.icon }}" style="font-size:15px;color:#4F7BFF"></i>{{ sec.title }}</span>
+              <sc-if value="{{ sec.isLocked }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#8C95A8"><i class="ph-bold ph-lock-simple"></i>Lo asigna el entrenador</span></sc-if>
+              <sc-if value="{{ sec.canRequest }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sec.onRequest }}" style="background:none;border:0;color:#3DDC6A;font-weight:700;font-size:13px;cursor:pointer;padding:0">Solicitar cambio</button></sc-if>
+              <sc-if value="{{ sec.isPending }}" hint-placeholder-val="{{ false }}"><span style="padding:4px 10px;border-radius:999px;background:rgba(245,165,36,0.15);color:#F5A524;font-size:12px;font-weight:700">Cambio pendiente</span></sc-if>
+            </div>
+            <sc-for list="{{ sec.rows }}" as="row" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;gap:16px;font-size:14px;line-height:1.35"><span style="color:#8C95A8;flex:none">{{ row.k }}</span><span style="text-align:right;font-weight:600">{{ row.v }}</span></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </sc-if>
+
+      <sc-if value="{{ isTabFisico }}" hint-placeholder-val="{{ false }}">
+        <div style="border-radius:28px;padding:20px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Última medición</span><span style="font-size:12px;color:#8C95A8">{{ measLast.date }}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:28px;font-weight:800">{{ measLast.t }}</span><span style="font-size:12px;color:#8C95A8">Talla · cm</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:28px;font-weight:800">{{ measLast.p }}</span><span style="font-size:12px;color:#8C95A8">Peso · kg</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:28px;font-weight:800;color:#3DDC6A">{{ measLast.imc }}</span><span style="font-size:12px;color:#8C95A8">IMC</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;background:rgba(61,220,106,0.1)">
+            <div style="width:48px;height:48px;border-radius:50%;flex:none;border:3px solid #3DDC6A;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#3DDC6A">{{ kid.pct }}</div>
+            <div style="font-size:14px;line-height:1.35;font-weight:600">Dentro del rango esperado para su edad<br><span style="font-size:12px;font-weight:400;color:#8C95A8">Percentil OMS {{ kid.pctRef }}</span></div>
+          </div>
+        </div>
+        <div style="border-radius:28px;padding:20px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Evolución del IMC</span>
+          <div style="position:relative">
+            <svg viewBox="0 0 320 150" width="100%" style="display:block;overflow:visible">
+              <rect x="0" y="{{ imc.b1y }}" width="320" height="{{ imc.b1h }}" fill="rgba(245,165,36,0.10)"></rect>
+              <rect x="0" y="{{ imc.b2y }}" width="320" height="{{ imc.b2h }}" fill="rgba(61,220,106,0.12)"></rect>
+              <rect x="0" y="{{ imc.b3y }}" width="320" height="{{ imc.b3h }}" fill="rgba(245,165,36,0.10)"></rect>
+              <line x1="0" x2="320" y1="{{ imc.p50 }}" y2="{{ imc.p50 }}" stroke="rgba(255,255,255,0.25)" stroke-dasharray="3 4"></line>
+              <path d="{{ imc.path }}" fill="none" stroke="#3DDC6A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="{{ imc.d0.x }}" cy="{{ imc.d0.y }}" r="5" fill="#0A0D12" stroke="#3DDC6A" stroke-width="3"></circle>
+              <circle cx="{{ imc.d1.x }}" cy="{{ imc.d1.y }}" r="5" fill="#0A0D12" stroke="#3DDC6A" stroke-width="3"></circle>
+              <circle cx="{{ imc.d2.x }}" cy="{{ imc.d2.y }}" r="6" fill="#3DDC6A"></circle>
+            </svg>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#8C95A8"><span>Mar</span><span>Jun</span><span>Sep</span></div>
+          <div style="display:flex;gap:14px;font-size:11px;color:#8C95A8;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:rgba(61,220,106,0.35)"></span>P15–P85 esperado</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:rgba(245,165,36,0.35)"></span>P3–P15 · P85–P97</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;border-top:1px dashed rgba(255,255,255,0.5)"></span>P50</span>
+          </div>
+        </div>
+        <div style="border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px">
+          <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8C95A8;font-weight:700;padding-bottom:8px"><span>Fecha</span><span>Talla</span><span>Peso</span><span>IMC</span></div>
+          <sc-for list="{{ measRows }}" as="m" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;font-size:14px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.06)"><span style="color:#C9CFDB">{{ m.date }}</span><span>{{ m.t }}</span><span>{{ m.p }}</span><span style="font-weight:700">{{ m.imc }}</span></div>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;color:#8C95A8;line-height:1.5;text-wrap:pretty;padding:0 4px">Esta información es orientativa y no reemplaza la valoración del pediatra.</div>
+      </sc-if>
+
+      <sc-if value="{{ isTabPruebas }}" hint-placeholder-val="{{ false }}">
+        <div style="border-radius:28px;padding:20px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Perfil multidisciplinar</span>
+          <div style="position:relative;width:300px;height:250px;align-self:center">
+            <svg viewBox="0 0 240 200" width="300" height="250" style="display:block">
+              <polygon points="{{ radar.g1 }}" fill="none" stroke="rgba(255,255,255,0.08)"></polygon>
+              <polygon points="{{ radar.g2 }}" fill="none" stroke="rgba(255,255,255,0.08)"></polygon>
+              <polygon points="{{ radar.g3 }}" fill="none" stroke="rgba(255,255,255,0.08)"></polygon>
+              <polygon points="{{ radar.g4 }}" fill="none" stroke="rgba(255,255,255,0.14)"></polygon>
+              <line x1="120" y1="20" x2="120" y2="180" stroke="rgba(255,255,255,0.08)"></line>
+              <line x1="40" y1="100" x2="200" y2="100" stroke="rgba(255,255,255,0.08)"></line>
+              <polygon points="{{ radar.poly }}" fill="rgba(61,220,106,0.22)" stroke="#3DDC6A" stroke-width="2.5" stroke-linejoin="round"></polygon>
+            </svg>
+            <div style="position:absolute;top:0;left:0;right:0;text-align:center;font-size:12px;color:#C9CFDB">Locomoción <b style="color:#3DDC6A">{{ radar.loc }}</b></div>
+            <div style="position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:12px;color:#C9CFDB">Manos <b style="color:#3DDC6A">{{ radar.man }}</b></div>
+            <div style="position:absolute;top:112px;right:-8px;font-size:12px;color:#C9CFDB;text-align:right">Equilibrio<br><b style="color:#3DDC6A">{{ radar.eq }}</b></div>
+            <div style="position:absolute;top:112px;left:-8px;font-size:12px;color:#C9CFDB">Pies<br><b style="color:#3DDC6A">{{ radar.pie }}</b></div>
+          </div>
+          <div style="font-size:13px;color:#C9CFDB;line-height:1.45;text-wrap:pretty">{{ radar.note }}</div>
+        </div>
+        <sc-for list="{{ families }}" as="f" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 4px 0"><span style="font-stretch:125%;font-style:italic;font-weight:800;font-size:16px;text-transform:uppercase">{{ f.name }}</span><span style="font-size:12px;color:#8C95A8">{{ f.count }}</span></div>
+            <sc-for list="{{ f.tests }}" as="t" hint-placeholder-count="2">
+              <button onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;border-radius:20px;padding:14px 16px;background:#141924;border:1px solid rgba(255,255,255,0.07);color:#F2F4F8" style-hover="background:#181E2B">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                  <span style="font-size:14px;font-weight:600;line-height:1.25">{{ t.name }}</span>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:{{ t.cmpColor }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ t.cmpColor }}"></span>{{ t.cmp }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none"><span style="font-size:18px;font-weight:800">{{ t.value }} <span style="font-size:12px;font-weight:500;color:#8C95A8">{{ t.unit }}</span></span><span style="font-size:12px;font-weight:700;color:{{ t.trendColor }}">{{ t.trend }}</span></div>
+                <i class="ph-bold ph-caret-right" style="color:#5E6678"></i>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- PADRE · DETALLE DE PRUEBA -->
+  <sc-if value="{{ isPPrueba }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:56px 20px 130px;display:flex;flex-direction:column;gap:16px">
+      <button onClick="{{ backToPruebas }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 10px;border-radius:999px;background:#141924;border:1px solid rgba(255,255,255,0.08);color:#F2F4F8;font-size:13px;font-weight:600;cursor:pointer"><i class="ph-bold ph-caret-left"></i><span style="white-space:nowrap">Pruebas de {{ kid.name }}</span></button>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#4F7BFF;font-weight:700">{{ td.fam }} · {{ td.cap }}</span>
+        <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:26px;line-height:1.02;text-transform:uppercase;text-wrap:balance;overflow-wrap:anywhere">{{ td.name }}</div>
+      </div>
+      <div style="display:flex;align-items:stretch;gap:12px">
+        <div style="flex:1;border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Resultado · {{ td.lastDate }}</span>
+          <span style="font-size:38px;font-weight:850;line-height:1">{{ td.value }} <span style="font-size:15px;font-weight:500;color:#8C95A8">{{ td.unit }}</span></span>
+          <span style="font-size:13px;font-weight:700;color:{{ td.trendColor }}">{{ td.trendLong }}</span>
+        </div>
+        <div style="width:118px;flex:none;border-radius:24px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;background:{{ td.cmpBg }}">
+          <i class="ph-bold ph-target" style="font-size:22px;color:{{ td.cmpColor }}"></i>
+          <span style="font-size:15px;font-weight:800;line-height:1.15;color:{{ td.cmpColor }}">{{ td.cmp }}</span>
+          <span style="font-size:11px;color:#C9CFDB">Ref. {{ td.refLabel }}</span>
+        </div>
+      </div>
+      <div style="border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Progreso</span><span style="font-size:11px;color:#8C95A8">{{ td.betterLabel }}</span></div>
+        <svg viewBox="0 0 320 130" width="100%" style="display:block;overflow:visible">
+          <rect x="0" y="{{ td.chart.by }}" width="320" height="{{ td.chart.bh }}" fill="rgba(79,123,255,0.14)" rx="6"></rect>
+          <path d="{{ td.chart.path }}" fill="none" stroke="#3DDC6A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+          <circle cx="{{ td.chart.d0.x }}" cy="{{ td.chart.d0.y }}" r="5" fill="#0A0D12" stroke="#3DDC6A" stroke-width="3"></circle>
+          <circle cx="{{ td.chart.d1.x }}" cy="{{ td.chart.d1.y }}" r="5" fill="#0A0D12" stroke="#3DDC6A" stroke-width="3"></circle>
+          <circle cx="{{ td.chart.d2.x }}" cy="{{ td.chart.d2.y }}" r="6" fill="#3DDC6A"></circle>
+        </svg>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#8C95A8"><span>Mar</span><span>Jun</span><span>Sep</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#8C95A8"><span style="width:10px;height:10px;border-radius:3px;background:rgba(79,123,255,0.4)"></span>Franja de referencia para su edad</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:2px 4px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Qué mide y por qué</span>
+        <div style="font-size:15px;line-height:1.5;text-wrap:pretty">{{ td.obj }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"><span style="font-size:12px;color:#8C95A8;align-self:center">Prepara para</span>
+          <sc-for list="{{ td.sports }}" as="s" hint-placeholder-count="3"><span style="padding:5px 11px;border-radius:999px;border:1px solid rgba(61,220,106,0.4);color:#3DDC6A;font-size:12px;font-weight:600">{{ s }}</span></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:2px 4px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Cómo se realiza</span>
+        <div style="font-size:14px;line-height:1.5;color:#C9CFDB;text-wrap:pretty">{{ td.how }}</div>
+        <div style="height:170px;border-radius:20px;margin-top:4px;background:repeating-linear-gradient(135deg,#151B27 0 10px,#11161F 10px 20px);display:flex;align-items:center;justify-content:center;gap:10px;font:500 11px ui-monospace,Menlo,monospace;color:#5E6678"><span style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#F2F4F8"><i class="ph-fill ph-play" style="font-size:18px"></i></span>video de ejemplo</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700;padding:0 4px">Historial</span>
+        <sc-for list="{{ td.rows }}" as="r" hint-placeholder-count="3">
+          <div style="border-radius:20px;padding:14px 16px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#8C95A8">{{ r.date }}</span><span style="font-size:16px;font-weight:800">{{ r.value }}</span></div>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:{{ r.cmpColor }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.cmpColor }}"></span>{{ r.cmp }}</span>
+            <div style="font-size:13px;color:#C9CFDB;line-height:1.45">“{{ r.obs }}”</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PADRE · ASISTENCIA -->
+  <sc-if value="{{ isPAsist }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:30px;line-height:1;text-transform:uppercase">Asistencia</div>
+        <div style="display:flex;gap:6px"><sc-for list="{{ kidMini }}" as="k" hint-placeholder-count="2"><button onClick="{{ k.onClick }}" style="width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:11px;font-weight:800;background:{{ k.bg }};color:{{ k.color }};border:1px solid {{ k.border }}">{{ k.ini }}</button></sc-for></div>
+      </div>
+      <div style="border-radius:28px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:16px">Octubre 2026</span><span style="font-size:12px;color:#8C95A8">{{ kid.name }} · {{ kid.cat }}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:11px;color:#8C95A8;font-weight:700"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+          <sc-for list="{{ calDays }}" as="d" hint-placeholder-count="31">
+            <div style="aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:{{ d.weight }};background:{{ d.bg }};color:{{ d.color }};border:1.5px solid {{ d.border }};box-sizing:border-box">{{ d.num }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px 14px;font-size:11px;color:#C9CFDB">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="5"><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:{{ l.color }}"></span>{{ l.label }}</span></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;background:#11151E;padding:5px;border-radius:999px;border:1px solid rgba(255,255,255,0.07)">
+        <sc-for list="{{ periodTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.onClick }}" style="flex:1;height:36px;border:0;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;background:{{ t.bg }};color:{{ t.color }}">{{ t.label }}</button></sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <sc-for list="{{ attStats }}" as="s" hint-placeholder-count="4">
+          <div style="border-radius:22px;padding:16px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:8px">
+            <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#C9CFDB"><span style="width:8px;height:8px;border-radius:50%;background:{{ s.color }}"></span>{{ s.label }}</span>
+            <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:30px;font-weight:850;color:{{ s.color }}">{{ s.pct }}</span><span style="font-size:13px;color:#8C95A8">{{ s.count }} ses.</span></div>
+            <div style="height:5px;border-radius:3px;background:#232A3A;overflow:hidden"><div style="height:100%;width:{{ s.w }};background:{{ s.color }}"></div></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;color:#8C95A8;padding:0 4px">{{ attPeriodNote }}</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700;padding:0 4px">Sesiones</span>
+        <sc-for list="{{ sessionList }}" as="s" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:14px;border-radius:20px;padding:12px 16px;background:#141924;border:1px solid rgba(255,255,255,0.07)">
+            <div style="width:44px;flex:none;display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-size:20px;font-weight:800">{{ s.day }}</span><span style="font-size:11px;color:#8C95A8;text-transform:uppercase">{{ s.dow }}</span></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ s.type }}</span><span style="font-size:12px;color:#8C95A8">{{ s.obs }}</span></div>
+            <span style="padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ s.bg }};color:{{ s.color }}">{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;color:#8C95A8;line-height:1.5;padding:0 4px;text-wrap:pretty">Las excusas las registra el entrenador. Si tu hijo no puede asistir, avísale por WhatsApp.</div>
+    </div>
+  </sc-if>
+
+  <!-- PADRE · PAGOS -->
+  <sc-if value="{{ isPPagos }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:30px;line-height:1;text-transform:uppercase">Pagos</div>
+        <div style="display:flex;gap:6px"><sc-for list="{{ kidMini }}" as="k" hint-placeholder-count="2"><button onClick="{{ k.onClick }}" style="width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:11px;font-weight:800;background:{{ k.bg }};color:{{ k.color }};border:1px solid {{ k.border }}">{{ k.ini }}</button></sc-for></div>
+      </div>
+      <div style="border-radius:28px;padding:22px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:5px;background:{{ payColor }}"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">{{ kid.name }} · {{ kid.pay.period }}</span><span style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ payPillBg }};color:{{ payColor }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ payColor }}"></span>{{ kid.pay.status }}</span></div>
+        <div style="font-size:40px;font-weight:850;letter-spacing:-0.02em;line-height:1">{{ payTotal }}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:14px">
+          <div style="display:flex;justify-content:space-between"><span style="color:#8C95A8">Mensualidad {{ kid.cat }}</span><span>{{ payBase }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#8C95A8">{{ kid.pay.discLabel }}</span><span style="color:#3DDC6A">− {{ payDisc }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#8C95A8">Ciclo / vencimiento</span><span>{{ kid.pay.cycle }} → {{ kid.pay.due }}</span></div>
+        </div>
+        <div style="font-size:13px;color:#C9CFDB;padding:12px 14px;border-radius:14px;background:#1B2130">{{ kid.pay.note }}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700;padding:0 4px">Medios de pago</span>
+        <sc-for list="{{ medios }}" as="m" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:14px;border-radius:20px;padding:14px 16px;background:#141924;border:1px solid rgba(255,255,255,0.07)">
+            <div style="width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:850;font-size:15px;background:{{ m.bg }};color:#F2F4F8">{{ m.ini }}</div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:700">{{ m.name }}</span><span style="font-size:14px;font-variant-numeric:tabular-nums">{{ m.num }}</span><span style="font-size:12px;color:#8C95A8">{{ m.holder }}</span></div>
+            <sc-if value="{{ m.canCopy }}" hint-placeholder-val="{{ true }}"><button onClick="{{ m.onCopy }}" style="height:38px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:#F2F4F8;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:rgba(255,255,255,0.06)"><i class="ph-bold ph-copy"></i>Copiar</button></sc-if>
+          </div>
+        </sc-for>
+        <div style="display:flex;gap:14px;align-items:center;border-radius:20px;padding:14px 16px;background:#141924;border:1px solid rgba(255,255,255,0.07)">
+          <div style="width:84px;height:84px;flex:none;border-radius:12px;background:repeating-linear-gradient(45deg,#E8ECF4 0 4px,#C9CFDB 4px 8px);display:flex;align-items:center;justify-content:center;font:600 10px ui-monospace,Menlo,monospace;color:#1B2333">QR</div>
+          <div style="font-size:13px;color:#C9CFDB;line-height:1.45">Escanea el código QR de Nequi o Bancolombia desde la app de tu banco. Escribe el nombre del niño en la referencia.</div>
+        </div>
+      </div>
+      <sc-if value="{{ payPending }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ notifyPaid }}" style="height:58px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ph-bold ph-whatsapp-logo" style="font-size:20px"></i>Ya pagué, avisar al entrenador</button>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:4px;border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07)">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700;padding-bottom:6px">Historial</span>
+        <sc-for list="{{ payHistory }}" as="h" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,0.06)">
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ h.period }}</span><span style="font-size:12px;color:#8C95A8">{{ h.meta }}</span></div>
+            <span style="font-size:14px;font-weight:700">{{ h.amount }}</span>
+            <span style="width:84px;text-align:center;padding:4px 0;border-radius:999px;font-size:11px;font-weight:700;background:{{ h.bg }};color:{{ h.color }}">{{ h.status }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PADRE · EVENTOS -->
+  <sc-if value="{{ isPEventos }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:30px;line-height:1;text-transform:uppercase">Eventos</div>
+      <sc-for list="{{ events }}" as="e" hint-placeholder-count="3">
+        <div style="border-radius:28px;overflow:hidden;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column">
+          <div style="display:flex;gap:16px;padding:18px 18px 14px">
+            <div style="width:62px;height:70px;flex:none;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;background:{{ e.dateBg }};color:{{ e.dateColor }}"><span style="font-size:11px;font-weight:800;letter-spacing:0.1em">{{ e.mon }}</span><span style="font-size:28px;font-weight:850">{{ e.day }}</span></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+              <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;color:{{ e.tagColor }}">{{ e.tag }}</span>
+              <span style="font-size:17px;font-weight:750;line-height:1.2">{{ e.title }}</span>
+              <span style="font-size:13px;color:#C9CFDB">{{ e.time }} · {{ e.place }}</span>
+              <span style="font-size:12px;color:#8C95A8">{{ e.meta }}</span>
+            </div>
+          </div>
+          <sc-if value="{{ e.needsConfirm }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:0 18px 14px">
+              <sc-for list="{{ e.kids }}" as="k" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="width:30px;height:30px;border-radius:50%;flex:none;background:#1F4FD8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800">{{ k.ini }}</span>
+                  <span style="flex:1;font-size:14px;font-weight:600">{{ k.name }}</span>
+                  <button onClick="{{ k.onYes }}" style="height:36px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;background:{{ k.yesBg }};color:{{ k.yesColor }};border:1px solid {{ k.yesBorder }}">Asistirá</button>
+                  <button onClick="{{ k.onNo }}" style="height:36px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;background:{{ k.noBg }};color:{{ k.noColor }};border:1px solid {{ k.noBorder }}">No asistirá</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex;border-top:1px solid rgba(255,255,255,0.06)">
+            <button onClick="{{ e.onMap }}" style="flex:1;height:46px;background:none;border:0;color:#4F7BFF;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ph-bold ph-map-trifold"></i>Cómo llegar</button>
+            <button onClick="{{ e.onCal }}" style="flex:1;height:46px;background:none;border:0;border-left:1px solid rgba(255,255,255,0.06);color:#4F7BFF;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ph-bold ph-calendar-plus"></i>Agregar al calendario</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- ENTRENADOR · PANEL -->
+  <sc-if value="{{ isCInicio }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:2px"><div style="font-size:13px;color:#8C95A8">Jueves 22 de octubre</div><div style="font-size:22px;font-weight:700">Hola, Nicolás</div></div>
+        <div style="width:44px;height:44px;border-radius:50%;background:#3DDC6A;color:#06210F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">NJ</div>
+      </div>
+      <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:34px;line-height:0.98;text-transform:uppercase">Hoy entrenas<br><span style="color:#3DDC6A">2 categorías.</span></div>
+      <sc-for list="{{ coachSessions }}" as="s" hint-placeholder-count="2">
+        <div style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:12px;background:{{ s.bg }};border:1px solid {{ s.border }}">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;color:{{ s.kicker }}">{{ s.type }}</span>
+            <span style="font-size:13px;font-weight:700">{{ s.time }}</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="font-stretch:125%;font-style:italic;font-weight:850;font-size:28px;text-transform:uppercase;line-height:1">{{ s.cat }}</span><span style="font-size:13px;color:#C9CFDB">{{ s.kids }} niños</span></div>
+          <div style="font-size:13px;color:#C9CFDB">{{ s.place }} · {{ s.topic }}</div>
+          <sc-if value="{{ s.hasAlert }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#F5A524"><i class="ph-bold ph-warning"></i><span>{{ s.alert }}</span></div></sc-if>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ s.onAtt }}" style="flex:1;height:48px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ph-bold ph-check-circle"></i>Tomar asistencia</button>
+            <sc-if value="{{ s.isControl }}" hint-placeholder-val="{{ false }}"><button onClick="{{ s.onCap }}" style="flex:1;height:48px;border-radius:999px;background:#F2F4F8;border:0;color:#0A0D12;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ph-bold ph-timer"></i>Registrar pruebas</button></sc-if>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <sc-for list="{{ coachPending }}" as="p" hint-placeholder-count="4">
+          <button onClick="{{ p.onClick }}" style="text-align:left;cursor:pointer;border-radius:22px;padding:16px;background:#141924;border:1px solid rgba(255,255,255,0.07);color:#F2F4F8;display:flex;flex-direction:column;gap:8px" style-hover="background:#181E2B">
+            <i class="ph-bold {{ p.icon }}" style="font-size:20px;color:{{ p.color }}"></i>
+            <span style="font-size:28px;font-weight:850;line-height:1;color:{{ p.color }}">{{ p.n }}</span>
+            <span style="font-size:13px;line-height:1.3">{{ p.label }}</span>
+            <span style="font-size:11px;color:#8C95A8;line-height:1.35">{{ p.sub }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="border-radius:24px;padding:18px;background:#141924;border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8C95A8;font-weight:700">Festival Infantil · sáb 14 nov</span><span style="font-size:12px;color:#8C95A8">34 niños</span></div>
+        <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px"><div style="flex:18;background:#3DDC6A"></div><div style="flex:4;background:#E5484D"></div><div style="flex:12;background:#2A3142"></div></div>
+        <div style="display:flex;gap:16px;font-size:12px;color:#C9CFDB"><span><b style="color:#3DDC6A">18</b> asistirán</span><span><b style="color:#E5484D">4</b> no asistirán</span><span><b>12</b> sin respuesta</span></div>
+        <button onClick="{{ remindRsvp }}" style="height:44px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:#F2F4F8;font-weight:600;font-size:13px;cursor:pointer" style-hover="background:rgba(255,255,255,0.05)">Recordar a los 12 sin respuesta</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ENTRENADOR · ASISTENCIA -->
+  <sc-if value="{{ isCAsist }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 200px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:12px;color:#8C95A8">Jue 22 oct · {{ cAtt.time }} · {{ cAtt.type }}</span>
+        <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:30px;line-height:1;text-transform:uppercase">Asistencia</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <sc-for list="{{ cAttTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="flex:1;height:44px;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;background:{{ t.bg }};color:{{ t.color }};border:1px solid {{ t.border }}">{{ t.label }}</button></sc-for>
+      </div>
+      <button onClick="{{ markAll }}" style="height:48px;border-radius:16px;border:1px dashed rgba(61,220,106,0.5);background:rgba(61,220,106,0.06);color:#3DDC6A;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ph-bold ph-checks"></i>Marcar todos como Asistió</button>
+      <sc-for list="{{ cAttRows }}" as="r" hint-placeholder-count="7">
+        <div style="border-radius:22px;padding:12px;background:#141924;border:1px solid {{ r.border }};display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:40px;height:40px;border-radius:14px;flex:none;background:#1F2638;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">{{ r.ini }}</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">{{ r.name }}</span>
+              <sc-if value="{{ r.hasAlert }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#F5A524"><i class="ph-bold ph-warning"></i>{{ r.alert }}</span></sc-if>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:{{ r.stColor }}">{{ r.stLabel }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+            <sc-for list="{{ r.btns }}" as="b" hint-placeholder-count="4">
+              <button onClick="{{ b.onClick }}" style="height:46px;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;background:{{ b.bg }};color:{{ b.color }};border:1px solid {{ b.border }}">{{ b.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:absolute;left:12px;right:12px;bottom:96px;border-radius:24px;padding:12px 12px 12px 18px;background:rgba(20,25,36,0.96);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:12px;backdrop-filter:blur(12px)">
+      <div style="flex:1;display:flex;gap:10px;font-size:13px;font-weight:700">
+        <sc-for list="{{ cAttSummary }}" as="s" hint-placeholder-count="4"><span style="color:{{ s.color }}">{{ s.n }} {{ s.l }}</span></sc-for>
+      </div>
+      <button onClick="{{ saveAtt }}" style="height:46px;padding:0 20px;border:0;border-radius:999px;background:{{ saveAttBg }};color:#06210F;font-weight:800;font-size:13px;cursor:pointer">{{ saveAttLabel }}</button>
+    </div>
+  </sc-if>
+
+  <!-- ENTRENADOR · CAPTURA -->
+  <sc-if value="{{ isCCaptura }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:60px 20px 130px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:#8C95A8">Día de control · Fiera · 4:15 p.m.</span><div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:28px;line-height:1;text-transform:uppercase">Por prueba</div></div>
+        <span style="font-size:12px;color:#8C95A8">{{ cap.progress }}</span>
+      </div>
+      <div style="display:flex;gap:6px;overflow-x:auto;margin:0 -20px;padding:0 20px">
+        <sc-for list="{{ capTests }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="flex:none;height:40px;padding:0 14px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ t.bg }};color:{{ t.color }};border:1px solid {{ t.border }}">{{ t.label }}</button></sc-for>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <sc-for list="{{ capKids }}" as="k" hint-placeholder-count="7"><button onClick="{{ k.onClick }}" style="flex:1;height:38px;border-radius:12px;font-size:11px;font-weight:800;cursor:pointer;background:{{ k.bg }};color:{{ k.color }};border:1.5px solid {{ k.border }}">{{ k.ini }}</button></sc-for>
+      </div>
+      <div style="border-radius:30px;padding:22px;background:linear-gradient(160deg,#1A2236,#121722);border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="width:48px;height:48px;border-radius:16px;background:#1F4FD8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">{{ cap.kid.ini }}</span>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:800">{{ cap.kid.name }}</span><span style="font-size:12px;color:#8C95A8">{{ cap.testName }} · {{ cap.unitLabel }}</span></div>
+          <sc-if value="{{ cap.kidAlert }}" hint-placeholder-val="{{ false }}"><i class="ph-bold ph-warning" style="color:#F5A524;font-size:20px"></i></sc-if>
+        </div>
+
+        <sc-if value="{{ cap.isTime }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center;font-stretch:110%;font-weight:850;font-size:76px;line-height:1;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:{{ cap.timerColor }}">{{ cap.timer }}<span style="font-size:24px;color:#8C95A8"> s</span></div>
+          <button onClick="{{ cap.onTimer }}" style="height:72px;border:0;border-radius:999px;font-size:18px;font-weight:850;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;background:{{ cap.timerBtnBg }};color:{{ cap.timerBtnColor }}"><i class="ph-fill {{ cap.timerIcon }}" style="font-size:22px"></i>{{ cap.timerBtn }}</button>
+        </sc-if>
+        <sc-if value="{{ cap.isDist }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;font-weight:850;font-size:64px;line-height:1;font-variant-numeric:tabular-nums">{{ cap.keypadShow }}<span style="font-size:22px;color:#8C95A8"> cm</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <sc-for list="{{ keypad }}" as="k" hint-placeholder-count="12"><button onClick="{{ k.onClick }}" style="height:52px;border-radius:16px;border:0;font-size:20px;font-weight:700;cursor:pointer;background:{{ k.bg }};color:{{ k.color }}" style-active="transform:scale(0.96)">{{ k.label }}</button></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ cap.isHits }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px;color:#C9CFDB;text-align:center">Aciertos de 5 lanzamientos</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+            <sc-for list="{{ hitBtns }}" as="h" hint-placeholder-count="6"><button onClick="{{ h.onClick }}" style="aspect-ratio:1;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:#1B2130;color:#F2F4F8;font-size:22px;font-weight:850;cursor:pointer" style-hover="background:#3DDC6A;color:#06210F">{{ h.label }}</button></sc-for>
+          </div>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div style="border-radius:16px;padding:10px 12px;background:rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#8C95A8">Intento 1</span><span style="font-size:17px;font-weight:800">{{ cap.a1 }}</span></div>
+          <div style="border-radius:16px;padding:10px 12px;background:rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#8C95A8">Intento 2</span><span style="font-size:17px;font-weight:800">{{ cap.a2 }}</span></div>
+          <div style="border-radius:16px;padding:10px 12px;background:rgba(61,220,106,0.12);display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#3DDC6A">Mejor</span><span style="font-size:17px;font-weight:800;color:#3DDC6A">{{ cap.best }}</span></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onClick="{{ cap.onSkip }}" style="height:48px;padding:0 16px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:#C9CFDB;font-weight:600;font-size:13px;cursor:pointer">No realizó</button>
+          <button onClick="{{ cap.onUndo }}" style="height:48px;padding:0 16px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:#C9CFDB;font-weight:600;font-size:13px;cursor:pointer"><i class="ph-bold ph-arrow-counter-clockwise"></i></button>
+          <button onClick="{{ cap.onNext }}" style="flex:1;height:48px;border:0;border-radius:999px;background:#F2F4F8;color:#0A0D12;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">{{ cap.nextLabel }}<i class="ph-bold ph-arrow-right"></i></button>
+        </div>
+      </div>
+      <button onClick="{{ saveResults }}" style="height:56px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:15px;letter-spacing:0.04em;cursor:pointer">Guardar y publicar resultados</button>
+      <div style="font-size:12px;color:#8C95A8;text-align:center;line-height:1.5">Al guardar se publica al instante y se avisa a los acudientes.</div>
+    </div>
+  </sc-if>
+
+  </div>
+
+  <!-- status bar -->
+  <div style="position:absolute;top:0;left:0;right:0;height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 36px;font-size:15px;font-weight:700;pointer-events:none;z-index:5">
+    <span>9:41</span>
+    <div style="position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000"></div>
+    <span style="display:flex;gap:6px;font-size:16px"><i class="ph-fill ph-cell-signal-full"></i><i class="ph-bold ph-wifi-high"></i><i class="ph-fill ph-battery-full"></i></span>
+  </div>
+
+  <!-- bottom nav -->
+  <sc-if value="{{ hasNav }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:12px;right:12px;bottom:16px;height:70px;border-radius:35px;background:rgba(18,22,32,0.94);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-around;padding:0 6px;z-index:6">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.onClick }}" style="height:54px;min-width:54px;padding:0 12px;border:0;border-radius:27px;cursor:pointer;display:flex;align-items:center;gap:7px;background:{{ n.bg }};color:{{ n.color }}">
+          <i class="{{ n.icon }}" style="font-size:21px"></i>
+          <sc-if value="{{ n.active }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:800">{{ n.label }}</span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- sheet: solicitar cambio -->
+  <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:8"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:9;border-radius:32px 32px 0 0;background:#141924;border-top:1px solid rgba(255,255,255,0.1);padding:14px 22px 34px;display:flex;flex-direction:column;gap:14px">
+      <div style="width:40px;height:5px;border-radius:3px;background:#2A3142;align-self:center"></div>
+      <div style="font-stretch:125%;font-style:italic;font-weight:850;font-size:22px;text-transform:uppercase;line-height:1">Solicitar cambio</div>
+      <div style="font-size:13px;color:#8C95A8">{{ sheet.title }} · {{ kid.name }}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:16px;background:#1B2130"><span style="font-size:11px;color:#8C95A8;letter-spacing:0.1em;text-transform:uppercase;font-weight:700">Valor actual</span><span style="font-size:14px">{{ sheet.current }}</span></div>
+      <input onChange="{{ onSheetInput }}" placeholder="Escribe el valor propuesto" style="height:54px;padding:0 16px;border-radius:16px;background:#0F131B;border:1px solid #4F7BFF;color:#F2F4F8;font-size:15px;outline:none">
+      <div style="font-size:12px;color:#8C95A8;line-height:1.45">El dato no cambia hasta que el entrenador lo apruebe. Te avisaremos con una notificación.</div>
+      <div style="display:flex;gap:8px">
+        <button onClick="{{ closeSheet }}" style="flex:1;height:52px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.14);color:#F2F4F8;font-weight:600;font-size:14px;cursor:pointer">Cancelar</button>
+        <button onClick="{{ submitSheet }}" style="flex:1.4;height:52px;border:0;border-radius:999px;background:#3DDC6A;color:#06210F;font-weight:800;font-size:14px;cursor:pointer">Enviar solicitud</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:20px;right:20px;top:58px;z-index:10;border-radius:20px;padding:14px 16px;background:#F2F4F8;color:#0A0D12;font-size:14px;font-weight:600;line-height:1.4;display:flex;gap:10px;align-items:flex-start;box-shadow:0 16px 40px rgba(0,0,0,0.5)"><i class="ph-fill ph-check-circle" style="color:#1E8A39;font-size:20px;flex:none"></i>{{ toastText }}</div>
+  </sc-if>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;c-inicio&quot;,&quot;options&quot;:[&quot;splash&quot;,&quot;login&quot;,&quot;p-inicio&quot;,&quot;p-hijo&quot;,&quot;p-prueba&quot;,&quot;p-asist&quot;,&quot;p-pagos&quot;,&quot;p-eventos&quot;,&quot;c-inicio&quot;,&quot;c-asist&quot;,&quot;c-captura&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototipo&quot;},&quot;glow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Estilo&quot;},&quot;showPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototipo&quot;}}">
+const C = { green:'#3DDC6A', blue:'#4F7BFF', brand:'#1F4FD8', amber:'#F5A524', red:'#E5484D', sky:'#3E9BFF', gray:'#9AA4B2', text:'#F2F4F8', muted:'#8C95A8', surf:'#141924', ink:'#06210F' };
+const COP = n => '$ ' + Math.round(n).toLocaleString('es-CO');
+const nf = n => typeof n === 'number' ? n.toLocaleString('es-CO', { maximumFractionDigits: 2 }) : n;
+const alpha = (hex, a) => { const h = hex.replace('#',''); const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16); return `rgba(${r},${g},${b},${a})`; };
+const ST = { A:{label:'Asistió',short:'Asistió',color:C.green}, F:{label:'Faltó',short:'Faltó',color:C.red}, E:{label:'Excusa',short:'Excusa',color:C.sky}, R:{label:'Retardo',short:'Retardo',color:C.amber}, X:{label:'Cancelada',color:C.gray} };
+const DATES = ['10/03/2026','16/06/2026','08/09/2026'];
+const QUAL = ['Por mejorar','En proceso','Logrado'];
+
+const TESTS = [
+  { id:'vel10', name:'Carrera de velocidad 10 m', fam:'loc', cap:'Velocidad', unit:'s', better:'menor', ref:[2.8,3.4], sports:['Atletismo','Fútbol','Baloncesto'], obj:'Mide la rapidez para desplazarse en línea recta y reaccionar a una señal.', how:'Sale de pie detrás de la línea. A la señal corre 10 m hasta el cono final. Se cronometran 2 intentos y se guarda el mejor.' },
+  { id:'zig', name:'Carrera en zigzag (conos)', fam:'loc', cap:'Agilidad', unit:'s', better:'menor', ref:[8.5,10], sports:['Fútbol','Baloncesto','Tenis','Rugby'], obj:'Mide la agilidad para cambiar de dirección rápido sin perder el control.', how:'Recorre 5 conos separados 2 m en zigzag, ida y vuelta, lo más rápido posible sin tumbarlos.' },
+  { id:'salto', name:'Salto largo con pies juntos', fam:'loc', cap:'Fuerza', unit:'cm', better:'mayor', ref:[75,100], sports:['Atletismo','Voleibol','Baloncesto'], obj:'Evalúa la potencia de las piernas y la coordinación del impulso con los brazos.', how:'Desde la línea, con los pies juntos, balancea los brazos y salta hacia adelante. Se mide desde la línea hasta el talón más cercano.' },
+  { id:'equi', name:'Equilibrio en un pie', fam:'eq', cap:'Equilibrio', unit:'s', better:'mayor', ref:[5,12], sports:['Gimnasia','Patinaje','Artes marciales'], obj:'Mide cuánto tiempo mantiene el equilibrio sobre un pie.', how:'Con las manos en la cintura levanta un pie. Se cronometra hasta que apoya el pie o suelta las manos (máximo 30 s).' },
+  { id:'viga', name:'Caminar sobre una línea/viga', fam:'eq', cap:'Equilibrio', unit:'pasos', better:'mayor', ref:[6,10], sports:['Gimnasia','Escalada','Patinaje'], obj:'Evalúa el control del cuerpo mientras se desplaza por una superficie estrecha.', how:'Camina sobre una viga baja poniendo un pie delante del otro. Se cuentan los pasos sin salirse (máximo 10).' },
+  { id:'rollo', name:'Rollo adelante', fam:'eq', cap:'Coordinación', unit:'', better:'mayor', qual:true, sports:['Gimnasia','Judo','Natación'], obj:'Evalúa la conciencia corporal y la coordinación al girar.', how:'Desde cuclillas apoya las manos, mete la cabeza y rueda sobre la espalda hasta quedar de pie. Se observa con la escala Logrado / En proceso / Por mejorar.' },
+  { id:'recep', name:'Recepción de pelota', fam:'man', cap:'Coordinación', unit:'/5', better:'mayor', ref:[2,4], sports:['Baloncesto','Voleibol','Béisbol'], obj:'Evalúa la capacidad de atrapar un balón lanzado.', how:'El entrenador lanza 5 veces una pelota mediana desde 3 m. Se cuentan las recepciones limpias.' },
+  { id:'lanz', name:'Lanzamiento a un objetivo', fam:'man', cap:'Precisión', unit:'/5', better:'mayor', ref:[2,4], sports:['Baloncesto','Balonmano','Béisbol'], obj:'Mide la precisión al lanzar.', how:'Lanza 5 pelotas pequeñas a un aro ubicado a 3 m. Se cuentan los aciertos.' },
+  { id:'cond', name:'Conducción de balón entre conos', fam:'pie', cap:'Coordinación', unit:'s', better:'menor', ref:[10,13], sports:['Fútbol','Fútbol de salón'], obj:'Evalúa el control del balón en movimiento.', how:'Conduce el balón con el pie entre 5 conos y regresa. Se cronometra el recorrido.' },
+  { id:'patear', name:'Patear a un objetivo', fam:'pie', cap:'Precisión', unit:'/5', better:'mayor', ref:[2,4], sports:['Fútbol','Rugby'], obj:'Mide la precisión y la coordinación al patear.', how:'Patea 5 balones hacia una portería pequeña a 4 m. Se cuentan los aciertos.' },
+];
+const FAMS = [ {k:'loc',name:'Locomoción'}, {k:'eq',name:'Equilibrio'}, {k:'man',name:'Manipulación · manos'}, {k:'pie',name:'Manipulación · pies'} ];
+
+const KIDS = {
+  sofia: { id:'sofia', name:'Sofía', full:'Sofía Rojas Méndez', ini:'SR', age:'5 años 2 meses', birth:'14/08/2021', doc:'RC 1.019.284.556', cat:'Cachorro', schedule:'Mar y Jue · 3:00 – 4:00 p.m.', place:'Parque El Virrey', inscr:'12/02/2026', talla:'6',
+    next:{ when:'HOY', date:'Jue 22 oct', time:'3:00 p.m.', type:'Entrenamiento', topic:'Saltos y aterrizajes seguros' },
+    pay:{ period:'Octubre', status:'Al día', base:120000, disc:12000, discLabel:'Descuento hermanos · 10 %', cycle:'12/10', due:'17/10', note:'Pagado el 15/10/2026 por Nequi. Próximo cobro: 12/11/2026.', homeNote:'Próximo cobro 12/11' },
+    att:{1:'A',6:'A',8:'R',13:'X',15:'A',20:'E'}, attQ:{A:17,R:2,E:2,F:1}, attT:{A:54,R:4,E:4,F:2},
+    attObs:{8:'Llegó 10 min tarde', 13:'Cancelada por lluvia', 20:'Cita médica'},
+    radar:{loc:72,eq:84,man:58,pie:50}, radarNote:'Se destaca en equilibrio. Conviene reforzar el trabajo con balón en los pies.',
+    meas:[{t:107.2,p:18.1,imc:15.8},{t:108.6,p:18.4,imc:15.6},{t:110,p:19,imc:15.7}], pct:'P56', pctRef:'2007 · niñas 5 años',
+    sangre:'O+', alergias:'Ninguna', cond:'Ninguna', meds:'Ninguno', eps:'Sanitas EPS', epsNum:'4410229871', phone:'+57 310 555 0148', emergency:'Jorge Rojas (Padre) · +57 310 555 0192', pickup:'Jorge Rojas, Marta Méndez (Abuela)',
+    hist:{ vel10:[3.42,3.18,2.96], zig:[10.4,9.6,9.1], salto:[72,81,92], equi:[6,9,14], viga:[5,7,8], rollo:[0,1,2], recep:[1,2,3], lanz:[2,2,2], cond:[14.2,13.1,12.4], patear:[1,1,2] },
+    payHist:[ ['Septiembre','Pagado 14/09 · Nequi','P'], ['Agosto','Pagado 12/08 · Bancolombia','P'], ['Julio','Vacaciones','C'], ['Junio','Pagado 13/06 · Nequi','P'] ] },
+  andres: { id:'andres', name:'Andrés', full:'Andrés Rojas Méndez', ini:'AR', age:'4 años 7 meses', birth:'02/03/2022', doc:'RC 1.019.301.772', cat:'Fiera', schedule:'Mar y Jue · 4:15 – 5:15 p.m.', place:'Parque El Virrey', inscr:'18/03/2026', talla:'4',
+    next:{ when:'HOY', date:'Jue 22 oct', time:'4:15 p.m.', type:'Día de control', topic:'Pruebas de velocidad, salto, equilibrio y recepción' },
+    pay:{ period:'Octubre', status:'Pendiente', base:130000, disc:13000, discLabel:'Descuento hermanos · 10 %', cycle:'18/10', due:'23/10', note:'Vence mañana, 23/10/2026. Paga por cualquiera de los medios de abajo y avísale al entrenador.', homeNote:'Vence mañana · 23/10' },
+    att:{1:'A',6:'A',8:'F',13:'X',15:'A',20:'R'}, attQ:{A:16,R:2,E:1,F:3}, attT:{A:41,R:3,E:2,F:4},
+    attObs:{8:'Sin aviso', 13:'Cancelada por lluvia', 20:'Llegó 5 min tarde'},
+    radar:{loc:78,eq:55,man:62,pie:74}, radarNote:'Se destaca en locomoción y en el trabajo con los pies. Conviene reforzar el equilibrio.',
+    meas:[{t:101.5,p:16,imc:15.5},{t:103,p:16.6,imc:15.6},{t:104.2,p:17.4,imc:16}], pct:'P63', pctRef:'2006 · niños menores de 5 años',
+    sangre:'O+', alergias:'Penicilina', cond:'Ninguna', meds:'Ninguno', eps:'Sanitas EPS', epsNum:'4410229902', phone:'+57 310 555 0148', emergency:'Jorge Rojas (Padre) · +57 310 555 0192', pickup:'Jorge Rojas, Marta Méndez (Abuela)',
+    hist:{ vel10:[3.6,3.3,3.05], zig:[10.9,9.8,9.3], salto:[70,78,85], equi:[3,4,6], viga:[3,5,6], rollo:[0,1,1], recep:[1,2,2], lanz:[1,2,3], cond:[13.5,12,11.2], patear:[2,3,4] },
+    payHist:[ ['Septiembre','Pagado 20/09 · Daviplata','P'], ['Agosto','Pagado 19/08 · Nequi','P'], ['Julio','Vacaciones','C'], ['Junio','Pagado 18/06 · Nequi','P'] ] },
+};
+const OBS = {
+  sofia:{ salto:['Le cuesta coordinar los brazos.','Mejor impulso, sigue cayendo con un pie.','¡Excelente aterrizaje con ambos pies!'], equi:['Se distrae con facilidad.','Más concentrada.','Muy estable, mira al frente.'] },
+  andres:{ equi:['Le cuesta mantener la postura.','Va mejorando.','Ya aguanta más, sigue practicando en casa.'], patear:['Patea con la punta.','Usa el empeine.','Muy preciso con la pierna derecha.'] },
+};
+const ROSTER = {
+  cachorro:[ {id:'sofia',name:'Sofía Rojas',ini:'SR'}, {id:'emilio',name:'Emilio Prieto',ini:'EP'}, {id:'luciana',name:'Luciana Gómez',ini:'LG',alert:'Asma · inhalador en el bolso'}, {id:'tomas',name:'Tomás Vargas',ini:'TV'}, {id:'mariana',name:'Mariana Cruz',ini:'MC'}, {id:'jacobo',name:'Jacobo León',ini:'JL'}, {id:'sara',name:'Sara Pinzón',ini:'SP'} ],
+  fiera:[ {id:'andres',name:'Andrés Rojas',ini:'AR',alert:'Alergia a la penicilina'}, {id:'julian',name:'Julián Moreno',ini:'JM',alert:'Alergia al maní'}, {id:'valentina',name:'Valentina Suárez',ini:'VS'}, {id:'samuel',name:'Samuel Ortiz',ini:'SO'}, {id:'isabella',name:'Isabella Torres',ini:'IT'}, {id:'martin',name:'Martín Herrera',ini:'MH'}, {id:'antonia',name:'Antonia Beltrán',ini:'AB'} ],
+};
+const CAP = [ {id:'vel10',label:'Velocidad 10 m',type:'time',unit:'s',better:'menor'}, {id:'salto',label:'Salto largo',type:'dist',unit:'cm',better:'mayor'}, {id:'equi',label:'Equilibrio',type:'time',unit:'s',better:'mayor'}, {id:'recep',label:'Recepción',type:'hits',unit:'/5',better:'mayor'} ];
+
+function cmpOf(t, v) {
+  if (t.qual) return [{l:'Por mejorar',c:C.amber},{l:'En proceso',c:C.blue},{l:'Logrado',c:C.green}][v];
+  const [lo, hi] = t.ref;
+  if (v >= lo && v <= hi) return {l:'Esperado', c:C.blue};
+  const above = t.better === 'mayor' ? v > hi : v < lo;
+  return above ? {l:'Por encima', c:C.green} : {l:'Por debajo', c:C.amber};
+}
+function trendOf(t, a, b) {
+  if (a === b) return {s:'=', long:'Igual que la evaluación anterior', c:C.muted};
+  const better = t.better === 'menor' ? b < a : b > a;
+  const d = Math.abs(Math.round((b - a) * 100) / 100);
+  if (t.qual) return better ? {s:'↑', long:'Mejoró respecto a la evaluación anterior', c:C.green} : {s:'↓', long:'Bajó respecto a la evaluación anterior', c:C.amber};
+  return better ? {s:'↑ ' + nf(d), long:`Mejoró ${nf(d)} ${t.unit} respecto a junio`, c:C.green} : {s:'↓ ' + nf(d), long:`Bajó ${nf(d)} ${t.unit} respecto a junio`, c:C.amber};
+}
+const fmtVal = (t, v) => t.qual ? QUAL[v] : nf(v);
+const XS = [20, 160, 300];
+function lineChart(vals, lo, hi, H, band) {
+  const y = v => Math.round((H - 10 - (v - lo) / (hi - lo) * (H - 20)) * 10) / 10;
+  const pts = vals.map((v, i) => ({ x: XS[i], y: y(v) }));
+  const out = { path: 'M' + pts.map(p => p.x + ' ' + p.y).join(' L'), d0: pts[0], d1: pts[1], d2: pts[2] };
+  if (band) { out.by = y(band[1]); out.bh = Math.max(4, y(band[0]) - y(band[1])); }
+  return out;
+}
+
+class Component extends DCLogic {
+  state = { screen:'splash', kid:'sofia', tab:'datos', testId:'salto', period:'mes', toast:null, sheet:null, sheetVal:'', pending:{}, rsvp:{}, authMode:'login', remember:true, terms:false, attSession:'fiera', marks:{}, attSaved:{}, capTest:0, capKid:0, caps:{}, timerOn:false, elapsed:0, keypad:'' };
+  scrollRef = React.createRef();
+
+  componentDidMount() {
+    const s = this.props.startScreen ?? 'splash';
+    this.setState({ screen: s });
+    if (s === 'splash') this.splashT = setTimeout(() => { if (this.state.screen === 'splash') this.go('login'); }, 2400);
+  }
+  componentWillUnmount() { clearTimeout(this.splashT); clearInterval(this.tick); clearTimeout(this.toastT); }
+  componentDidUpdate(pp, ps) {
+    if ((ps.screen !== this.state.screen || ps.tab !== this.state.tab) && this.scrollRef.current) this.scrollRef.current.scrollTop = 0;
+    if (pp.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen });
+  }
+  go(screen, extra) { this.stopTick(); this.setState({ screen, sheet:null, ...(extra||{}) }); }
+  toast(t) { clearTimeout(this.toastT); this.setState({ toast: t }); this.toastT = setTimeout(() => this.setState({ toast: null }), 2800); }
+  stopTick() { if (this.tick) { clearInterval(this.tick); this.tick = null; } if (this.state.timerOn) this.setState({ timerOn:false, elapsed:0 }); }
+
+  capKey() { const t = CAP[this.state.capTest]; const k = ROSTER.fiera[this.state.capKid]; return [t, k]; }
+  addAttempt(v) {
+    const [t, k] = this.capKey();
+    this.setState(s => {
+      const caps = { ...s.caps, [t.id]: { ...(s.caps[t.id] || {}) } };
+      const arr = (caps[t.id][k.id] || []).filter(x => x !== 'NR');
+      if (arr.length >= 2) return null;
+      caps[t.id][k.id] = [...arr, v];
+      return { caps, keypad:'' };
+    });
+  }
+  toggleTimer() {
+    if (this.state.timerOn) {
+      clearInterval(this.tick); this.tick = null;
+      const v = Math.round((performance.now() - this.t0) / 10) / 100;
+      this.setState({ timerOn:false, elapsed: v * 1000 });
+      this.addAttempt(v);
+    } else {
+      const [t, k] = this.capKey();
+      if (((this.state.caps[t.id] || {})[k.id] || []).filter(x => x !== 'NR').length >= 2) { this.toast('Ya tiene 2 intentos. Pasa al siguiente niño.'); return; }
+      this.t0 = performance.now();
+      this.setState({ timerOn:true, elapsed:0 });
+      this.tick = setInterval(() => this.setState({ elapsed: performance.now() - this.t0 }), 41);
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const kid = KIDS[s.kid];
+    const role = s.screen.startsWith('c-') ? 'entrenador' : 'padre';
+    const kidIds = ['sofia','andres'];
+
+    const payColor = kid.pay.status === 'Al día' ? C.green : kid.pay.status === 'Vencido' ? C.red : C.amber;
+    const tests = TESTS.map(t => {
+      const h = kid.hist[t.id], v = h[2];
+      const cmp = cmpOf(t, v), tr = trendOf(t, h[1], h[2]);
+      return { t, h, v, cmp, tr };
+    });
+
+    const kidChips = kidIds.map(id => { const k = KIDS[id], on = id === s.kid; return { name:k.name, ini:k.ini, cat:k.cat, onClick:() => this.setState({ kid:id }), bg: on ? C.text : '#141924', color: on ? '#0A0D12' : C.text, border: on ? C.text : 'rgba(255,255,255,0.08)', avBg: on ? C.brand : '#232A3A' }; });
+    const kidMini = kidIds.map(id => { const k = KIDS[id], on = id === s.kid; return { ini:k.ini, onClick:() => this.setState({ kid:id }), bg: on ? C.green : 'transparent', color: on ? C.ink : C.muted, border: on ? C.green : 'rgba(255,255,255,0.14)' }; });
+
+    const statsFrom = (o) => { const tot = o.A + o.R + o.E + o.F; return ['A','R','E','F'].map(k => { const p = Math.round(o[k] / tot * 100); return { label: ST[k].label, count: o[k], pct: p + ' %', w: p + '%', color: ST[k].color }; }); };
+    const mesCounts = { A:0, R:0, E:0, F:0 }; Object.values(kid.att).forEach(v => { if (mesCounts[v] !== undefined) mesCounts[v]++; });
+    const attStatsMes = statsFrom(mesCounts);
+    const attStats = statsFrom(s.period === 'mes' ? mesCounts : s.period === 'tri' ? kid.attQ : kid.attT);
+    const sumOf = o => o.A + o.R + o.E + o.F;
+
+    // calendar
+    const calDays = [];
+    for (let i = 0; i < 3; i++) calDays.push({ num:'', bg:'transparent', color:'transparent', border:'transparent', weight:400 });
+    const sched = [1,6,8,13,15,20,22,27,29];
+    for (let d = 1; d <= 31; d++) {
+      const st = kid.att[d], today = d === 22, planned = sched.includes(d) && !st;
+      const col = st ? ST[st].color : null;
+      calDays.push({ num:d, weight: st || today ? 800 : 500,
+        bg: col ? alpha(col, st === 'X' ? 0.18 : 0.22) : 'transparent',
+        color: col ? col : today ? C.text : planned ? C.text : '#5E6678',
+        border: today ? C.green : planned ? 'rgba(255,255,255,0.18)' : 'transparent' });
+    }
+    const dows = { 1:'Jue',6:'Mar',8:'Jue',13:'Mar',15:'Jue',20:'Mar' };
+    const sessionList = [20,15,13,8,6,1].map(d => { const st = ST[kid.att[d]]; return { day:d, dow:dows[d], type: d === 1 ? 'Entrenamiento · inicio de mes' : 'Entrenamiento', obs: kid.attObs[d] || '3:00 p.m. · ' + kid.place, label: st.label, color: st.color, bg: alpha(st.color, 0.15) }; });
+
+    // imc chart
+    const sexBands = s.kid === 'sofia' ? [13.0,13.9,15.3,16.7,18.1] : [13.2,14.0,15.4,16.6,17.8];
+    const yI = v => Math.round((150 - (v - 12.5) / 6 * 150) * 10) / 10;
+    const ic = lineChart(kid.meas.map(m => m.imc), 12.5, 18.5, 150 + 20, null);
+    const imcPts = kid.meas.map((m, i) => ({ x: XS[i], y: yI(m.imc) }));
+    const imc = { b1y: yI(sexBands[1]), b1h: yI(sexBands[0]) - yI(sexBands[1]), b2y: yI(sexBands[3]), b2h: yI(sexBands[1]) - yI(sexBands[3]), b3y: yI(sexBands[4]), b3h: yI(sexBands[3]) - yI(sexBands[4]), p50: yI(sexBands[2]), path: 'M' + imcPts.map(p => p.x + ' ' + p.y).join(' L'), d0: imcPts[0], d1: imcPts[1], d2: imcPts[2] };
+    void ic;
+    const mL = kid.meas[2];
+    const measLast = { date: DATES[2], t: nf(mL.t), p: nf(mL.p), imc: nf(mL.imc) };
+    const measRows = kid.meas.map((m, i) => ({ date: DATES[i], t: nf(m.t), p: nf(m.p), imc: nf(m.imc) })).reverse();
+
+    // radar
+    const R = 80, cx = 120, cy = 100;
+    const dia = f => `${cx},${cy - R*f} ${cx + R*f},${cy} ${cx},${cy + R*f} ${cx - R*f},${cy}`;
+    const rd = kid.radar;
+    const radar = { g1:dia(0.25), g2:dia(0.5), g3:dia(0.75), g4:dia(1), loc:rd.loc, eq:rd.eq, man:rd.man, pie:rd.pie, note: kid.radarNote,
+      poly: `${cx},${cy - R*rd.loc/100} ${cx + R*rd.eq/100},${cy} ${cx},${cy + R*rd.man/100} ${cx - R*rd.pie/100},${cy}` };
+    const families = FAMS.map(f => { const list = tests.filter(x => x.t.fam === f.k); return { name: f.name, count: list.length + (list.length === 1 ? ' prueba' : ' pruebas'),
+      tests: list.map(x => ({ name:x.t.name, value: fmtVal(x.t, x.v), unit: x.t.qual ? '' : x.t.unit, cmp: x.cmp.l, cmpColor: x.cmp.c, trend: x.tr.s, trendColor: x.tr.c, onClick: () => this.go('p-prueba', { testId: x.t.id }) })) }; });
+
+    // test detail
+    const X = tests.find(x => x.t.id === s.testId) || tests[2];
+    const tt = X.t, famName = FAMS.find(f => f.k === tt.fam).name;
+    let lo, hi;
+    if (tt.qual) { lo = -0.4; hi = 2.4; } else { const all = [...X.h, ...tt.ref]; const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.18 || 1; lo = mn - pad; hi = mx + pad; }
+    const chart = lineChart(X.h, lo, hi, 130, tt.qual ? [1.6, 2.4] : tt.ref);
+    const obs = (OBS[s.kid] && OBS[s.kid][tt.id]) || ['Primera evaluación, buena disposición.','Mejoró la técnica.','Muy buen trabajo, sigue practicando en casa.'];
+    const td = { name: tt.name, fam: famName, cap: tt.cap, value: fmtVal(tt, X.v), unit: tt.qual ? '' : tt.unit, lastDate: DATES[2], cmp: X.cmp.l, cmpColor: X.cmp.c, cmpBg: alpha(X.cmp.c, 0.14),
+      refLabel: tt.qual ? 'Logrado' : `${nf(tt.ref[0])}–${nf(tt.ref[1])} ${tt.unit}`, trendLong: X.tr.long, trendColor: X.tr.c,
+      betterLabel: tt.qual ? 'Escala cualitativa' : tt.better === 'menor' ? 'Menor es mejor' : 'Mayor es mejor',
+      obj: tt.obj, how: tt.how, sports: tt.sports, chart,
+      rows: X.h.map((v, i) => { const c = cmpOf(tt, v); return { date: DATES[i], value: fmtVal(tt, v) + (tt.qual ? '' : ' ' + tt.unit), cmp: c.l, cmpColor: c.c, obs: obs[i] }; }).reverse() };
+
+    // datos
+    const pend = k => !!s.pending[s.kid + ':' + k];
+    const req = (key, title, current) => () => this.setState({ sheet: { key, title, current }, sheetVal:'' });
+    const sec = (key, title, icon, rows, editable, current) => ({ title, icon, rows, isLocked: !editable, canRequest: editable && !pend(key), isPending: editable && pend(key), onRequest: editable ? req(key, title, current) : null });
+    const dataSections = [
+      sec('cat','Categoría','ph-flag-pennant',[ {k:'Categoría',v:kid.cat}, {k:'Horario',v:kid.schedule}, {k:'Lugar',v:kid.place}, {k:'Inscrito desde',v:kid.inscr} ], false),
+      sec('pers','Datos personales','ph-identification-card',[ {k:'Nombre',v:kid.full}, {k:'Nacimiento',v:kid.birth}, {k:'Documento',v:kid.doc}, {k:'Talla uniforme',v:kid.talla} ], true, kid.full + ' · ' + kid.doc),
+      sec('cont','Acudientes y contactos','ph-phone',[ {k:'Acudiente',v:'Carolina Rojas (Madre)'}, {k:'Teléfono',v:kid.phone}, {k:'Emergencia',v:kid.emergency}, {k:'Pueden recogerlo',v:kid.pickup} ], true, kid.phone),
+      sec('salud','Salud','ph-heartbeat',[ {k:'Tipo de sangre',v:kid.sangre}, {k:'Alergias',v:kid.alergias}, {k:'Condiciones',v:kid.cond}, {k:'Medicamentos',v:kid.meds} ], true, 'Alergias: ' + kid.alergias),
+      sec('seguro','Seguro médico','ph-first-aid-kit',[ {k:'Tipo',v:'EPS'}, {k:'Entidad',v:kid.eps}, {k:'Afiliación',v:kid.epsNum} ], true, kid.eps + ' · ' + kid.epsNum),
+      sec('cons','Consentimientos','ph-seal-check',[ {k:'Tratamiento de datos',v:'Autorizado · 12/02/2026'}, {k:'Uso de imagen',v:'Autorizado'}, {k:'Actividad física',v:'Autorizado'} ], false),
+    ];
+    dataSections[5].isLocked = false;
+
+    // pagos
+    const medios = [
+      { ini:'N', name:'Nequi', num:'300 412 8890', holder:'Nicolás Jiménez', bg:'#5B2A86', canCopy:true },
+      { ini:'D', name:'Daviplata', num:'300 412 8890', holder:'Nicolás Jiménez', bg:'#B4202A', canCopy:true },
+      { ini:'B', name:'Bancolombia · Ahorros', num:'236-458912-07', holder:'Nicolás Jiménez · CC 80.123.456', bg:'#B8860B', canCopy:true },
+      { ini:'$', name:'Efectivo', num:'En la cancha', holder:'Entrégalo al entrenador antes de la sesión', bg:'#2A3142', canCopy:false },
+    ].map(m => ({ ...m, onCopy: () => this.toast(`Número de ${m.name.split(' ')[0]} copiado`) }));
+    const total = kid.pay.base - kid.pay.disc;
+    const payHistory = kid.payHist.map(([p, meta, st]) => ({ period:p, meta, amount: st === 'C' ? '—' : COP(total), status: st === 'P' ? 'Pagado' : 'Congelado', color: st === 'P' ? C.green : C.gray, bg: alpha(st === 'P' ? C.green : C.gray, 0.15) }));
+
+    // eventos
+    const rs = (eid, kidId) => s.rsvp[eid + ':' + kidId];
+    const mkKids = (eid, ids) => ids.map(id => { const r = rs(eid, id); return { name: KIDS[id].name, ini: KIDS[id].ini,
+      onYes: () => { this.setState(st => ({ rsvp: { ...st.rsvp, [eid+':'+id]:'si' } })); this.toast(`Confirmado: ${KIDS[id].name} asistirá`); },
+      onNo: () => { this.setState(st => ({ rsvp: { ...st.rsvp, [eid+':'+id]:'no' } })); this.toast(`Registrado: ${KIDS[id].name} no asistirá`); },
+      yesBg: r === 'si' ? C.green : 'transparent', yesColor: r === 'si' ? C.ink : C.text, yesBorder: r === 'si' ? C.green : 'rgba(255,255,255,0.14)',
+      noBg: r === 'no' ? alpha(C.red, 0.2) : 'transparent', noColor: r === 'no' ? '#FF8A8D' : C.muted, noBorder: r === 'no' ? C.red : 'rgba(255,255,255,0.1)' }; });
+    const ev = (o) => ({ ...o, onMap: () => this.toast('Abriendo Google Maps…'), onCal: () => this.toast('Evento agregado al calendario (.ics)') });
+    const events = [
+      ev({ tag:'Día de control', tagColor:C.blue, dateBg:C.green, dateColor:C.ink, mon:'OCT', day:'22', title:'Evaluación de habilidades · Fiera', time:'Hoy 4:15 p.m.', place:'Parque El Virrey', meta:'Solo para Andrés · no requiere confirmación', needsConfirm:false, kids:[] }),
+      ev({ tag:'Actividad especial', tagColor:C.amber, dateBg:'#1B2130', dateColor:C.text, mon:'OCT', day:'31', title:'Halloween deportivo', time:'Sáb 9:00 a.m.', place:'Parque El Virrey', meta:'Gratis · confirma hasta el 29/10', needsConfirm:true, kids: mkKids('hall', kidIds) }),
+      ev({ tag:'Festival', tagColor:C.green, dateBg:C.brand, dateColor:C.text, mon:'NOV', day:'14', title:'Festival Infantil Pequeños Atletas', time:'Sáb 8:00 a.m. – 12:00 m.', place:'Coliseo El Salitre', meta:'$ 25.000 por niño · confirma hasta el 07/11', needsConfirm:true, kids: mkKids('fest', kidIds) }),
+    ];
+
+    // coach
+    const coachSessions = [
+      { type:'Entrenamiento', time:'3:00 – 4:00 p.m.', cat:'Cachorro', kids:7, place:'Parque El Virrey', topic:'Saltos y aterrizajes', hasAlert:true, alert:'1 niño con condición de salud', isControl:false, bg:'#141924', border:'rgba(255,255,255,0.07)', kicker:C.muted, onAtt: () => this.go('c-asist', { attSession:'cachorro' }) },
+      { type:'Día de control', time:'4:15 – 5:15 p.m.', cat:'Fiera', kids:7, place:'Parque El Virrey', topic:'4 pruebas', hasAlert:true, alert:'2 niños con alergias', isControl:true, bg:'linear-gradient(150deg,#1F4FD8,#0F2A7A)', border:'rgba(79,123,255,0.5)', kicker:'#C8D5FF', onAtt: () => this.go('c-asist', { attSession:'fiera' }), onCap: () => this.go('c-captura') },
+    ];
+    const coachPending = [
+      { icon:'ph-user-plus', n:2, label:'Inscripciones por aprobar', sub:'Lucía Forero, Gabriel Niño', color:C.green, onClick: () => this.toast('Inscripciones pendientes: Lucía Forero y Gabriel Niño') },
+      { icon:'ph-note-pencil', n:1, label:'Solicitud de cambio', sub:'Teléfono · Carolina Rojas', color:C.blue, onClick: () => this.toast('Solicitud: cambio de teléfono de Carolina Rojas') },
+      { icon:'ph-warning-circle', n:3, label:'Pagos vencidos', sub:COP(351000) + ' por cobrar', color:C.red, onClick: () => this.toast('Recordatorio enviado a 3 acudientes') },
+      { icon:'ph-calendar-star', n:2, label:'Próximos eventos', sub:'Halloween · Festival', color:C.amber, onClick: () => this.toast('Halloween 31/10 · Festival 14/11') },
+    ];
+    const roster = ROSTER[s.attSession];
+    const mk = s.marks[s.attSession] || {};
+    const cAttRows = roster.map(k => { const cur = mk[k.id];
+      return { name:k.name, ini:k.ini, hasAlert: !!k.alert, alert:k.alert, stLabel: cur ? ST[cur].label : 'Sin marcar', stColor: cur ? ST[cur].color : '#5E6678', border: cur ? alpha(ST[cur].color, 0.35) : 'rgba(255,255,255,0.07)',
+        btns: ['A','F','E','R'].map(code => { const on = cur === code; return { label: ST[code].short, onClick: () => this.setState(st => ({ marks: { ...st.marks, [st.attSession]: { ...(st.marks[st.attSession] || {}), [k.id]: code } }, attSaved: { ...st.attSaved, [st.attSession]: false } })),
+          bg: on ? ST[code].color : '#1B2130', color: on ? (code === 'E' || code === 'F' ? '#fff' : C.ink) : '#C9CFDB', border: on ? ST[code].color : 'rgba(255,255,255,0.06)' }; }) }; });
+    const counts = { A:0, F:0, E:0, R:0 }; Object.values(mk).forEach(v => counts[v]++);
+    const marked = Object.keys(mk).length, allMarked = marked === roster.length, saved = s.attSaved[s.attSession];
+    const cAttSummary = ['A','F','E','R'].map(k => ({ n: counts[k], l: ST[k].short.slice(0,1), color: counts[k] ? ST[k].color : '#5E6678' }));
+    const cAttTabs = [['cachorro','Cachorro · 3:00'],['fiera','Fiera · 4:15']].map(([id, l]) => { const on = s.attSession === id; return { label:l, onClick: () => this.setState({ attSession:id }), bg: on ? C.text : 'transparent', color: on ? '#0A0D12' : C.text, border: on ? C.text : 'rgba(255,255,255,0.14)' }; });
+    const cAtt = s.attSession === 'fiera' ? { time:'4:15 p.m.', type:'Día de control' } : { time:'3:00 p.m.', type:'Entrenamiento' };
+
+    // captura
+    const ct = CAP[s.capTest], ck = ROSTER.fiera[s.capKid];
+    const attempts = ((s.caps[ct.id] || {})[ck.id]) || [];
+    const nr = attempts[0] === 'NR';
+    const real = attempts.filter(x => x !== 'NR');
+    const best = real.length ? (ct.better === 'menor' ? Math.min(...real) : Math.max(...real)) : null;
+    const fmtA = v => v === undefined ? '—' : nf(v) + (ct.unit === '/5' ? '/5' : ' ' + ct.unit);
+    const doneCount = ROSTER.fiera.filter(k => ((s.caps[ct.id] || {})[k.id] || []).length).length;
+    const cap = {
+      kid: ck, kidAlert: !!ck.alert, testName: TESTS.find(t => t.id === ct.id).name,
+      unitLabel: ct.type === 'time' ? (ct.better === 'menor' ? 'tiempo · menor es mejor' : 'tiempo · máx. 30 s') : ct.type === 'dist' ? 'distancia en cm' : 'aciertos',
+      isTime: ct.type === 'time', isDist: ct.type === 'dist', isHits: ct.type === 'hits',
+      timer: (s.elapsed / 1000).toFixed(2).replace('.', ','), timerColor: s.timerOn ? C.green : C.text,
+      timerBtn: s.timerOn ? 'Detener' : 'Iniciar', timerIcon: s.timerOn ? 'ph-stop' : 'ph-play', timerBtnBg: s.timerOn ? C.red : C.green, timerBtnColor: s.timerOn ? '#fff' : C.ink,
+      onTimer: () => this.toggleTimer(),
+      keypadShow: s.keypad || '0',
+      a1: nr ? 'No realizó' : fmtA(real[0]), a2: nr ? '—' : fmtA(real[1]), best: best === null ? '—' : fmtA(best),
+      progress: `${doneCount}/${ROSTER.fiera.length} niños`,
+      nextLabel: s.capKid < ROSTER.fiera.length - 1 ? 'Siguiente: ' + ROSTER.fiera[s.capKid + 1].name.split(' ')[0] : 'Siguiente prueba',
+      onNext: () => { this.stopTick(); if (s.capKid < ROSTER.fiera.length - 1) this.setState({ capKid: s.capKid + 1, keypad:'', elapsed:0 }); else this.setState({ capKid:0, capTest:(s.capTest + 1) % CAP.length, keypad:'', elapsed:0 }); },
+      onSkip: () => { this.stopTick(); this.setState(st => ({ caps: { ...st.caps, [ct.id]: { ...(st.caps[ct.id] || {}), [ck.id]: ['NR'] } } })); this.toast(`${ck.name.split(' ')[0]}: no realizó la prueba`); },
+      onUndo: () => { this.stopTick(); this.setState(st => { const arr = ((st.caps[ct.id] || {})[ck.id] || []).slice(0, -1); return { caps: { ...st.caps, [ct.id]: { ...(st.caps[ct.id] || {}), [ck.id]: arr } }, elapsed:0 }; }); },
+    };
+    const capTests = CAP.map((t, i) => { const on = i === s.capTest; return { label: t.label, onClick: () => { this.stopTick(); this.setState({ capTest:i, capKid:0, keypad:'', elapsed:0 }); }, bg: on ? C.text : 'transparent', color: on ? '#0A0D12' : C.text, border: on ? C.text : 'rgba(255,255,255,0.14)' }; });
+    const capKids = ROSTER.fiera.map((k, i) => { const done = ((s.caps[ct.id] || {})[k.id] || []).length > 0, on = i === s.capKid;
+      return { ini:k.ini, onClick: () => { this.stopTick(); this.setState({ capKid:i, keypad:'', elapsed:0 }); }, bg: done ? alpha(C.green, 0.18) : '#141924', color: done ? C.green : on ? C.text : C.muted, border: on ? C.green : 'rgba(255,255,255,0.08)' }; });
+    const keypad = ['1','2','3','4','5','6','7','8','9','⌫','0','OK'].map(l => ({ label:l, bg: l === 'OK' ? C.green : '#1B2130', color: l === 'OK' ? C.ink : C.text,
+      onClick: () => { if (l === '⌫') this.setState(st => ({ keypad: st.keypad.slice(0, -1) })); else if (l === 'OK') { if (s.keypad) this.addAttempt(parseInt(s.keypad, 10)); } else if (s.keypad.length < 3) this.setState(st => ({ keypad: st.keypad + l })); } }));
+    const hitBtns = [0,1,2,3,4,5].map(n => ({ label:String(n), onClick: () => this.addAttempt(n) }));
+
+    // nav
+    const navDefs = role === 'padre'
+      ? [['p-inicio','Inicio','ph-house'],['p-hijo','Mi hijo','ph-baby'],['p-asist','Asistencia','ph-calendar-check'],['p-pagos','Pagos','ph-wallet'],['p-eventos','Eventos','ph-flag-banner']]
+      : [['c-inicio','Hoy','ph-lightning'],['c-asist','Asistencia','ph-check-square'],['c-captura','Pruebas','ph-timer']];
+    const activeNav = s.screen === 'p-prueba' ? 'p-hijo' : s.screen;
+    const navItems = navDefs.map(([id, label, icon]) => { const on = activeNav === id; return { label, active: on, icon: (on ? 'ph-fill ' : 'ph-bold ') + icon, onClick: () => this.go(id), bg: on ? C.green : 'transparent', color: on ? C.ink : C.muted }; });
+
+    const linkDefs = [ ['h','Común'], ['splash','Splash'], ['login','Iniciar sesión / Registro'], ['h','Acudiente'], ['p-inicio','Inicio'], ['p-hijo','Mi hijo · Datos','datos'], ['p-hijo','Perfil físico','fisico'], ['p-hijo','Pruebas + radar','pruebas'], ['p-prueba','Detalle de prueba'], ['p-asist','Asistencia'], ['p-pagos','Pagos'], ['p-eventos','Eventos'], ['h','Entrenador'], ['c-inicio','Panel del día'], ['c-asist','Marcar asistencia'], ['c-captura','Captura de resultados'] ];
+    const screenLinks = linkDefs.map(([id, label, tab]) => {
+      if (id === 'h') return { isHead:true, isLink:false, label };
+      const on = s.screen === id && (!tab || s.tab === tab);
+      return { isHead:false, isLink:true, label, onClick: () => { this.go(id, tab ? { tab } : (id === 'login' ? { authMode:'login' } : {})); if (id === 'splash') { clearTimeout(this.splashT); this.splashT = setTimeout(() => { if (this.state.screen === 'splash') this.go('login'); }, 2400); } },
+        bg: on ? 'rgba(61,220,106,0.12)' : 'transparent', color: on ? C.green : '#C9CFDB', dot: on ? C.green : '#2A3142' };
+    });
+    const roleTabs = [['padre','Acudiente','p-inicio'],['entrenador','Entrenador','c-inicio']].map(([r, l, scr]) => { const on = role === r && s.screen !== 'splash' && s.screen !== 'login'; return { label:l, onClick: () => this.go(scr), bg: on ? C.green : 'transparent', color: on ? C.ink : C.text }; });
+
+    const childTabs = [['datos','Datos'],['fisico','Físico'],['pruebas','Pruebas']].map(([id, l]) => { const on = s.tab === id; return { label:l, onClick: () => this.setState({ tab:id }), bg: on ? C.text : 'transparent', color: on ? '#0A0D12' : C.muted }; });
+    const periodTabs = [['mes','Mes'],['tri','Trimestre'],['tot','Total']].map(([id, l]) => { const on = s.period === id; return { label:l, onClick: () => this.setState({ period:id }), bg: on ? C.text : 'transparent', color: on ? '#0A0D12' : C.muted }; });
+    const per = s.period === 'mes' ? mesCounts : s.period === 'tri' ? kid.attQ : kid.attT;
+
+    const lr = tests.find(x => x.t.id === 'salto');
+
+    return {
+      showPanel: this.props.showPanel ?? true, glowOn: this.props.glow ?? true,
+      isSplash: s.screen === 'splash', isLogin: s.screen === 'login', isPInicio: s.screen === 'p-inicio', isPHijo: s.screen === 'p-hijo', isPPrueba: s.screen === 'p-prueba', isPAsist: s.screen === 'p-asist', isPPagos: s.screen === 'p-pagos', isPEventos: s.screen === 'p-eventos', isCInicio: s.screen === 'c-inicio', isCAsist: s.screen === 'c-asist', isCCaptura: s.screen === 'c-captura',
+      hasNav: s.screen !== 'splash' && s.screen !== 'login',
+      roleTabs, screenLinks, navItems,
+      goLogin: () => this.go('login'),
+      isLoginMode: s.authMode === 'login', isRegisterMode: s.authMode === 'register',
+      toRegister: () => this.setState({ authMode:'register' }), toLogin: () => this.setState({ authMode:'login' }),
+      toggleRemember: () => this.setState({ remember: !s.remember }), rememberBg: s.remember ? C.green : '#2A3142', rememberX: s.remember ? '17px' : '3px',
+      toggleTerms: () => this.setState({ terms: !s.terms }), termsBg: s.terms ? C.green : 'transparent', termsBorder: s.terms ? C.green : 'rgba(255,255,255,0.3)',
+      forgot: () => this.toast('Te enviamos un enlace para recuperar la contraseña'),
+      loginParent: () => this.go('p-inicio'), loginCoach: () => this.go('c-inicio'),
+      register: () => { if (!s.terms) { this.toast('Debes aceptar los Términos y la Política de Datos'); return; } this.setState({ authMode:'login' }); this.toast('Cuenta creada. Revisa tu correo para verificarla.'); },
+      kid, kidChips, kidMini,
+      payTotal: COP(total), payBase: COP(kid.pay.base), payDisc: COP(kid.pay.disc), payColor, payPillBg: alpha(payColor, 0.15), payPending: kid.pay.status !== 'Al día',
+      lastRes: { name: lr.t.name, value: nf(lr.v), unit: lr.t.unit, trend: lr.tr.s },
+      attStatsMes, attTotalLabel: sumOf(mesCounts) + ' sesiones realizadas',
+      goPagos: () => this.go('p-pagos'), goAsist: () => this.go('p-asist'), goEventos: () => this.go('p-eventos'), goPruebas: () => this.go('p-hijo', { tab:'pruebas' }),
+      openWhatsApp: () => this.toast(`Abriendo WhatsApp: “Hola profe Nicolás, le escribo por ${kid.name}…”`),
+      childTabs, isTabDatos: s.tab === 'datos', isTabFisico: s.tab === 'fisico', isTabPruebas: s.tab === 'pruebas',
+      dataSections, measLast, measRows, imc, radar, families, td,
+      backToPruebas: () => this.go('p-hijo', { tab:'pruebas' }),
+      calDays, legend: ['A','R','E','F','X'].map(k => ({ label: ST[k].label, color: ST[k].color })), periodTabs, attStats,
+      attPeriodNote: `${sumOf(per)} sesiones realizadas ${s.period === 'mes' ? 'en octubre' : s.period === 'tri' ? 'desde agosto' : 'desde la inscripción'} · las canceladas no cuentan`,
+      sessionList, medios, payHistory,
+      notifyPaid: () => this.toast(`Abriendo WhatsApp: “Ya pagué ${kid.pay.period} de ${kid.name} · ${COP(total)}”`),
+      events, coachSessions, coachPending,
+      remindRsvp: () => this.toast('Recordatorio enviado a 12 acudientes'),
+      cAtt, cAttTabs, cAttRows, cAttSummary,
+      markAll: () => this.setState(st => { const cur = { ...(st.marks[st.attSession] || {}) }; ROSTER[st.attSession].forEach(k => { if (!cur[k.id]) cur[k.id] = 'A'; }); return { marks: { ...st.marks, [st.attSession]: cur } }; }),
+      saveAttLabel: saved ? 'Publicada' : allMarked ? 'Guardar' : `${marked}/${roster.length}`,
+      saveAttBg: saved ? '#8C95A8' : allMarked ? C.green : '#3A4253',
+      saveAtt: () => { if (!allMarked) { this.toast(`Faltan ${roster.length - marked} niños por marcar`); return; } this.setState(st => ({ attSaved: { ...st.attSaved, [st.attSession]: true } })); this.toast(`Asistencia publicada. ${counts.F ? counts.F + ' aviso(s) de inasistencia enviados.' : 'Sin inasistencias.'}`); },
+      cap, capTests, capKids, keypad, hitBtns,
+      saveResults: () => { const n = CAP.reduce((a, t) => a + Object.keys(s.caps[t.id] || {}).length, 0); if (!n) { this.toast('Aún no hay resultados registrados'); return; } this.toast(`${n} resultados publicados. Se avisó a los acudientes: “Nuevos resultados disponibles”.`); },
+      sheetOpen: !!s.sheet, sheet: s.sheet || {},
+      onSheetInput: e => this.setState({ sheetVal: e.target.value }),
+      closeSheet: () => this.setState({ sheet:null }),
+      submitSheet: () => { if (!s.sheetVal.trim()) { this.toast('Escribe el valor propuesto'); return; } this.setState(st => ({ pending: { ...st.pending, [st.kid + ':' + st.sheet.key]: true }, sheet:null })); this.toast('Solicitud enviada. Queda pendiente hasta que el entrenador la apruebe.'); },
+      scrollRef: this.scrollRef,
+      hasToast: !!s.toast, toastText: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

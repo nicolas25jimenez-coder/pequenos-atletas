@@ -1,0 +1,11 @@
+node_modules/
+dist/
+lib/
+*.log
+.firebase/
+.emulator-data/
+coverage/
+.env.local
+*.local
+.DS_Store
+Mobile app design form 1.zip
