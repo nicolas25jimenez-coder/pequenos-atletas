@@ -49,18 +49,19 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
 | Fase | Qué es | Estado |
 |---|---|---|
 | 0 | Plan, CLAUDE.md, memoria | ✅ Hecha (2026-10-22) |
-| 1 | Cuentas, base de datos Supabase, login | ✅ Hecha (2026-10-22) · falta conectar Netlify (ver abajo) |
+| 1 | Cuentas, base de datos Supabase, login | ✅ Hecha (2026-10-22); Netlify verificado (2026-10-23) |
 | 2 | Pantallas padre y entrenador sobre Supabase | ⏳ Pendiente |
 | 3 | Campanita, tareas diarias, quitar Firebase | ⏳ Pendiente |
 | 4 | Publicación final en Netlify y entrega | ⏳ Pendiente |
 
-Links: GitHub: https://github.com/nicolas25jimenez-coder/pequenos-atletas · Netlify: _pendiente_ · Supabase (proyecto): https://ebzbbwxgnfrawkhebwvw.supabase.co
+Links: GitHub: https://github.com/nicolas25jimenez-coder/pequenos-atletas · Netlify: https://pequenos-atletas2.netlify.app · Supabase (proyecto): https://ebzbbwxgnfrawkhebwvw.supabase.co
 
 Notas de la Fase 1 (para las siguientes ventanas):
 - Migraciones `supabase/migrations/0001` y `0002` ya aplicadas (pegadas en el SQL Editor). Cada tabla: `id`, `datos jsonb` (objeto completo) y columnas reales que el servidor deriva de `datos` con triggers.
 - `app/src/lib/datos.ts` ya expone `obtener, listar, guardar, guardarVarios, actualizar, agregarA, quitarDe, borrar, lote()`; `sesion.tsx` expone `usuario.uid`. Las pantallas aún importan `firebase/*` (Fase 2) y `firebase.ts`/`push.ts` se borran en la Fase 3.
 - `npm run seed` recrea datos y cuentas de demo (contraseña `Atletas2026`; ej. `entrenador@pequenosatletas.co`, `carolina.rojas@ejemplo.co`). `npm run test:seguridad` (22 pruebas) pasa.
 - Claves en `app/.env.local` (URL, publishable y `SUPABASE_SERVICE_ROLE_KEY`). Dev server de Fase 1 en puerto 5174 (`app-fase1` en `.claude/launch.json`); el puerto 5173 lo ocupa otra ventana.
+- Netlify: las 3 variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY) ya están y el ingreso como padre y entrenador funciona en el sitio publicado. Al agregar variables hay que hacer "Clear cache and deploy site".
 - Falta probar en el navegador el registro de cuenta nueva (depende de "Confirm email" en Supabase).
 
 ## Comandos útiles
