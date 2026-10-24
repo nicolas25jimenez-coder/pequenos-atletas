@@ -1,14 +1,12 @@
 // Toma de asistencia (RF-E19 a RF-E23), diseño del prototipo "ENTRENADOR · ASISTENCIA".
 import { ChatCircleText, Checks, Warning } from '@phosphor-icons/react';
-import { doc, writeBatch } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, ESTADOS_ASISTENCIA, ETIQUETA_ASISTENCIA, fechaChip, hora12, hoy,
   type Asistencia, type EstadoAsistencia, type Nino, type Sesion,
 } from '@pa/shared';
-import { useColeccion, useDocumento } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { lote, useColeccion, useDocumento } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { COLOR_ASISTENCIA } from '../../lib/estilos';
 import { mensajeError } from '../../lib/errores';
@@ -57,24 +55,24 @@ export function TomarAsistencia() {
     if (!completo || !usuario || !s) return;
     setGuardando(true);
     try {
-      const b = writeBatch(db);
+      const b = lote();
       const t = ahoraIso();
       let cambios = 0;
       for (const n of kids) {
         const m = marcas[n.id];
         const previa = previas.datos.find((a) => a.ninoId === n.id);
         if (previa && previa.estado === m.estado && (previa.observacion ?? '') === m.observacion && previa.minutosRetardo === m.minutosRetardo) continue;
-        const a: Omit<Asistencia, 'id'> = {
-          sesionId: s.id, ninoId: n.id, acudientesIds: n.acudientesIds, categoriaId: s.categoriaId, fecha: s.fecha, tipoSesion: s.tipo,
+        const a: Asistencia = {
+          id: `${s.id}_${n.id}`, sesionId: s.id, ninoId: n.id, acudientesIds: n.acudientesIds, categoriaId: s.categoriaId, fecha: s.fecha, tipoSesion: s.tipo,
           estado: m.estado, observacion: m.observacion.trim(), ...(m.estado === 'retardo' && m.minutosRetardo ? { minutosRetardo: m.minutosRetardo } : {}),
           historialCambios: [...(previa?.historialCambios ?? []), ...(previa?.estado !== m.estado ? [{ estadoAnterior: previa?.estado ?? null, estadoNuevo: m.estado, fecha: t, usuarioId: usuario.uid }] : [])],
           creadoEn: previa?.creadoEn ?? t, actualizadoEn: t, creadoPor: previa?.creadoPor ?? usuario.uid,
         };
-        b.set(doc(db, 'asistencias', `${s.id}_${n.id}`), a);
+        b.guardar('asistencias', a);
         cambios++;
       }
-      b.update(doc(db, 'sesiones', s.id), { asistenciaGuardada: true, ...(s.fecha <= hoy() ? { estado: 'realizada' } : {}), actualizadoEn: t });
-      await b.commit();
+      b.actualizar('sesiones', s.id, { asistenciaGuardada: true, ...(s.fecha <= hoy() ? { estado: 'realizada' } : {}), actualizadoEn: t });
+      await b.confirmar();
       const faltas = kids.filter((k) => marcas[k.id].estado === 'falto').length;
       toast(cambios ? `Asistencia guardada y publicada${faltas ? `. Se avisó a ${faltas} ${faltas === 1 ? 'familia' : 'familias'} por inasistencia` : ''}.` : 'No había cambios.');
       nav(`/e/sesion/${s.id}`);

@@ -1,11 +1,9 @@
 // Categorías y tarifas (RF-E14 a RF-E16).
 import { CaretRight, Plus, Trash } from '@phosphor-icons/react';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ahoraIso, cop, DIAS, hora12, type Categoria, type Horario } from '@pa/shared';
-import { db } from '../../lib/firebase';
-import { idNuevo } from '../../lib/datos';
+import { actualizar, guardar as guardarDoc, idNuevo } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { AreaTexto, Aviso, Boton, Campo, Encabezado, Etiqueta, Interruptor, Kicker, Selector, Tarjeta, Volver, useToast } from '../../ui/base';
@@ -65,9 +63,10 @@ export function FormCategoria() {
     if (!c.activa && conNinos) return setError(`No puedes inactivar una categoría con ${conNinos} niños activos. Muévelos primero.`);
     setGuardando(true);
     try {
-      const datos = { ...c, nombre: c.nombre.trim(), actualizadoEn: ahoraIso() };
-      if (actual) await updateDoc(doc(db, 'categorias', actual.id), datos);
-      else await setDoc(doc(db, 'categorias', idNuevo('categorias')), { ...datos, creadoEn: ahoraIso(), creadoPor: usuario!.uid });
+      const { id: _omit, ...resto } = c as typeof c & { id?: string }; void _omit;
+      const datos = { ...resto, nombre: c.nombre.trim(), actualizadoEn: ahoraIso() };
+      if (actual) await actualizar('categorias', actual.id, datos);
+      else await guardarDoc('categorias', { ...datos, id: idNuevo('categorias'), creadoEn: ahoraIso(), creadoPor: usuario!.uid });
       toast(actual && actual.valorMensual !== c.valorMensual ? 'Guardado. La nueva tarifa aplica desde el próximo ciclo de cada niño.' : 'Categoría guardada');
       nav('/e/categorias', { replace: true });
     } catch (e) { setError(mensajeError(e)); }

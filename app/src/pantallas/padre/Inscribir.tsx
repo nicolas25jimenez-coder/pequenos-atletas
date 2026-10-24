@@ -1,13 +1,11 @@
 // Asistente de inscripción en 7 pasos (RF-P06 a RF-P09).
 import { Camera, Check, FilePlus, Plus, Trash } from '@phosphor-icons/react';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ahoraIso, edadTexto, hoy, type Contacto, type Documento, type Nino, type SeguroMedico, type Salud, type Sexo,
 } from '@pa/shared';
-import { db } from '../../lib/firebase';
-import { useConfiguracion, idNuevo } from '../../lib/datos';
+import { actualizar, guardar, useConfiguracion, idNuevo } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { extension, subirArchivo } from '../../lib/archivos';
 import { mensajeError } from '../../lib/errores';
@@ -92,7 +90,7 @@ export function Inscribir() {
         estado: 'pendiente_aprobacion',
         creadoEn: t, actualizadoEn: t, creadoPor: usuario.uid,
       };
-      await setDoc(doc(db, 'ninos', id), datos);
+      await guardar('ninos', { ...datos, id });
 
       // Archivos (las reglas los permiten mientras la inscripción está pendiente)
       const cambios: Partial<Nino> = {};
@@ -107,7 +105,7 @@ export function Inscribir() {
       await sube(archivos.carnet, 'Carné de seguro', 'carnet');
       await sube(archivos.certificado, 'Certificado médico', 'certificado');
       if (docs.length) cambios.documentos = docs;
-      if (Object.keys(cambios).length) await updateDoc(doc(db, 'ninos', id), { ...cambios, actualizadoEn: ahoraIso() });
+      if (Object.keys(cambios).length) await actualizar('ninos', id, { ...cambios, actualizadoEn: ahoraIso() });
 
       toast(`Inscripción de ${datos.nombres} enviada. El entrenador la revisará pronto.`);
       nav('/p', { replace: true });

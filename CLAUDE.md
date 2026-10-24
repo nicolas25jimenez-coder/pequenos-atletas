@@ -50,7 +50,7 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
 |---|---|---|
 | 0 | Plan, CLAUDE.md, memoria | ✅ Hecha (2026-10-22) |
 | 1 | Cuentas, base de datos Supabase, login | ✅ Hecha (2026-10-22); Netlify verificado (2026-10-23) |
-| 2 | Pantallas padre y entrenador sobre Supabase | ⏳ Pendiente |
+| 2 | Pantallas padre y entrenador sobre Supabase | ✅ Hecha (2026-10-23) |
 | 3 | Campanita, tareas diarias, quitar Firebase | ⏳ Pendiente |
 | 4 | Publicación final en Netlify y entrega | ⏳ Pendiente |
 
@@ -81,3 +81,10 @@ Notas de la Fase 1 (para las siguientes ventanas):
 - `supabase/migrations/` — tablas y reglas de seguridad (se crea en la Fase 1).
 - `netlify/functions/` — tareas diarias y botón "Ejecutar tareas de hoy" (Fase 3).
 - `scripts/seed.ts` — datos de ejemplo y cuentas de demo.
+
+Notas de la Fase 2 (para las siguientes ventanas):
+- Ninguna pantalla importa `firebase/*`. Quedan Firebase en `lib/firebase.ts`, `lib/push.ts`, `sw.ts`, `functions/` y `usaEmuladores` de `lib/config` (usado en `Configuracion.tsx`): se quitan en la Fase 3.
+- "Ejecutar tareas de hoy" (`Configuracion.tsx`) ya llama a `POST /.netlify/functions/ejecutar-tareas` con `Authorization: Bearer <token>`; la función se crea en la Fase 3.
+- `lote()` no es atómico. `sincronizarAcudientes` (FichaNino) reescribe documentos completos con `guardarVarios`.
+- Probado en el navegador: entrenador (panel, aprobar inscripción → se crea el pago) y padre (ve solo a sus hijos).
+- Cuidado con choques de nombre: en pantallas con función local `guardar`, el import se renombra `guardar as guardarDoc`.

@@ -1,13 +1,11 @@
 // Catálogo de pruebas (RF-E30) y plantillas de control (RF-E31).
 import { CaretRight, Copy, Plus, Trash } from '@phosphor-icons/react';
-import { deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, ESCALA_CUALITATIVA, FAMILIAS, TIPOS_RESULTADO, type Familia, type PlantillaControl, type Prueba, type Referencia,
 } from '@pa/shared';
-import { idNuevo, useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { borrar, guardar as guardarDoc, idNuevo, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import {
@@ -75,7 +73,7 @@ export function FormPrueba() {
         intentos: p.tipoResultado === 'cualitativa' ? 1 : p.intentos,
         actualizadoEn: ahoraIso(), ...(copia || !actual ? { creadoEn: ahoraIso(), creadoPor: usuario!.uid } : {}),
       }));
-      await setDoc(doc(db, 'pruebas', nid), datos);
+      await guardarDoc('pruebas', { ...datos, id: nid });
       toast(copia ? 'Prueba duplicada' : 'Prueba guardada');
       nav(copia ? `/e/pruebas/${nid}` : '/e/pruebas', { replace: true });
     } catch (e) { setError(mensajeError(e)); }
@@ -146,7 +144,7 @@ export function Plantillas() {
   async function guardar() {
     if (!edit?.nombre.trim() || !edit.pruebasIds.length) return toast('Escribe un nombre y elige pruebas', 'error');
     try {
-      await setDoc(doc(db, 'plantillasControl', edit.id ?? idNuevo('plantillasControl')), { nombre: edit.nombre.trim(), pruebasIds: edit.pruebasIds, actualizadoEn: ahoraIso(), creadoPor: usuario!.uid });
+      await guardarDoc('plantillasControl', { id: edit.id ?? idNuevo('plantillasControl'), nombre: edit.nombre.trim(), pruebasIds: edit.pruebasIds, actualizadoEn: ahoraIso(), creadoPor: usuario!.uid });
       toast('Plantilla guardada'); setEdit(null);
     } catch (e) { toast(mensajeError(e), 'error'); }
   }
@@ -168,7 +166,7 @@ export function Plantillas() {
             {pruebas.filter((p) => p.activa).map((p) => <Casilla key={p.id} activo={edit.pruebasIds.includes(p.id)} onCambio={(v) => setEdit({ ...edit, pruebasIds: v ? [...edit.pruebasIds, p.id] : edit.pruebasIds.filter((x) => x !== p.id) })}>{p.nombre}</Casilla>)}
           </div>
           <div className="flex gap-2">
-            {edit.id && <Boton variante="secundario" className="!text-rojo" onClick={async () => { await deleteDoc(doc(db, 'plantillasControl', edit.id!)); setEdit(null); toast('Plantilla eliminada'); }}>Eliminar</Boton>}
+            {edit.id && <Boton variante="secundario" className="!text-rojo" onClick={async () => { await borrar('plantillasControl', edit.id!); setEdit(null); toast('Plantilla eliminada'); }}>Eliminar</Boton>}
             <Boton className="flex-1" onClick={guardar}>Guardar</Boton>
           </div>
         </>)}

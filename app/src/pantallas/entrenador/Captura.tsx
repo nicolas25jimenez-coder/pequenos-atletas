@@ -1,14 +1,12 @@
 // Captura de resultados del día de control (RF-E24 a RF-E29), diseño "ENTRENADOR · CAPTURA".
 import { ArrowCounterClockwise, ArrowRight, Camera, ChatCircleText, Play, Stop, Warning } from '@phosphor-icons/react';
-import { doc, writeBatch } from 'firebase/firestore';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, comparar, edadAnios, formatoValor, hora12, valorFinal,
   type Asistencia, type Medio, type Nino, type Prueba, type ResultadoPrueba, type Sesion,
 } from '@pa/shared';
-import { useColeccion, useDocumento } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { lote, useColeccion, useDocumento } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { subirArchivo } from '../../lib/archivos';
 import { mensajeError } from '../../lib/errores';
@@ -89,7 +87,7 @@ export function Captura() {
     if (!usuario || !s) return;
     setGuardando(true);
     try {
-      const b = writeBatch(db);
+      const b = lote();
       const t = ahoraIso();
       let n2 = 0;
       for (const pr of pruebas) for (const k of kids) {
@@ -97,18 +95,18 @@ export function Captura() {
         if (!c || (!c.intentos.length && !c.noRealizada)) continue;
         const vf = c.noRealizada ? null : valorFinal(pr, c.intentos);
         const previo = previos.datos.find((r) => r.pruebaId === pr.id && r.ninoId === k.id);
-        const r: Omit<ResultadoPrueba, 'id'> = {
-          sesionId: s.id, ninoId: k.id, acudientesIds: k.acudientesIds, pruebaId: pr.id, fecha: s.fecha,
+        const r: ResultadoPrueba = {
+          id: `${s.id}_${k.id}_${pr.id}`, sesionId: s.id, ninoId: k.id, acudientesIds: k.acudientesIds, pruebaId: pr.id, fecha: s.fecha,
           intentos: c.noRealizada ? [] : c.intentos, valorFinal: vf,
           comparacionReferencia: vf === null ? null : comparar(pr, vf, edadAnios(k.fechaNacimiento, s.fecha), k.sexo),
           observacion: c.observacion?.trim() ?? '', medios: c.medios, noRealizada: c.noRealizada ? { motivo: c.noRealizada } : null,
           creadoEn: previo?.creadoEn ?? t, actualizadoEn: t, creadoPor: previo?.creadoPor ?? usuario.uid,
         };
-        b.set(doc(db, 'resultadosPruebas', `${s.id}_${k.id}_${pr.id}`), r);
+        b.guardar('resultadosPruebas', r);
         n2++;
       }
-      b.update(doc(db, 'sesiones', s.id), { resultadosGuardados: true, actualizadoEn: t });
-      await b.commit();
+      b.actualizar('sesiones', s.id, { resultadosGuardados: true, actualizadoEn: t });
+      await b.confirmar();
       toast(`${n2} resultados guardados y publicados. Se avisó a los acudientes.`);
       nav(`/e/sesion/${s.id}`);
     } catch (e) { toast(mensajeError(e), 'error'); }

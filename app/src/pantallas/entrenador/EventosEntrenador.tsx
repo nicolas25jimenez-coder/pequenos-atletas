@@ -1,14 +1,12 @@
 // Eventos con confirmación de asistencia (RF-E36 a RF-E38).
 import { Plus } from '@phosphor-icons/react';
-import { addDoc, collection, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, cop, fechaChip, hora12, hoy, sumarDias,
   type ConfirmacionEvento, type Evento, type Sesion, type TipoEvento,
 } from '@pa/shared';
-import { idNuevo, useColeccion, useDocumento } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { borrar, guardar as guardarDoc, idNuevo, useColeccion, useDocumento } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import {
@@ -71,13 +69,13 @@ function DetalleEvento({ e, conf, onCerrar }: { e: Evento | null; conf: Confirma
   async function recordar() {
     try {
       const ids = [...new Set(sin.flatMap((n) => n.acudientesIds))];
-      await Promise.all(ids.map((u) => addDoc(collection(db, 'notificaciones'), { usuarioId: u, tipo: 'confirmar_evento', titulo: `Confirma: ${e!.titulo}`, cuerpo: `¿Tu hijo asistirá a ${e!.titulo}? Confirma en Eventos.`, enlace: '/p/eventos', leida: false, fecha: ahoraIso() })));
+      await Promise.all(ids.map((u) => guardarDoc('notificaciones', { id: idNuevo('notificaciones'), usuarioId: u, tipo: 'confirmar_evento', titulo: `Confirma: ${e!.titulo}`, cuerpo: `¿Tu hijo asistirá a ${e!.titulo}? Confirma en Eventos.`, enlace: '/p/eventos', leida: false, fecha: ahoraIso() })));
       toast(`Recordatorio enviado a ${ids.length} acudientes`);
     } catch (err) { toast(mensajeError(err), 'error'); }
   }
   async function eliminar() {
     if (!confirm('¿Eliminar este evento?')) return;
-    await deleteDoc(doc(db, 'eventos', e!.id));
+    await borrar('eventos', e!.id);
     toast('Evento eliminado'); onCerrar();
   }
 
@@ -128,7 +126,7 @@ export function FormEvento() {
     if (hFin <= hIni) return setError('La hora de fin debe ser posterior a la de inicio.');
     try {
       const nid = nuevo ? idNuevo('eventos') : id!;
-      await setDoc(doc(db, 'eventos', nid), JSON.parse(JSON.stringify({ ...e, titulo: e.titulo.trim(), actualizadoEn: ahoraIso(), ...(nuevo ? { creadoEn: ahoraIso(), creadoPor: usuario!.uid } : {}) })));
+      await guardarDoc('eventos', JSON.parse(JSON.stringify({ ...e, id: nid, titulo: e.titulo.trim(), actualizadoEn: ahoraIso(), ...(nuevo ? { creadoEn: ahoraIso(), creadoPor: usuario!.uid } : {}) })));
       toast('Evento guardado');
       nav('/e/eventos', { replace: true });
     } catch (err) { setError(mensajeError(err)); }

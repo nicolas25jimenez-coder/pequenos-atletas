@@ -1,20 +1,19 @@
 // Operaciones del entrenador que tocan varios documentos.
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import {
   ahoraIso, construirPago, diaCobroDe, hoy, periodoVigente,
   type Categoria, type Configuracion, type Nino,
 } from '@pa/shared';
-import { db } from '../../lib/firebase';
+import { guardar, obtener } from '../../lib/datos';
 
 /** Genera el pago del ciclo vigente si no existe (al aprobar o activar un niño). */
 export async function asegurarPagoVigente(nino: Nino, categoria: Categoria, config: Configuracion, uid: string) {
   if (!nino.fechaInscripcion) return;
   const dia = diaCobroDe(nino);
   const periodo = periodoVigente(dia, hoy() < nino.fechaInscripcion ? nino.fechaInscripcion : hoy());
-  const ref = doc(db, 'pagos', `${nino.id}_${periodo}`);
-  if ((await getDoc(ref)).exists()) return;
+  const id = `${nino.id}_${periodo}`;
+  if (await obtener('pagos', id)) return;
   const p = construirPago({ ninoId: nino.id, acudientesIds: nino.acudientesIds, categoriaId: categoria.id, diaCobro: dia, valorMensual: categoria.valorMensual, descuento: nino.descuento }, periodo, config);
-  await setDoc(ref, { ...p, creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: uid });
+  await guardar('pagos', { ...p, id, creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: uid });
 }
 
 /** Asigna un valor dentro de un objeto siguiendo una ruta 'a.b.0.c' (para aplicar solicitudes de cambio). */

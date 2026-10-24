@@ -1,12 +1,10 @@
 import { CalendarPlus, CaretRight, Plus } from '@phosphor-icons/react';
-import { doc, getDoc, writeBatch } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   aFecha, ahoraIso, DIAS_CORTOS, diaSemana, hora12, hoy, nombreMes, sumarMeses, ultimoDiaMes, type Sesion,
 } from '@pa/shared';
-import { useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { lote, obtener, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { alfa, Boton, Chips, COLOR, Encabezado, Hoja, Segmentado, Selector, Etiqueta, Vacio, useToast } from '../../ui/base';
@@ -78,7 +76,7 @@ function GenerarMes({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => v
     setOcupado(true);
     try {
       const [y, m] = mes.split('-').map(Number);
-      const batch = writeBatch(db);
+      const batch = lote();
       let n = 0;
       for (const c of categorias.filter((x) => x.activa)) {
         for (let d = 1; d <= ultimoDiaMes(y, m); d++) {
@@ -86,14 +84,14 @@ function GenerarMes({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => v
           if (f < hoy()) continue;
           for (const h of c.horarios.filter((x) => x.diaSemana === diaSemana(f))) {
             const id = `${c.id}_${f}${c.horarios.filter((x) => x.diaSemana === h.diaSemana).length > 1 ? `_${h.horaInicio.replace(':', '')}` : ''}`;
-            if ((await getDoc(doc(db, 'sesiones', id))).exists()) continue;
-            const s: Omit<Sesion, 'id'> = { tipo: 'entrenamiento', categoriaId: c.id, fecha: f, horaInicio: h.horaInicio, horaFin: h.horaFin, lugar: h.lugar, pruebasSeleccionadas: [], estado: 'programada', creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: usuario.uid };
-            batch.set(doc(db, 'sesiones', id), s);
+            if (await obtener('sesiones', id)) continue;
+            const s: Sesion = { id, tipo: 'entrenamiento', categoriaId: c.id, fecha: f, horaInicio: h.horaInicio, horaFin: h.horaFin, lugar: h.lugar, pruebasSeleccionadas: [], estado: 'programada', creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: usuario.uid };
+            batch.guardar('sesiones', s);
             n++;
           }
         }
       }
-      await batch.commit();
+      await batch.confirmar();
       toast(n ? `${n} sesiones creadas para ${nombreMes(mes).toLowerCase()}` : 'Ya estaban todas las sesiones del mes');
       onCerrar();
     } catch (e) { toast(mensajeError(e), 'error'); }

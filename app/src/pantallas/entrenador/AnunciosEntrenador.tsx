@@ -1,11 +1,9 @@
 // Anuncios generales, por categoría o por niño (RF-E39).
 import { Plus, PushPin, Trash } from '@phosphor-icons/react';
-import { deleteDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ahoraIso, type Anuncio } from '@pa/shared';
-import { idNuevo, useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { actualizar, borrar, guardar as guardarDoc, idNuevo, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { subirArchivo } from '../../lib/archivos';
 import { mensajeError } from '../../lib/errores';
@@ -31,8 +29,8 @@ export function AnunciosEntrenador() {
         <div key={a.id} className="flex flex-col gap-1">
           <TarjetaAnuncio a={a} acciones={
             <div className="flex gap-1">
-              <button onClick={() => updateDoc(doc(db, 'anuncios', a.id), { fijado: !a.fijado })} className="w-8 h-8 rounded-full bg-transparent border border-white/10 cursor-pointer flex items-center justify-center" style={{ color: a.fijado ? '#3DDC6A' : '#8C95A8' }} aria-label="Fijar"><PushPin weight={a.fijado ? 'fill' : 'bold'} /></button>
-              <button onClick={async () => { if (confirm('¿Eliminar este anuncio?')) { await deleteDoc(doc(db, 'anuncios', a.id)); toast('Anuncio eliminado'); } }} className="w-8 h-8 rounded-full bg-transparent border border-white/10 text-rojo cursor-pointer flex items-center justify-center" aria-label="Eliminar"><Trash weight="bold" /></button>
+              <button onClick={() => actualizar('anuncios', a.id, { fijado: !a.fijado })} className="w-8 h-8 rounded-full bg-transparent border border-white/10 cursor-pointer flex items-center justify-center" style={{ color: a.fijado ? '#3DDC6A' : '#8C95A8' }} aria-label="Fijar"><PushPin weight={a.fijado ? 'fill' : 'bold'} /></button>
+              <button onClick={async () => { if (confirm('¿Eliminar este anuncio?')) { await borrar('anuncios', a.id); toast('Anuncio eliminado'); } }} className="w-8 h-8 rounded-full bg-transparent border border-white/10 text-rojo cursor-pointer flex items-center justify-center" aria-label="Eliminar"><Trash weight="bold" /></button>
             </div>} />
           <span className="text-[11px] text-tenue px-2">Para: {para(a)}{a.enviarPush ? ' · con notificación' : ''}</span>
         </div>
@@ -61,12 +59,12 @@ export function FormAnuncio() {
     try {
       const nid = idNuevo('anuncios');
       const imagenRuta = imagen ? await subirArchivo(`publico/anuncio-${nid}.jpg`, imagen) : undefined;
-      const d: Omit<Anuncio, 'id'> = {
-        titulo: a.titulo.trim(), mensaje: a.mensaje.trim(), destinatarios: tipo === 'todas' ? { tipo } : { tipo, ids },
+      const d: Anuncio = {
+        id: nid, titulo: a.titulo.trim(), mensaje: a.mensaje.trim(), destinatarios: tipo === 'todas' ? { tipo } : { tipo, ids },
         fijado: a.fijado, enviarPush: a.enviarPush, fechaPublicacion: ahoraIso(), ...(a.expira ? { fechaExpiracion: `${a.expira}T23:59:00-05:00` } : {}),
         ...(imagenRuta ? { imagenRuta } : {}), creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: usuario!.uid,
       };
-      await setDoc(doc(db, 'anuncios', nid), d);
+      await guardarDoc('anuncios', d);
       toast(a.enviarPush ? 'Anuncio publicado y notificado' : 'Anuncio publicado');
       nav('/e/anuncios', { replace: true });
     } catch (e) { setError(mensajeError(e)); }

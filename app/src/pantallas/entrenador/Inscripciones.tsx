@@ -1,11 +1,9 @@
 // Bandeja de inscripciones y aprobación con asignación de categoría (RF-E04).
 import { CaretRight, Check, X } from '@phosphor-icons/react';
-import { doc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ahoraIso, cop, edadAnios, edadTexto, fechaCorta, hoy, valorDescuento, type Descuento, type Documento } from '@pa/shared';
-import { db } from '../../lib/firebase';
-import { useConfiguracion } from '../../lib/datos';
+import { actualizar, useConfiguracion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { urlArchivo } from '../../lib/archivos';
 import { mensajeError } from '../../lib/errores';
@@ -68,7 +66,7 @@ export function RevisarInscripcion() {
         estado: 'activo' as const, categoriaId: cat, fechaInscripcion: fecha, historialCategorias: [{ categoriaId: cat, desde: fecha }],
         descuento: desc?.valor ? JSON.parse(JSON.stringify({ ...desc, motivo: desc.motivo || 'Descuento' })) : null, actualizadoEn: ahoraIso(),
       };
-      await updateDoc(doc(db, 'ninos', n!.id), datos);
+      await actualizar('ninos', n!.id, datos);
       await asegurarPagoVigente({ ...n!, ...datos }, c, config, usuario.uid);
       toast(`${n!.nombres} aprobado en ${c.nombre}. Se avisó a la familia.`);
       nav(`/e/nino/${n!.id}`, { replace: true });
@@ -77,7 +75,7 @@ export function RevisarInscripcion() {
   }
   async function confirmarRechazo() {
     try {
-      await updateDoc(doc(db, 'ninos', n!.id), { estado: 'rechazado', motivoRechazo: motivo.trim(), actualizadoEn: ahoraIso() });
+      await actualizar('ninos', n!.id, { estado: 'rechazado', motivoRechazo: motivo.trim(), actualizadoEn: ahoraIso() });
       toast('Inscripción rechazada. Se avisó a la familia.');
       nav('/e/inscripciones', { replace: true });
     } catch (e) { toast(mensajeError(e), 'error'); }

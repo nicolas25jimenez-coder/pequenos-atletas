@@ -1,11 +1,9 @@
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { ahoraIso, type PreferenciasNotificacion } from '@pa/shared';
-import { db } from '../../lib/firebase';
+import { actualizar, guardar, idNuevo } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
-import { activarPush, pushDisponible } from '../../lib/push';
 import { mensajeError } from '../../lib/errores';
-import { Aviso, Boton, Campo, Etiqueta, Hoja, Interruptor, Kicker, Selector, Tarjeta, Volver, useToast, AreaTexto } from '../../ui/base';
+import { Boton, Campo, Etiqueta, Hoja, Interruptor, Kicker, Selector, Tarjeta, Volver, useToast, AreaTexto } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 import { useFamilia } from './familia';
 
@@ -29,20 +27,15 @@ export function Cuenta() {
   const prefs = { pagoRegistrado: true, inasistencia: true, resultados: true, eventos: true, solicitudes: true, ...perfil?.preferenciasNotificacion };
 
   if (!perfil || !usuario) return null;
-  const ref = doc(db, 'usuarios', usuario.uid);
 
   async function guardar() {
     setGuardando(true);
-    try { await updateDoc(ref, { nombres: nombres.trim(), apellidos: apellidos.trim(), telefono: telefono.trim(), actualizadoEn: ahoraIso() }); toast('Datos actualizados'); }
+    try { await actualizar('usuarios', usuario!.uid, { nombres: nombres.trim(), apellidos: apellidos.trim(), telefono: telefono.trim(), actualizadoEn: ahoraIso() }); toast('Datos actualizados'); }
     catch (e) { toast(mensajeError(e), 'error'); }
     setGuardando(false);
   }
   async function pref(k: keyof PreferenciasNotificacion, v: boolean) {
-    await updateDoc(ref, { [`preferenciasNotificacion.${k}`]: v });
-  }
-  async function push() {
-    const r = await activarPush(usuario!.uid);
-    toast(r === 'ok' ? 'Notificaciones activadas en este dispositivo' : r === 'denegado' ? 'Permiso denegado en el navegador' : 'Las notificaciones push se activan cuando la app esté publicada', r === 'ok' ? 'ok' : 'error');
+    await actualizar('usuarios', usuario!.uid, { [`preferenciasNotificacion.${k}`]: v });
   }
 
   return (
@@ -63,8 +56,6 @@ export function Cuenta() {
         <Kicker>Notificaciones</Kicker>
         {PREFS.map((p) => <Interruptor key={p.k} activo={prefs[p.k]} onCambio={(v) => pref(p.k, v)}>{p.t}</Interruptor>)}
         <div className="text-xs text-tenue leading-snug">Los recordatorios de pago, los anuncios y las cancelaciones siempre se envían.</div>
-        <Boton variante="secundario" onClick={push}>Activar notificaciones en este dispositivo</Boton>
-        {!pushDisponible() && <Aviso>En el modo de prueba local las notificaciones llegan a la bandeja de la app, no como push del teléfono.</Aviso>}
       </Tarjeta>
       <Tarjeta className="gap-3">
         <Kicker>Privacidad y retiro</Kicker>
@@ -91,8 +82,8 @@ function SolicitudEspecial({ tipo, onCerrar }: { tipo: 'retiro' | 'supresion' | 
     if (!nino || !usuario) return;
     setEnviando(true);
     try {
-      await addDoc(collection(db, 'solicitudesCambio'), {
-        ninoId: nino.id, acudientesIds: nino.acudientesIds, solicitadoPor: usuario.uid, solicitadoPorNombre: `${perfil?.nombres} ${perfil?.apellidos}`,
+      await guardar('solicitudesCambio', {
+        id: idNuevo('solicitudesCambio'), ninoId: nino.id, acudientesIds: nino.acudientesIds, solicitadoPor: usuario.uid, solicitadoPorNombre: `${perfil?.nombres} ${perfil?.apellidos}`,
         seccion: tipo === 'retiro' ? 'Retiro' : 'Habeas data', campo: tipo === 'retiro' ? '__retiro' : '__supresion',
         etiqueta: tipo === 'retiro' ? `Retiro de ${nino.nombres}` : 'Eliminación de datos personales',
         valorActual: nino.estado, valorPropuesto: motivo.trim() || (tipo === 'retiro' ? 'Retiro voluntario' : 'Supresión solicitada'),

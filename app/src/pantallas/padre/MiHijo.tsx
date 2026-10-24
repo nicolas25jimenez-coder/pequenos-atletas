@@ -1,7 +1,6 @@
 import {
   CaretRight, FirstAidKit, FlagPennant, Heartbeat, IdentificationCard, LockSimple, Phone, SealCheck, FileText,
 } from '@phosphor-icons/react';
-import { addDoc, collection } from 'firebase/firestore';
 import { useMemo, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -9,7 +8,7 @@ import {
   formatoValor, hora12, iniciales, notaPerfil, perfilMultidisciplinar, referenciaTabla, tendencia, clasificarImc,
   type Categoria, type Nino, type Prueba, type ResultadoPrueba,
 } from '@pa/shared';
-import { db } from '../../lib/firebase';
+import { guardar, idNuevo } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { urlArchivo } from '../../lib/archivos';
 import { COLOR_COMPARACION, COLOR_CUALITATIVA, COLOR_IMC, COLOR_TENDENCIA } from '../../lib/estilos';
@@ -157,8 +156,8 @@ function SolicitarCambio({ seccion, nino, onCerrar }: { seccion: Seccion | null;
     if (!seccion || !campo || !valor.trim() || !usuario) return;
     setEnviando(true);
     try {
-      await addDoc(collection(db, 'solicitudesCambio'), {
-        ninoId: nino.id, acudientesIds: nino.acudientesIds, solicitadoPor: usuario.uid,
+      await guardar('solicitudesCambio', {
+        id: idNuevo('solicitudesCambio'), ninoId: nino.id, acudientesIds: nino.acudientesIds, solicitadoPor: usuario.uid,
         solicitadoPorNombre: `${perfil?.nombres} ${perfil?.apellidos}`, seccion: seccion.id, campo: campo.campo, etiqueta: campo.etiqueta,
         valorActual: campo.valor, valorPropuesto: valor.trim(), estado: 'pendiente',
         creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: usuario.uid,

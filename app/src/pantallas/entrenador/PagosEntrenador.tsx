@@ -1,14 +1,12 @@
 // Gestión de pagos (RF-E32 a RF-E35, RF-E33b).
 import { CaretLeft, CaretRight, CreditCard, WhatsappLogo } from '@phosphor-icons/react';
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ahoraIso, cop, enlaceWhatsApp, ETIQUETA_PAGO, estadoEn, fechaCorta, hoy, nombreMes, sumarMeses, diferenciaDias,
   type EstadoPago, type MedioPago, type Pago,
 } from '@pa/shared';
-import { useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { actualizar, guardar, idNuevo, useColeccion } from '../../lib/datos';
 import { COLOR_PAGO } from '../../lib/estilos';
 import { mensajeError } from '../../lib/errores';
 import { alfa, Boton, Campo, Chips, Encabezado, Etiqueta, Hoja, Segmentado, Selector, Tarjeta, Vacio, useToast } from '../../ui/base';
@@ -98,18 +96,17 @@ function HojaPago({ pago, onCerrar }: { pago: Pago | null; onCerrar: () => void 
   useEffect(() => { setAccion(null); setF({ fecha: hoy(), medio: '', referencia: '', nota: '', motivo: '', valor: pago ? String(pago.valorAPagar) : '' }); }, [pago]);
   if (!pago) return null;
   const n = porId.get(pago.ninoId);
-  const ref = doc(db, 'pagos', pago.id);
   const abierto = pago.estado === 'pendiente' || pago.estado === 'vencido';
 
   async function ejecutar(cambios: Record<string, unknown>, msj: string) {
-    try { await updateDoc(ref, { ...cambios, actualizadoEn: ahoraIso() }); toast(msj); onCerrar(); }
+    try { await actualizar('pagos', pago!.id, { ...cambios, actualizadoEn: ahoraIso() }); toast(msj); onCerrar(); }
     catch (e) { toast(mensajeError(e), 'error'); }
   }
   async function recordar() {
     if (!n) return;
     try {
-      await Promise.all(pago!.acudientesIds.map((u) => addDoc(collection(db, 'notificaciones'), {
-        usuarioId: u, tipo: 'pago_vencido', titulo: `Recordatorio de pago · ${n.nombres}`,
+      await Promise.all(pago!.acudientesIds.map((u) => guardar('notificaciones', {
+        id: idNuevo('notificaciones'), usuarioId: u, tipo: 'pago_vencido', titulo: `Recordatorio de pago · ${n.nombres}`,
         cuerpo: `Tienes pendiente el pago de ${nombreMes(pago!.periodo).toLowerCase()} por ${cop(pago!.valorAPagar)}. Si ya pagaste, avísale al entrenador.`,
         enlace: `/p/pagos?nino=${n.id}`, leida: false, fecha: ahoraIso(),
       })));

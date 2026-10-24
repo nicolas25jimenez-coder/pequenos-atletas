@@ -1,12 +1,10 @@
 import { CalendarPlus, MapTrifold } from '@phosphor-icons/react';
-import { doc, setDoc } from 'firebase/firestore';
 import { useMemo } from 'react';
 import {
   ahoraIso, cop, fechaChip, hora12, hoy, iniciales, MESES,
   type ConfirmacionEvento, type Evento, type Nino, type RespuestaEvento,
 } from '@pa/shared';
-import { useColeccion, useDeFamilia } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { guardar, useColeccion, useDeFamilia } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { descargarIcs } from '../../lib/ics';
 import { mensajeError } from '../../lib/errores';
@@ -37,8 +35,8 @@ export function Eventos() {
   async function responder(e: Evento, n: Nino, respuesta: RespuestaEvento) {
     if (!usuario) return;
     try {
-      await setDoc(doc(db, 'confirmacionesEvento', `${e.id}_${n.id}`), {
-        eventoId: e.id, ninoId: n.id, acudientesIds: n.acudientesIds, respuesta, respondidoPor: usuario.uid, fecha: ahoraIso(),
+      await guardar('confirmacionesEvento', {
+        id: `${e.id}_${n.id}`, eventoId: e.id, ninoId: n.id, acudientesIds: n.acudientesIds, respuesta, respondidoPor: usuario.uid, fecha: ahoraIso(),
         creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: usuario.uid,
       });
       toast(respuesta === 'asistira' ? `Confirmado: ${n.nombres} asistirá` : `Registrado: ${n.nombres} no asistirá`);

@@ -1,14 +1,12 @@
 // Ficha completa del niño para el entrenador (RF-E06 a RF-E12).
 import { FilePdf, FilePlus, PencilSimple, Ruler, Warning, WhatsappLogo } from '@phosphor-icons/react';
-import { doc, updateDoc, writeBatch, collection, query, where, getDocs } from 'firebase/firestore';
 import { useState } from 'react';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, cop, diaCobroDe, DIAS, edadAnios, edadTexto, enlaceWhatsApp, ETIQUETA_ASISTENCIA, ETIQUETA_PAGO, estadoEn, fechaCorta, hora12,
   hoy, nombreMes, resumirAsistencia, type Descuento, type Documento, type Nino,
 } from '@pa/shared';
-import { db } from '../../lib/firebase';
-import { useConfiguracion } from '../../lib/datos';
+import { actualizar, guardarVarios, listar, useConfiguracion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { extension, subirArchivo, urlArchivo } from '../../lib/archivos';
 import { COLOR_ASISTENCIA, COLOR_PAGO } from '../../lib/estilos';
@@ -179,7 +177,7 @@ function HojaCategoria({ abierta, nino, onCerrar }: { abierta: boolean; nino: Ni
     const c = catPorId.get(sel)!;
     if (c.cupoMaximo && activos.filter((n) => n.categoriaId === sel).length >= c.cupoMaximo) toast(`Ojo: ${c.nombre} ya está en su cupo máximo (${c.cupoMaximo}).`, 'error');
     try {
-      await updateDoc(doc(db, 'ninos', nino.id), { categoriaId: sel, historialCategorias: [...(nino.historialCategorias ?? []), { categoriaId: sel, desde: hoy() }], actualizadoEn: ahoraIso() });
+      await actualizar('ninos', nino.id, { categoriaId: sel, historialCategorias: [...(nino.historialCategorias ?? []), { categoriaId: sel, desde: hoy() }], actualizadoEn: ahoraIso() });
       if (!nino.categoriaId && nino.estado === 'activo') await asegurarPagoVigente({ ...nino, categoriaId: sel }, c, config, usuario!.uid);
       toast(`${nino.nombres} ahora está en ${c.nombre}. La nueva tarifa aplica desde el próximo ciclo.`);
       onCerrar();
@@ -214,7 +212,7 @@ function HojaDescuento({ abierta, nino, onCerrar }: { abierta: boolean; nino: Ni
   async function guardar(quitar = false) {
     try {
       const v = quitar || !d?.valor ? null : JSON.parse(JSON.stringify({ ...d, motivo: d.motivo.trim() || 'Descuento' }));
-      await updateDoc(doc(db, 'ninos', nino.id), { descuento: v, actualizadoEn: ahoraIso() });
+      await actualizar('ninos', nino.id, { descuento: v, actualizadoEn: ahoraIso() });
       toast(v ? 'Descuento guardado. Aplica desde el próximo ciclo.' : 'Descuento eliminado');
       onCerrar();
     } catch (e) { toast(mensajeError(e), 'error'); }
@@ -233,7 +231,7 @@ function HojaCobro({ abierta, nino, onCerrar }: { abierta: boolean; nino: Nino; 
   async function guardar() {
     const n = Number(dia);
     if (!(n >= 1 && n <= 31)) return toast('Escribe un día entre 1 y 31', 'error');
-    await updateDoc(doc(db, 'ninos', nino.id), { diaCobro: n, actualizadoEn: ahoraIso() });
+    await actualizar('ninos', nino.id, { diaCobro: n, actualizadoEn: ahoraIso() });
     toast(`Día de cobro: ${n}. Aplica desde el próximo ciclo.`);
     onCerrar();
   }
@@ -253,14 +251,14 @@ function HojaEstado({ abierta, nino, onCerrar }: { abierta: boolean; nino: Nino;
   const [motivo, setMotivo] = useState('Retiro voluntario');
   async function inactivar() {
     try {
-      await updateDoc(doc(db, 'ninos', nino.id), { estado: 'inactivo', motivoInactivacion: motivo, fechaInactivacion: hoy(), actualizadoEn: ahoraIso() });
+      await actualizar('ninos', nino.id, { estado: 'inactivo', motivoInactivacion: motivo, fechaInactivacion: hoy(), actualizadoEn: ahoraIso() });
       toast(`${nino.nombres} quedó inactivo. Ya no se generarán cobros.`);
       onCerrar();
     } catch (e) { toast(mensajeError(e), 'error'); }
   }
   async function reactivar() {
     try {
-      await updateDoc(doc(db, 'ninos', nino.id), { estado: 'activo', motivoInactivacion: null, fechaInactivacion: null, actualizadoEn: ahoraIso() });
+      await actualizar('ninos', nino.id, { estado: 'activo', motivoInactivacion: null, fechaInactivacion: null, actualizadoEn: ahoraIso() });
       const c = catPorId.get(nino.categoriaId ?? '');
       if (c) await asegurarPagoVigente({ ...nino, estado: 'activo' }, c, config, usuario!.uid);
       toast(`${nino.nombres} está activo de nuevo`);
@@ -293,7 +291,7 @@ function HojaDocumento({ abierta, nino, onCerrar }: { abierta: boolean; nino: Ni
     setSubiendo(true);
     try {
       const ruta = await subirArchivo(`ninos/${nino.id}/documentos/${tipo.split(' ')[0].toLowerCase()}-${Date.now()}.${extension(archivo)}`, archivo);
-      await updateDoc(doc(db, 'ninos', nino.id), { documentos: [...nino.documentos, { tipo, nombre: archivo.name, ruta, fecha: hoy() }], actualizadoEn: ahoraIso() });
+      await actualizar('ninos', nino.id, { documentos: [...nino.documentos, { tipo, nombre: archivo.name, ruta, fecha: hoy() }], actualizadoEn: ahoraIso() });
       toast('Documento subido');
       setArchivo(undefined);
       onCerrar();
@@ -395,10 +393,8 @@ function HojaInforme({ abierta, onCerrar }: { abierta: boolean; onCerrar: () => 
 
 // Utilidad usada al vincular un acudiente desde el formulario del niño
 export async function sincronizarAcudientes(ninoId: string, acudientesIds: string[]) {
-  const b = writeBatch(db);
   for (const col of ['asistencias', 'medicionesFisicas', 'pagos', 'resultadosPruebas', 'confirmacionesEvento', 'solicitudesCambio']) {
-    const docs = await getDocs(query(collection(db, col), where('ninoId', '==', ninoId)));
-    docs.forEach((d) => b.update(d.ref, { acudientesIds }));
+    const docs = await listar<{ id: string }>(col, [['ninoId', '==', ninoId]]);
+    await guardarVarios(col, docs.map((d) => ({ ...d, acudientesIds })));
   }
-  await b.commit();
 }

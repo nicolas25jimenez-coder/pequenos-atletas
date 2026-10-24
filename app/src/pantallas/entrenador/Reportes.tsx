@@ -1,14 +1,12 @@
 // Reportes (RF-E40 a RF-E43): pagos del mes, asistencia, informes PDF y Excel.
 import { FilePdf, FileXls } from '@phosphor-icons/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useMemo, useState } from 'react';
 import {
   cop, edadTexto, ETIQUETA_ASISTENCIA, ETIQUETA_PAGO, estadoEn, ETIQUETA_COMPARACION, fechaCorta, formatoValor, hoy, nombreMes, porcentajeFaltas,
   resumirAsistencia, sumarDias, sumarMeses,
   type Asistencia, type MedicionFisica, type Nino, type Pago, type ResultadoPrueba,
 } from '@pa/shared';
-import { useColeccion, useConfiguracion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { listar, useColeccion, useConfiguracion } from '../../lib/datos';
 import { COLOR_ASISTENCIA, COLOR_PAGO } from '../../lib/estilos';
 import { mensajeError } from '../../lib/errores';
 import { alfa, Boton, Campo, Etiqueta, Kicker, Segmentado, Selector, Tarjeta, Volver, useToast } from '../../ui/base';
@@ -113,8 +111,8 @@ function ReporteAsistencia() {
 }
 
 async function porNino<T>(col: string, ninoId: string): Promise<T[]> {
-  const s = await getDocs(query(collection(db, col), where('ninoId', '==', ninoId)));
-  return s.docs.map((d) => ({ id: d.id, ...d.data() }) as T).sort((a, b) => ((a as { fecha?: string }).fecha ?? '').localeCompare((b as { fecha?: string }).fecha ?? ''));
+  const s = await listar<T>(col, [['ninoId', '==', ninoId]]);
+  return s.sort((a, b) => ((a as { fecha?: string }).fecha ?? '').localeCompare((b as { fecha?: string }).fecha ?? ''));
 }
 
 function Informes() {
@@ -160,10 +158,10 @@ function Excel() {
   async function exportar() {
     setGenerando(true);
     try {
-      const traer = async <T,>(col: string) => (await getDocs(query(collection(db, col), where('fecha', '>=', desde)))).docs.map((d) => ({ id: d.id, ...d.data() }) as T);
+      const traer = async <T,>(col: string) => listar<T>(col, [['fecha', '>=', desde]]);
       const [asis, res, med, pagos] = await Promise.all([
         traer<Asistencia>('asistencias'), traer<ResultadoPrueba>('resultadosPruebas'), traer<MedicionFisica>('medicionesFisicas'),
-        getDocs(collection(db, 'pagos')).then((s) => s.docs.map((d) => ({ id: d.id, ...d.data() }) as Pago)),
+        listar<Pago>('pagos'),
       ]);
       const enRango = <T extends { fecha: string }>(xs: T[]) => xs.filter((x) => x.fecha <= hasta).sort((a, b) => a.fecha.localeCompare(b.fecha));
       const nom = (id: string) => { const n = porId.get(id); return n ? `${n.nombres} ${n.apellidos}` : id; };

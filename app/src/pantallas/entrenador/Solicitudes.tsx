@@ -1,10 +1,8 @@
 // Solicitudes de cambio de los acudientes (RF-E13), retiro (RF-P34) y habeas data (RF-P35).
 import { ArrowRight } from '@phosphor-icons/react';
-import { doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { useState } from 'react';
 import { ahoraIso, fechaCorta, hoy, type SolicitudCambio } from '@pa/shared';
-import { useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { actualizar, lote, useColeccion } from '../../lib/datos';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Hoja, Segmentado, Tarjeta, Titulo, Vacio, Volver, useToast, Kicker } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
@@ -56,19 +54,19 @@ function Resolver({ s, onCerrar }: { s: SolicitudCambio | null; onCerrar: () => 
     if (!n || !s) return;
     setOcupado(true);
     try {
-      const b = writeBatch(db);
+      const b = lote();
       const t = ahoraIso();
       if (aprobar && esRetiro) {
-        b.update(doc(db, 'ninos', n.id), { estado: 'inactivo', motivoInactivacion: s.valorPropuesto || 'Retiro voluntario', fechaInactivacion: hoy(), actualizadoEn: t });
+        b.actualizar('ninos', n.id, { estado: 'inactivo', motivoInactivacion: s.valorPropuesto || 'Retiro voluntario', fechaInactivacion: hoy(), actualizadoEn: t });
       } else if (aprobar && !esSupresion) {
         let valor: unknown = s.valorPropuesto;
         if (s.campo.endsWith('.autorizado')) valor = /^s[ií]/i.test(s.valorPropuesto.trim());
         const raiz = s.campo.split('.')[0];
         const actualizado = asignarRuta(n, s.campo, valor) as unknown as Record<string, unknown>;
-        b.update(doc(db, 'ninos', n.id), { [raiz]: actualizado[raiz], actualizadoEn: t });
+        b.actualizar('ninos', n.id, { [raiz]: actualizado[raiz], actualizadoEn: t });
       }
-      b.update(doc(db, 'solicitudesCambio', s!.id), { estado: aprobar ? 'aprobado' : 'rechazado', comentarioEntrenador: comentario.trim(), fechaResolucion: t, actualizadoEn: t });
-      await b.commit();
+      b.actualizar('solicitudesCambio', s!.id, { estado: aprobar ? 'aprobado' : 'rechazado', comentarioEntrenador: comentario.trim(), fechaResolucion: t, actualizadoEn: t });
+      await b.confirmar();
       toast(aprobar ? (esSupresion ? 'Marcada como atendida. Recuerda eliminar los datos solicitados.' : 'Cambio aprobado y aplicado') : 'Solicitud rechazada');
       setComentario('');
       onCerrar();
@@ -95,4 +93,4 @@ function Resolver({ s, onCerrar }: { s: SolicitudCambio | null; onCerrar: () => 
   );
 }
 
-export async function marcarLeida(id: string) { await updateDoc(doc(db, 'notificaciones', id), { leida: true }); }
+export async function marcarLeida(id: string) { await actualizar('notificaciones', id, { leida: true }); }

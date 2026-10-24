@@ -1,12 +1,10 @@
 import { Bell, CalendarStar, CheckCircle, NotePencil, Plus, Timer, UserPlus, Warning, WarningCircle } from '@phosphor-icons/react';
-import { addDoc, collection } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import {
   ahoraIso, cop, estadoEn, fechaChip, fechaLarga, hora12, hoy, nombreCorto,
   type ConfirmacionEvento, type Evento, type Notificacion, type Pago, type Sesion, type SolicitudCambio,
 } from '@pa/shared';
-import { useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { guardar, idNuevo, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Avatar, Boton, BotonIcono, COLOR, Kicker, Tarjeta, useToast } from '../../ui/base';
@@ -42,8 +40,8 @@ export function Panel() {
     if (!proximoEvento) return;
     try {
       const ids = [...new Set(sinResp.flatMap((n) => n.acudientesIds))];
-      await Promise.all(ids.map((u) => addDoc(collection(db, 'notificaciones'), {
-        usuarioId: u, tipo: 'confirmar_evento', titulo: `Confirma: ${proximoEvento.titulo}`,
+      await Promise.all(ids.map((u) => guardar('notificaciones', {
+        id: idNuevo('notificaciones'), usuarioId: u, tipo: 'confirmar_evento', titulo: `Confirma: ${proximoEvento.titulo}`,
         cuerpo: `¿Tu hijo asistirá a ${proximoEvento.titulo} el ${fechaChip(proximoEvento.fechaInicio.slice(0, 10))}? Confirma en Eventos.`,
         enlace: '/p/eventos', leida: false, fecha: ahoraIso(),
       })));

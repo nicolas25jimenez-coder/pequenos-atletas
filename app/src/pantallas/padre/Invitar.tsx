@@ -1,9 +1,7 @@
 import { EnvelopeSimple, Trash } from '@phosphor-icons/react';
-import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
 import { useState } from 'react';
 import { ahoraIso, normalizarCorreo, type Invitacion } from '@pa/shared';
-import { useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { borrar, guardar, idNuevo, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Casilla, Etiqueta, Kicker, Selector, Tarjeta, Volver, useToast } from '../../ui/base';
@@ -26,8 +24,8 @@ export function Invitar() {
     if (!usuario || !correo.includes('@') || !sel.length) return;
     setEnviando(true);
     try {
-      await addDoc(collection(db, 'invitaciones'), {
-        correo: normalizarCorreo(correo), ninosIds: sel, parentesco, invitadoPor: usuario.uid, estado: 'pendiente',
+      await guardar('invitaciones', {
+        id: idNuevo('invitaciones'), correo: normalizarCorreo(correo), ninosIds: sel, parentesco, invitadoPor: usuario.uid, estado: 'pendiente',
         creadoEn: ahoraIso(), actualizadoEn: ahoraIso(), creadoPor: usuario.uid,
       });
       toast('Invitación creada. Pídele que se registre en la app con ese correo.');
@@ -57,7 +55,7 @@ export function Invitar() {
           {invitaciones.datos.map((i) => (
             <div key={i.id} className="flex items-center gap-3 py-2 border-t border-white/[0.06]">
               <div className="flex-1 min-w-0"><div className="text-sm font-semibold truncate">{i.correo}</div><div className="text-xs text-tenue">{i.parentesco} · {i.estado === 'aceptada' ? 'Aceptada ✅' : 'Esperando registro'}</div></div>
-              {i.estado === 'pendiente' && <button onClick={() => deleteDoc(doc(db, 'invitaciones', i.id))} className="bg-transparent border-0 text-rojo cursor-pointer p-1" aria-label="Cancelar invitación"><Trash weight="bold" /></button>}
+              {i.estado === 'pendiente' && <button onClick={() => borrar('invitaciones', i.id)} className="bg-transparent border-0 text-rojo cursor-pointer p-1" aria-label="Cancelar invitación"><Trash weight="bold" /></button>}
             </div>
           ))}
         </Tarjeta>

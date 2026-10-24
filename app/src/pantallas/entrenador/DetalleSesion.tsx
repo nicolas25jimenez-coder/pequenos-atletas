@@ -1,10 +1,8 @@
 import { CheckCircle, PencilSimple, Ruler, Timer, XCircle } from '@phosphor-icons/react';
-import { doc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ahoraIso, ETIQUETA_ASISTENCIA, fechaLarga, hora12, resumirAsistencia, type Asistencia, type ResultadoPrueba, type Sesion } from '@pa/shared';
-import { useColeccion, useDocumento } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { actualizar, useColeccion, useDocumento } from '../../lib/datos';
 import { COLOR_ASISTENCIA } from '../../lib/estilos';
 import { mensajeError } from '../../lib/errores';
 import { alfa, Aviso, Boton, Campo, Cargando, Fila, Hoja, Kicker, Tarjeta, Volver, useToast } from '../../ui/base';
@@ -32,13 +30,13 @@ export function DetalleSesion() {
 
   async function confirmarCancelacion() {
     try {
-      await updateDoc(doc(db, 'sesiones', s!.id), { estado: 'cancelada', motivoCancelacion: motivo.trim() || 'Cancelada', actualizadoEn: ahoraIso() });
+      await actualizar('sesiones', s!.id, { estado: 'cancelada', motivoCancelacion: motivo.trim() || 'Cancelada', actualizadoEn: ahoraIso() });
       toast('Sesión cancelada. Se avisó a los acudientes.');
       setCancelar(false);
     } catch (e) { toast(mensajeError(e), 'error'); }
   }
   async function reactivar() {
-    await updateDoc(doc(db, 'sesiones', s!.id), { estado: 'programada', motivoCancelacion: null, actualizadoEn: ahoraIso() });
+    await actualizar('sesiones', s!.id, { estado: 'programada', motivoCancelacion: undefined, actualizadoEn: ahoraIso() });
     toast('Sesión reactivada');
   }
 

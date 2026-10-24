@@ -1,10 +1,8 @@
 // Registro de talla y peso, individual o en lote por categoría (RF-E09, RF-E26).
-import { doc, writeBatch } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ahoraIso, edadMesesExacta, evaluarImc, hoy, num, type MedicionFisica, type Sesion } from '@pa/shared';
-import { useColeccion, useDocumento } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { lote, useColeccion, useDocumento } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { COLOR_IMC } from '../../lib/estilos';
 import { mensajeError } from '../../lib/errores';
@@ -48,18 +46,18 @@ export function Mediciones() {
     if (!usuario) return;
     setGuardando(true);
     try {
-      const b = writeBatch(db);
+      const b = lote();
       const t = ahoraIso();
       for (const { k, v, ev } of listas) {
         const em = edadMesesExacta(k.fechaNacimiento, fecha);
-        const m: Omit<MedicionFisica, 'id'> = {
-          ninoId: k.id, acudientesIds: k.acudientesIds, ...(id ? { sesionId: id } : {}), fecha, tallaCm: n(v.t), pesoKg: n(v.p),
+        const m: MedicionFisica = {
+          id: `${id ?? `med_${fecha}`}_${k.id}`, ninoId: k.id, acudientesIds: k.acudientesIds, ...(id ? { sesionId: id } : {}), fecha, tallaCm: n(v.t), pesoKg: n(v.p),
           imc: ev!.imc, edadMeses: Math.floor(em), zScoreImc: ev!.zScore, percentilImc: ev!.percentil, clasificacionImc: ev!.clasificacion?.tecnica ?? null,
           creadoEn: t, actualizadoEn: t, creadoPor: usuario.uid,
         };
-        b.set(doc(db, 'medicionesFisicas', `${id ?? `med_${fecha}`}_${k.id}`), m);
+        b.guardar('medicionesFisicas', m);
       }
-      await b.commit();
+      await b.confirmar();
       toast(`${listas.length} ${listas.length === 1 ? 'medición guardada' : 'mediciones guardadas'}`);
       nav(-1);
     } catch (e) { toast(mensajeError(e), 'error'); }

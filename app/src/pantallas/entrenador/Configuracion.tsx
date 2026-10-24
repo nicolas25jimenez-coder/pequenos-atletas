@@ -1,11 +1,9 @@
 // Configuración de la escuela (RF-E44, RF-E45).
 import { Lightning } from '@phosphor-icons/react';
-import { doc, setDoc } from 'firebase/firestore';
-import { httpsCallable } from 'firebase/functions';
 import { useEffect, useState } from 'react';
 import type { Configuracion as TConfig } from '@pa/shared';
-import { useConfiguracion } from '../../lib/datos';
-import { db, functions } from '../../lib/firebase';
+import { guardar as guardarDoc, useConfiguracion } from '../../lib/datos';
+import { supabase } from '../../lib/supabase';
 import { usaEmuladores } from '../../lib/config';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Etiqueta, Kicker, Tarjeta, Volver, useToast } from '../../ui/base';
@@ -24,7 +22,7 @@ export function Configuracion() {
   async function guardar() {
     setGuardando(true);
     try {
-      await setDoc(doc(db, 'configuracion', 'general'), { ...c, telefonoWhatsApp: c.telefonoWhatsApp.replace(/\D/g, ''), tallasUniforme: tallas.split(',').map((t) => t.trim()).filter(Boolean) });
+      await guardarDoc('configuracion', { ...c, id: 'general', telefonoWhatsApp: c.telefonoWhatsApp.replace(/\D/g, ''), tallasUniforme: tallas.split(',').map((t) => t.trim()).filter(Boolean) });
       toast('Configuración guardada');
     } catch (e) { toast(mensajeError(e), 'error'); }
     setGuardando(false);
@@ -32,7 +30,11 @@ export function Configuracion() {
   async function ejecutar() {
     setEjecutando(true);
     try {
-      const r = (await httpsCallable(functions, 'ejecutarTareas')({})).data as Record<string, number>;
+      const { data: ses } = await supabase.auth.getSession();
+      const resp = await fetch('/.netlify/functions/ejecutar-tareas', { method: 'POST', headers: { Authorization: `Bearer ${ses.session?.access_token ?? ''}` } });
+      if (resp.status === 404) throw new Error('Las tareas automáticas todavía no están disponibles en esta versión de la app.');
+      if (!resp.ok) throw new Error(`No se pudieron ejecutar las tareas (error ${resp.status}).`);
+      const r = (await resp.json()) as Record<string, number>;
       toast(`Listo: ${r.creados} cobros nuevos, ${r.vencidos} vencidos, ${(r.previos ?? 0) + (r.delMes ?? 0) + (r.vencidos ?? 0)} recordatorios de pago, ${(r.eventos ?? 0) + (r.confirmar ?? 0)} de eventos.`);
     } catch (e) { toast(mensajeError(e), 'error'); }
     setEjecutando(false);

@@ -1,9 +1,7 @@
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ahoraIso, diaSemana, FAMILIAS, hoy, type PlantillaControl, type Sesion, type TipoSesion } from '@pa/shared';
-import { idNuevo, useColeccion, useDocumento } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { actualizar, guardar as guardarDoc, idNuevo, useColeccion, useDocumento } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Casilla, Etiqueta, Segmentado, Selector, Tarjeta, Volver, useToast, Kicker } from '../../ui/base';
@@ -48,10 +46,10 @@ export function FormSesion() {
     setGuardando(true);
     try {
       const datos = { ...f, lugar: f.lugar.trim(), tema: f.tema.trim(), pruebasSeleccionadas: f.tipo === 'control' ? sel : [], actualizadoEn: ahoraIso() };
-      if (id) await updateDoc(doc(db, 'sesiones', id), datos);
+      if (id) await actualizar('sesiones', id, datos);
       else {
         const nuevo = idNuevo('sesiones');
-        await setDoc(doc(db, 'sesiones', nuevo), { ...datos, estado: 'programada', creadoEn: ahoraIso(), creadoPor: usuario!.uid } satisfies Omit<Sesion, 'id'>);
+        await guardarDoc('sesiones', { id: nuevo, ...datos, estado: 'programada', creadoEn: ahoraIso(), creadoPor: usuario!.uid } satisfies Sesion);
         toast('Sesión creada');
         nav(`/e/sesion/${nuevo}`, { replace: true });
         return;

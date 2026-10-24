@@ -1,9 +1,7 @@
 import { Bell, Checks } from '@phosphor-icons/react';
-import { doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { fechaCorta, hora12, hoy, type Notificacion } from '@pa/shared';
-import { useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { actualizar, lote, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { Boton, Vacio, Volver } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
@@ -17,13 +15,13 @@ export function Notificaciones() {
   const base = perfil?.rol === 'entrenador' ? '/e' : '/p';
 
   async function abrir(n: Notificacion) {
-    if (!n.leida) await updateDoc(doc(db, 'notificaciones', n.id), { leida: true });
+    if (!n.leida) await actualizar('notificaciones', n.id, { leida: true });
     if (n.enlace) nav(n.enlace);
   }
   async function leerTodas() {
-    const b = writeBatch(db);
-    sinLeer.forEach((n) => b.update(doc(db, 'notificaciones', n.id), { leida: true }));
-    await b.commit();
+    const b = lote();
+    sinLeer.forEach((n) => b.actualizar('notificaciones', n.id, { leida: true }));
+    await b.confirmar();
   }
 
   return (

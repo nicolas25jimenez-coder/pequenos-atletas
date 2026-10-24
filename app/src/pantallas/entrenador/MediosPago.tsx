@@ -1,10 +1,8 @@
 // Configuración de medios de pago (SPEC §4.10, RF-E34).
 import { PencilSimple, Plus } from '@phosphor-icons/react';
-import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { ahoraIso, type MedioPago } from '@pa/shared';
-import { idNuevo, useColeccion } from '../../lib/datos';
-import { db } from '../../lib/firebase';
+import { guardar as guardarDoc, idNuevo, useColeccion } from '../../lib/datos';
 import { subirArchivo } from '../../lib/archivos';
 import { mensajeError } from '../../lib/errores';
 import { Boton, Campo, Casilla, Encabezado, Etiqueta, Hoja, Interruptor, Volver, useToast } from '../../ui/base';
@@ -47,7 +45,7 @@ function Editor({ medio, onCerrar }: { medio: (Omit<MedioPago, 'id'> & { id?: st
       const id = m!.id ?? idNuevo('mediosPago');
       const qrRuta = qr ? await subirArchivo(`publico/qr-${id}-${Date.now()}.jpg`, qr) : m!.qrRuta;
       const { id: _omit, ...resto } = m!; void _omit;
-      await setDoc(doc(db, 'mediosPago', id), JSON.parse(JSON.stringify({ ...resto, ...(qrRuta ? { qrRuta } : {}), iniciales: m!.iniciales || m!.nombre[0].toUpperCase(), actualizadoEn: ahoraIso() })));
+      await guardarDoc('mediosPago', JSON.parse(JSON.stringify({ ...resto, id, ...(qrRuta ? { qrRuta } : {}), iniciales: m!.iniciales || m!.nombre[0].toUpperCase(), actualizadoEn: ahoraIso() })));
       toast('Medio de pago guardado');
       setQr(undefined);
       onCerrar();

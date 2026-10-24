@@ -1,13 +1,11 @@
 // Crear (RF-E05) o editar (RF-E07) un niño directamente desde el entrenador.
 import { Plus, Trash } from '@phosphor-icons/react';
-import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, edadTexto, hoy, normalizarCorreo, type Contacto, type Nino, type Salud, type SeguroMedico, type Sexo,
 } from '@pa/shared';
-import { db } from '../../lib/firebase';
-import { idNuevo, limpio, useConfiguracion } from '../../lib/datos';
+import { actualizar, guardar as guardarDoc, idNuevo, limpio, useConfiguracion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
 import { Aviso, Boton, Campo, Casilla, Etiqueta, Kicker, Selector, Tarjeta, Volver, useToast } from '../../ui/base';
@@ -60,7 +58,7 @@ export function FormNino() {
         actualizadoEn: t,
       };
       if (actual) {
-        await updateDoc(doc(db, 'ninos', actual.id), limpio(comun));
+        await actualizar('ninos', actual.id, limpio(comun));
         toast('Datos actualizados');
         nav(`/e/nino/${actual.id}`, { replace: true });
       } else {
@@ -70,10 +68,10 @@ export function FormNino() {
           estado: 'activo' as const, historialCategorias: [{ categoriaId: b.categoriaId, desde: b.fechaInscripcion }], descuento: null,
           creadoEn: t, creadoPor: usuario!.uid,
         });
-        await setDoc(doc(db, 'ninos', nid), nino);
+        await guardarDoc('ninos', { ...nino, id: nid });
         await asegurarPagoVigente({ ...nino, id: nid }, catPorId.get(b.categoriaId)!, config, usuario!.uid);
         if (correo.includes('@')) {
-          await addDoc(collection(db, 'invitaciones'), { correo: normalizarCorreo(correo), ninosIds: [nid], parentesco: contactos[0]?.parentesco || 'Otro', invitadoPor: usuario!.uid, estado: 'pendiente', creadoEn: t, actualizadoEn: t, creadoPor: usuario!.uid });
+          await guardarDoc('invitaciones', { id: idNuevo('invitaciones'), correo: normalizarCorreo(correo), ninosIds: [nid], parentesco: contactos[0]?.parentesco || 'Otro', invitadoPor: usuario!.uid, estado: 'pendiente', creadoEn: t, actualizadoEn: t, creadoPor: usuario!.uid });
         }
         toast(`${nino.nombres} fue creado${correo.includes('@') ? '. Quedará vinculado cuando el acudiente se registre con ese correo.' : ''}`);
         nav(`/e/nino/${nid}`, { replace: true });
