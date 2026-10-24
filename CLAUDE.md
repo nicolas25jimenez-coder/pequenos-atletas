@@ -94,4 +94,4 @@ Notas de la Fase 3 (para las siguientes ventanas):
 - Firebase borrado (functions/, reglas, emuladores, push, FCM del service worker). `npm run build` ahora solo arma la app. Sin push al celular (solo campanita).
 - Tareas diarias en `netlify/functions/` (cron UTC `5 5 * * *` y `0 12 * * *`); `netlify.toml` usa `node_bundler = "esbuild"`. Necesitan `SUPABASE_SERVICE_ROLE_KEY` en Netlify (ya está).
 - Fotos: el padre solo puede subir foto/documentos mientras la inscripción está pendiente (diseño de seguridad); después solo el entrenador. Probado: crear niño pendiente + subir foto + aviso al entrenador + aprobación con aviso al padre.
-- Falta verificar en el sitio publicado que "Ejecutar tareas de hoy" responda bien (Fase 4).
+- "Ejecutar tareas de hoy" verificado en el sitio publicado (entrenador 200, padre 403). Si la clave secreta de Netlify falla, da "Invalid API key".

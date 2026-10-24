@@ -11,7 +11,7 @@ export default async (req: Request): Promise<Response> => {
   try {
     const sb = supabase();
     const { data: u, error } = await sb.auth.getUser(token);
-    if (error || !u.user) return json({ error: 'Sesión no válida.', detalle: error?.message }, 401);
+    if (error || !u.user) return json({ error: 'Sesión no válida.'}, 401);
     const { data: fila } = await sb.from('usuarios').select('rol').eq('id', u.user.id).maybeSingle();
     if (fila?.rol !== 'entrenador') return json({ error: 'Solo el entrenador puede ejecutar las tareas.' }, 403);
 
