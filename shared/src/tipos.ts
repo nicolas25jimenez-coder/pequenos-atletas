@@ -29,7 +29,6 @@ export interface Usuario extends Auditoria {
   tipoDocumento?: string;
   numeroDocumento?: string;
   parentesco?: Parentesco;
-  fcmTokens?: string[];
   preferenciasNotificacion?: PreferenciasNotificacion;
   aceptoTerminos?: { fecha: string; version: string };
   estado: 'activo' | 'bloqueado';

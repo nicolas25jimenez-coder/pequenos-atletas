@@ -6,7 +6,7 @@ import { configurado } from './config';
 import { guardar, obtener, useDocumento } from './datos';
 import { fijarRecordar, supabase, traducirError } from './supabase';
 
-/** Usuario de la sesión. Mantiene la forma que tenía con Firebase (uid, email, emailVerified). */
+/** Usuario de la sesión. Con los campos uid, email y emailVerified. */
 export interface UsuarioSesion {
   id: string;
   uid: string;

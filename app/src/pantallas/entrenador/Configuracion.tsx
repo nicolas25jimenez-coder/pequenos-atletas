@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import type { Configuracion as TConfig } from '@pa/shared';
 import { guardar as guardarDoc, useConfiguracion } from '../../lib/datos';
 import { supabase } from '../../lib/supabase';
-import { usaEmuladores } from '../../lib/config';
 import { mensajeError } from '../../lib/errores';
-import { Aviso, Boton, Campo, Etiqueta, Kicker, Tarjeta, Volver, useToast } from '../../ui/base';
+import { Boton, Campo, Etiqueta, Kicker, Tarjeta, Volver, useToast } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 
 export function Configuracion() {
@@ -35,7 +34,7 @@ export function Configuracion() {
       if (resp.status === 404) throw new Error('Las tareas automáticas todavía no están disponibles en esta versión de la app.');
       if (!resp.ok) throw new Error(`No se pudieron ejecutar las tareas (error ${resp.status}).`);
       const r = (await resp.json()) as Record<string, number>;
-      toast(`Listo: ${r.creados} cobros nuevos, ${r.vencidos} vencidos, ${(r.previos ?? 0) + (r.delMes ?? 0) + (r.vencidos ?? 0)} recordatorios de pago, ${(r.eventos ?? 0) + (r.confirmar ?? 0)} de eventos.`);
+      toast(`Listo: ${r.creados} cobros nuevos, ${r.vencidos} vencidos, ${(r.previos ?? 0) + (r.delMes ?? 0) + (r.avisosVencidos ?? 0)} recordatorios de pago, ${(r.eventos ?? 0) + (r.confirmar ?? 0)} de eventos.`);
     } catch (e) { toast(mensajeError(e), 'error'); }
     setEjecutando(false);
   }
@@ -65,7 +64,6 @@ export function Configuracion() {
       <Tarjeta className="gap-3">
         <Kicker>Tareas automáticas</Kicker>
         <div className="text-[13px] text-suave">Cada noche se generan los cobros y se marcan los vencidos; cada mañana se envían los recordatorios. Puedes ejecutarlas ahora.</div>
-        {usaEmuladores && <Aviso>En el modo de prueba local las tareas no corren solas: usa este botón para simularlas.</Aviso>}
         <Boton variante="secundario" icono={<Lightning weight="bold" />} onClick={ejecutar} cargando={ejecutando}>Ejecutar tareas de hoy</Boton>
       </Tarjeta>
     </Pantalla>

@@ -18,7 +18,7 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
 - **Entrega:** link de la app en **Netlify** + repositorio público en **GitHub**.
 - **Stack destino:** React + Vite + Tailwind (ya existe) · **Supabase** (base de datos, login, archivos) ·
   **Netlify** (publicación y tareas programadas) · **GitHub** (código).
-- La app hoy usa Firebase; las fases 1–3 lo reemplazan por Supabase. Fase 4 publica y entrega.
+- Firebase ya fue reemplazado por Supabase (fases 1–3). Fase 4 publica y entrega.
 - Avisos: **solo la campanita dentro de la app**. Push al celular solo si sobra tiempo el día 4.
 
 ## Cómo se trabaja
@@ -51,7 +51,7 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
 | 0 | Plan, CLAUDE.md, memoria | ✅ Hecha (2026-10-22) |
 | 1 | Cuentas, base de datos Supabase, login | ✅ Hecha (2026-10-22); Netlify verificado (2026-10-23) |
 | 2 | Pantallas padre y entrenador sobre Supabase | ✅ Hecha (2026-10-23) |
-| 3 | Campanita, tareas diarias, quitar Firebase | ⏳ Pendiente |
+| 3 | Campanita, tareas diarias, quitar Firebase | ✅ Hecha (2026-10-23) |
 | 4 | Publicación final en Netlify y entrega | ⏳ Pendiente |
 
 Links: GitHub: https://github.com/nicolas25jimenez-coder/pequenos-atletas · Netlify: https://pequenos-atletas2.netlify.app · Supabase (proyecto): https://ebzbbwxgnfrawkhebwvw.supabase.co
@@ -71,15 +71,15 @@ Notas de la Fase 1 (para las siguientes ventanas):
 - `npm test` — pruebas de la lógica (`shared/src/dominio.test.ts`).
 - `npm run typecheck` — revisa errores de tipos.
 - `npm run build` — arma la versión para publicar.
-- `npm run test:seguridad` — pruebas de permisos contra Supabase (se crea en la Fase 1).
+- `npm run test:seguridad` — pruebas de permisos contra Supabase (22 pruebas).
 
 ## Mapa del código
 
 - `shared/src/` — lógica de negocio sin base de datos (reutilizar tal cual).
 - `app/src/lib/` — conexión con la base de datos, sesión, archivos. `datos.ts` es el adaptador que usan las pantallas.
 - `app/src/pantallas/acceso|padre|entrenador|comun/` — pantallas.
-- `supabase/migrations/` — tablas y reglas de seguridad (se crea en la Fase 1).
-- `netlify/functions/` — tareas diarias y botón "Ejecutar tareas de hoy" (Fase 3).
+- `supabase/migrations/` — 0001 tablas, 0002 seguridad, 0003 avisos de la campanita, 0004 segundo acudiente.
+- `netlify/functions/` — `ciclo-nocturno`, `recordatorios` (programadas) y `ejecutar-tareas` (botón del entrenador).
 - `scripts/seed.ts` — datos de ejemplo y cuentas de demo.
 
 Notas de la Fase 2 (para las siguientes ventanas):
@@ -88,3 +88,10 @@ Notas de la Fase 2 (para las siguientes ventanas):
 - `lote()` no es atómico. `sincronizarAcudientes` (FichaNino) reescribe documentos completos con `guardarVarios`.
 - Probado en el navegador: entrenador (panel, aprobar inscripción → se crea el pago) y padre (ve solo a sus hijos).
 - Cuidado con choques de nombre: en pantallas con función local `guardar`, el import se renombra `guardar as guardarDoc`.
+
+Notas de la Fase 3 (para las siguientes ventanas):
+- Migraciones `0003_notificaciones.sql` y `0004_invitaciones.sql` ya aplicadas (pegadas en el SQL Editor). Triggers `c_*` crean los avisos N04–N06, N09–N14 en `notificaciones` con `public.notificar()`; `vincular_invitaciones` une al segundo acudiente.
+- Firebase borrado (functions/, reglas, emuladores, push, FCM del service worker). `npm run build` ahora solo arma la app. Sin push al celular (solo campanita).
+- Tareas diarias en `netlify/functions/` (cron UTC `5 5 * * *` y `0 12 * * *`); `netlify.toml` usa `node_bundler = "esbuild"`. Necesitan `SUPABASE_SERVICE_ROLE_KEY` en Netlify (ya está).
+- Fotos: el padre solo puede subir foto/documentos mientras la inscripción está pendiente (diseño de seguridad); después solo el entrenador. Probado: crear niño pendiente + subir foto + aviso al entrenador + aprobación con aviso al padre.
+- Falta verificar en el sitio publicado que "Ejecutar tareas de hoy" responda bien (Fase 4).
