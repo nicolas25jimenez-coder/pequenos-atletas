@@ -5,7 +5,7 @@ import {
   avisoPrevio, CONFIG_POR_DEFECTO, construirPago, cop, diaCobroDe, diferenciaDias, estadoEn, fechaCorta, hoy,
   nombreMes, periodoVigente, recordatorioDelDia,
   type Categoria, type Configuracion, type Evento, type MedioPago, type Nino, type Pago,
-} from '@pa/shared';
+} from '../../shared/src/index';
 
 declare const Netlify: { env: { get(k: string): string | undefined } } | undefined;
 
