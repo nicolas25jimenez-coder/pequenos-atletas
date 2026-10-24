@@ -52,7 +52,7 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
 | 1 | Cuentas, base de datos Supabase, login | ✅ Hecha (2026-10-22); Netlify verificado (2026-10-23) |
 | 2 | Pantallas padre y entrenador sobre Supabase | ✅ Hecha (2026-10-23) |
 | 3 | Campanita, tareas diarias, quitar Firebase | ✅ Hecha (2026-10-23) |
-| 4 | Publicación final en Netlify y entrega | ⏳ Pendiente |
+| 4 | Publicación final en Netlify y entrega | ✅ Hecha (2026-10-23); falta aplicar migración 0005 y Auth URL en Supabase |
 
 Links: GitHub: https://github.com/nicolas25jimenez-coder/pequenos-atletas · Netlify: https://pequenos-atletas2.netlify.app · Supabase (proyecto): https://ebzbbwxgnfrawkhebwvw.supabase.co
 
@@ -78,7 +78,7 @@ Notas de la Fase 1 (para las siguientes ventanas):
 - `shared/src/` — lógica de negocio sin base de datos (reutilizar tal cual).
 - `app/src/lib/` — conexión con la base de datos, sesión, archivos. `datos.ts` es el adaptador que usan las pantallas.
 - `app/src/pantallas/acceso|padre|entrenador|comun/` — pantallas.
-- `supabase/migrations/` — 0001 tablas, 0002 seguridad, 0003 avisos de la campanita, 0004 segundo acudiente.
+- `supabase/migrations/` — 0001 tablas, 0002 seguridad, 0003 avisos de la campanita, 0004 segundo acudiente, 0005 correo propio al crear perfil (pendiente de pegar en el SQL Editor).
 - `netlify/functions/` — `ciclo-nocturno`, `recordatorios` (programadas) y `ejecutar-tareas` (botón del entrenador).
 - `scripts/seed.ts` — datos de ejemplo y cuentas de demo.
 

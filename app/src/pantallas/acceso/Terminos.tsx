@@ -1,13 +1,13 @@
 import { Aviso, Volver } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 
-// ⚠️ Plantilla PENDIENTE DE REVISIÓN POR UN ABOGADO (SPEC Q3). No es un texto legal definitivo.
+// ⚠️ PLANTILLA base. No es asesoría legal: debe ser revisada por un abogado antes de uso comercial (SPEC Q3).
 export function Terminos() {
   return (
     <Pantalla conNav={false}>
       <Volver>Volver</Volver>
       <div className="titulo text-[26px]">Términos y política de datos</div>
-      <Aviso tono="alerta">Borrador para revisión de un abogado. Versión 2026-10.</Aviso>
+      <Aviso tono="alerta">PLANTILLA de ejemplo, no constituye asesoría legal. Debe ser revisada por un abogado antes de usarse comercialmente. Versión 2026-10.</Aviso>
       <div className="flex flex-col gap-4 text-sm text-suave leading-relaxed pretty">
         <section className="flex flex-col gap-1.5">
           <h2 className="kicker">1. Responsable del tratamiento</h2>

@@ -1,6 +1,7 @@
 # SPEC — App de Seguimiento Deportivo Infantil (4 a 6 años)
 
-> **Versión:** 1.2 · **Fecha:** 2026-10-22 · **Autor:** Nicolás Jiménez (entrenador)
+> **Versión:** 1.3 · **Fecha:** 2026-10-23 · **Autor:** Nicolás Jiménez (entrenador)
+> **Cambios v1.3:** el backend pasó de Firebase a **Supabase** (PostgreSQL, Auth y Storage con seguridad por filas), se publica en **Netlify** (código en GitHub) y las tareas programadas son **Netlify Functions**. Los avisos son **solo por la campanita** dentro de la app (sin push al celular). Ver §3.
 > **Cambios v1.2:** la app se construyó como **web instalable (PWA)** con React + Firebase (en lugar de Flutter) y con el **diseño oscuro del prototipo** (`design/`). Ver §3 y §3.1. Implementación y forma de ejecutarla: [README.md](README.md).
 > **Nombre comercial:** **Pequeños Atletas**
 > **Enfoque:** formación multidisciplinar y predeportiva (sin especialización en un deporte)
@@ -81,28 +82,27 @@ Una app donde:
 
 ---
 
-## 3. Arquitectura y tecnología recomendada
+## 3. Arquitectura y tecnología
 
 > Pensada para **un solo entrenador**, bajo costo y una sola base de código para móvil y web.
-> **v1.2:** se eligió una **PWA con React + TypeScript + Vite + Tailwind** en lugar de Flutter (requiere solo Node.js, se parece al prototipo HTML y luego puede empaquetarse para las tiendas). En desarrollo todo corre con los **emuladores de Firebase** (proyecto `demo-`, sin cuenta).
+> **v1.3:** React + TypeScript + Vite + Tailwind (PWA) con **Supabase** como backend, publicada en **Netlify**; el código vive en **GitHub**. Firebase fue reemplazado por completo.
 
 | Capa | Tecnología | Motivo |
 |---|---|---|
-| App (Android, iOS, Web) | **React + TypeScript (PWA)** · ~~Flutter~~ | Un solo código; instalable desde el navegador |
-| Autenticación | **Firebase Authentication** (correo + contraseña, verificación de correo, recuperación de contraseña) | Gratis, simple |
-| Base de datos | **Cloud Firestore** | Tiempo real, reglas de seguridad por rol |
-| Archivos (fotos, videos, documentos) | **Firebase Storage** | Integrado con reglas de seguridad |
-| Notificaciones push | **Firebase Cloud Messaging (FCM)** | Gratis, Android/iOS/Web |
-| Tareas programadas (cobro mensual, recordatorios) | **Cloud Functions** + Cloud Scheduler | Requiere plan Blaze (pago por uso, con cuota gratuita generosa) |
-| Generación de PDF | Cloud Function o paquete `pdf` de Flutter | Informe por niño |
-| Exportación Excel | Cloud Function (librería `exceljs`) o paquete `excel` de Flutter | Reportes |
-| Correo transaccional (verificación, aprobación) | Firebase Auth + extensión "Trigger Email" (SendGrid/Mailgun) | Opcional |
+| App (Android, iOS, Web) | **React + TypeScript (PWA)** | Un solo código; instalable desde el navegador |
+| Autenticación | **Supabase Auth** (correo + contraseña, recuperación de contraseña) | Simple y con plan gratuito |
+| Base de datos | **Supabase PostgreSQL** (tablas con `datos jsonb` + columnas derivadas por triggers) | Seguridad por filas (RLS) según rol |
+| Archivos (fotos, documentos) | **Supabase Storage** | Políticas de acceso por rol |
+| Avisos | **Campanita dentro de la app** (tabla `notificaciones`, creada por triggers) | Sin push al celular; push queda como mejora futura |
+| Tareas programadas (cobro mensual, recordatorios) | **Netlify Functions** programadas (`ciclo-nocturno`, `recordatorios`) y `ejecutar-tareas` (botón del entrenador) | Sin costo extra |
+| Publicación | **Netlify** (deploy automático desde GitHub) | https://pequenos-atletas2.netlify.app |
+| Informe PDF / Excel | Pendiente (no incluido en la entrega de v1.3) | Reportes |
 
-**Alternativa:** Supabase (PostgreSQL) + Edge Functions + FCM. Válida si prefieres SQL; Firebase es más directo para push y tiempo real.
+Nota: donde este documento mencione push, FCM, Cloud Functions o Firestore, léase como el equivalente actual (campanita, Netlify Functions, Supabase).
 
 **Costos estimados (aprox.):**
 - Durante el desarrollo: **USD 0**. Se prueba en la web local, en el emulador de Android y en tu celular (instalación directa del APK), sin publicar en tiendas.
-- Firebase: probablemente USD 0–5/mes para < 200 niños.
+- Supabase y Netlify: plan gratuito suficiente para < 200 niños.
 - *Solo cuando se decida publicar (ver §11, Fase 4):* Google Play USD 25 (pago único), Apple USD 99/año y dominio web ~COP 50.000/año.
 
 ### 3.1 Identidad visual — Pequeños Atletas
