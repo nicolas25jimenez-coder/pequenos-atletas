@@ -44,7 +44,20 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
    > Usa agentes en paralelo como dice el plan. Al terminar, corre las pruebas, haz commit y push, actualiza el estado
    > en `CLAUDE.md` y dame el texto para abrir la Fase N+1 en otra ventana."
 
-## Estado de las fases
+## Pulimiento v1.1 (5 fases) — plan en `PLAN-PULIDO.md`
+
+Después de la entrega se pule la app. Léelo al empezar cada ventana. Mismas reglas de cierre de arriba (pruebas, commit, push,
+actualizar esta tabla, dar el texto de la siguiente fase; usa la plantilla de `PLAN-PULIDO.md`).
+
+| Fase | Qué es | Estado |
+|---|---|---|
+| P1 | Cimientos: errores, accesibilidad base, migración 0005 y Auth URL | ⏳ Pendiente |
+| P2 | Acceso y pantallas del padre | ⏳ Pendiente |
+| P3 | Pantallas del entrenador | ⏳ Pendiente |
+| P4 | Rendimiento y PWA | ⏳ Pendiente |
+| P5 | Seguridad, documentación, CI y entrega v1.1 | ⏳ Pendiente |
+
+## Estado de las fases (proyecto original)
 
 | Fase | Qué es | Estado |
 |---|---|---|
