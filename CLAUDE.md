@@ -44,18 +44,21 @@ App web instalable (PWA) para un entrenador de niños de 4 a 6 años y los padre
    > Usa agentes en paralelo como dice el plan. Al terminar, corre las pruebas, haz commit y push, actualiza el estado
    > en `CLAUDE.md` y dame el texto para abrir la Fase N+1 en otra ventana."
 
-## Pulimiento v1.1 (5 fases) — plan en `PLAN-PULIDO.md`
+## Pulimiento v1.1 (6 fases) — plan en `PLAN-PULIDO.md`
 
-Después de la entrega se pule la app. Léelo al empezar cada ventana. Mismas reglas de cierre de arriba (pruebas, commit, push,
-actualizar esta tabla, dar el texto de la siguiente fase; usa la plantilla de `PLAN-PULIDO.md`).
+Después de la entrega se pule la app (interfaz, diseño e interacción). Léelo al empezar cada ventana. Mismas reglas de cierre
+de arriba (pruebas, commit, push, actualizar esta tabla, dar el texto de la siguiente fase; usa la plantilla de
+`PLAN-PULIDO.md`). Las fases 1 y 4 **empiezan con una entrevista**: preguntas a Nicolás + sus ideas pulidas juntos, guardadas
+en `IDEAS-ENTRENADOR.md` / `IDEAS-PADRE.md` y aprobadas por él antes de programar.
 
 | Fase | Qué es | Estado |
 |---|---|---|
-| P1 | Cimientos: errores, accesibilidad base, migración 0005 y Auth URL | ⏳ Pendiente |
-| P2 | Acceso y pantallas del padre | ⏳ Pendiente |
-| P3 | Pantallas del entrenador | ⏳ Pendiente |
-| P4 | Rendimiento y PWA | ⏳ Pendiente |
-| P5 | Seguridad, documentación, CI y entrega v1.1 | ⏳ Pendiente |
+| 1 | ENTRENADOR: entrevista + cimientos (componentes, migración 0005, Auth URL) + asistencia y sesiones | ⏳ Pendiente |
+| 2 | ENTRENADOR: panel, niños, inscripciones, pagos, mediciones | ⏳ Pendiente |
+| 3 | ENTRENADOR: anuncios, eventos, ajustes, reportes + revisión | ⏳ Pendiente |
+| 4 | PADRE: entrevista + acceso + inicio y menú | ⏳ Pendiente |
+| 5 | PADRE: mi hijo, asistencia, progreso, inscripción, pagos | ⏳ Pendiente |
+| 6 | PADRE: pulido final + rendimiento, PWA, seguridad, docs, CI y entrega v1.1 | ⏳ Pendiente |
 
 ## Estado de las fases (proyecto original)
 
