@@ -5,7 +5,7 @@ import { ahoraIso, ETIQUETA_ASISTENCIA, fechaLarga, hora12, resumirAsistencia, t
 import { actualizar, useColeccion, useDocumento } from '../../lib/datos';
 import { COLOR_ASISTENCIA } from '../../lib/estilos';
 import { mensajeError } from '../../lib/errores';
-import { alfa, Aviso, Boton, Campo, Cargando, Fila, Hoja, Kicker, Tarjeta, Volver, useToast } from '../../ui/base';
+import { alfa, Aviso, Boton, Campo, ErrorCarga, Esqueleto, EsqueletoLista, Fila, Hoja, Kicker, Tarjeta, Volver, useToast } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 import { alertaSalud, nombreNino, useEntrenador } from './contexto';
 
@@ -14,13 +14,16 @@ export function DetalleSesion() {
   const nav = useNavigate();
   const toast = useToast();
   const { catPorId, activos, porId, pruebaPorId } = useEntrenador();
-  const { datos: s, cargando } = useDocumento<Sesion>(`sesiones/${id}`);
+  const existente = useDocumento<Sesion>(`sesiones/${id}`);
+  const { datos: s, cargando } = existente;
   const asis = useColeccion<Asistencia>('asistencias', [['sesionId', '==', id]]);
   const res = useColeccion<ResultadoPrueba>('resultadosPruebas', [['sesionId', '==', id]]);
   const [cancelar, setCancelar] = useState(false);
   const [motivo, setMotivo] = useState('');
 
-  if (cargando) return <Cargando />;
+  if (cargando) return <Pantalla><Esqueleto alto={44} ancho={140} /><Esqueleto alto={90} /><EsqueletoLista filas={3} alto={56} /></Pantalla>;
+  const falla = existente.error ?? asis.error ?? res.error;
+  if (falla) return <Pantalla><Volver a="/e/sesiones">Sesiones</Volver><ErrorCarga mensaje={falla} onReintentar={() => location.reload()} /></Pantalla>;
   if (!s) return <Pantalla><Volver a="/e/sesiones">Sesiones</Volver><Aviso tono="error">La sesión no existe.</Aviso></Pantalla>;
   const cat = catPorId.get(s.categoriaId);
   const kids = activos.filter((n) => n.categoriaId === s.categoriaId);
@@ -36,8 +39,7 @@ export function DetalleSesion() {
     } catch (e) { toast(mensajeError(e), 'error'); }
   }
   async function reactivar() {
-    await actualizar('sesiones', s!.id, { estado: 'programada', motivoCancelacion: undefined, actualizadoEn: ahoraIso() });
-    toast('Sesión reactivada');
+try {      await actualizar('sesiones', s!.id, { estado: 'programada', motivoCancelacion: undefined, actualizadoEn: ahoraIso() });      toast('Sesión reactivada');    } catch (e) { toast(mensajeError(e), 'error'); }
   }
 
   return (
@@ -75,12 +77,12 @@ export function DetalleSesion() {
         <Tarjeta className="gap-2.5">
           <Kicker>Asistencia · {asis.datos.length} registrados</Kicker>
           <div className="grid grid-cols-4 gap-2">
-            {resumen.indicadores.map((i) => <div key={i.estado} className="flex flex-col"><span className="text-xl font-extrabold" style={{ color: COLOR_ASISTENCIA[i.estado] }}>{i.cantidad}</span><span className="text-[11px] text-tenue">{i.etiqueta}</span></div>)}
+            {resumen.indicadores.map((i) => <div key={i.estado} className="flex flex-col"><span className="text-xl font-extrabold" style={{ color: COLOR_ASISTENCIA[i.estado] }}>{i.cantidad}</span><span className="text-xs text-tenue">{i.etiqueta}</span></div>)}
           </div>
           {asis.datos.filter((a) => a.estado !== 'asistio').map((a) => {
             const n = porId.get(a.ninoId);
-            return <div key={a.id} className="flex justify-between text-[13px]"><span>{n ? nombreNino(n) : a.ninoId}</span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold" style={{ background: alfa(COLOR_ASISTENCIA[a.estado], 0.15), color: COLOR_ASISTENCIA[a.estado] }}>{ETIQUETA_ASISTENCIA[a.estado]}</span></div>;
+            return <div key={a.id} className="flex justify-between items-center gap-2 text-[13px]"><span>{n ? nombreNino(n) : a.ninoId}</span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold" style={{ background: alfa(COLOR_ASISTENCIA[a.estado], 0.15), color: COLOR_ASISTENCIA[a.estado] }}>{ETIQUETA_ASISTENCIA[a.estado]}</span></div>;
           })}
         </Tarjeta>
       )}

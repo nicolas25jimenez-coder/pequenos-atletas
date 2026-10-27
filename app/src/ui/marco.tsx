@@ -40,13 +40,13 @@ export interface ItemNav { a: string; etiqueta: string; icono: Icon; fin?: boole
 export function BarraNav({ items }: { items: ItemNav[] }) {
   return (
     <div className="fixed left-0 right-0 bottom-[max(16px,env(safe-area-inset-bottom))] z-30 flex justify-center px-3 pointer-events-none">
-      <nav className="pointer-events-auto w-full max-w-[456px] h-[70px] rounded-[35px] bg-[rgba(18,22,32,0.94)] border border-white/[0.08] backdrop-blur-[14px] flex items-center justify-around px-1.5">
+      <nav aria-label="Navegación principal" className="pointer-events-auto w-full max-w-[456px] h-[70px] rounded-[35px] bg-[rgba(18,22,32,0.94)] border border-white/[0.08] backdrop-blur-[14px] flex items-center justify-around px-1.5">
         {items.map(({ a, etiqueta, icono: I, fin, insignia }) => (
-          <NavLink key={a} to={a} end={fin}
+          <NavLink key={a} to={a} end={fin} aria-label={insignia ? `${etiqueta} (hay novedades)` : etiqueta}
             className={({ isActive }) => cx('h-[54px] min-w-[54px] px-3 rounded-[27px] flex items-center gap-[7px] no-underline relative',
               isActive ? 'bg-verde text-tinta' : 'bg-transparent text-tenue')}>
             {({ isActive }) => (<>
-              <I size={21} weight={isActive ? 'fill' : 'bold'} />
+              <I size={21} weight={isActive ? 'fill' : 'bold'} aria-hidden="true" />
               {isActive && <span className="text-[13px] font-extrabold">{etiqueta}</span>}
               {!!insignia && !isActive && <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-verde" />}
             </>)}

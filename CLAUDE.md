@@ -53,7 +53,7 @@ en `IDEAS-ENTRENADOR.md` / `IDEAS-PADRE.md` y aprobadas por él antes de program
 
 | Fase | Qué es | Estado |
 |---|---|---|
-| 1 | ENTRENADOR: entrevista + cimientos (componentes, migración 0005, Auth URL) + asistencia y sesiones | ⏳ Pendiente |
+| 1 | ENTRENADOR: entrevista + cimientos (componentes, migración 0005, Auth URL) + asistencia y sesiones | ✅ Hecha (2026-10-27); migraciones 0005 y 0006 ya aplicadas; falta confirmar la Auth URL en Supabase. Ideas aprobadas en `IDEAS-ENTRENADOR.md` |
 | 2 | ENTRENADOR: panel, niños, inscripciones, pagos, mediciones | ⏳ Pendiente |
 | 3 | ENTRENADOR: anuncios, eventos, ajustes, reportes + revisión | ⏳ Pendiente |
 | 4 | PADRE: entrevista + acceso + inicio y menú | ⏳ Pendiente |

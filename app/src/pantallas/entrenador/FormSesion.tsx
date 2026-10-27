@@ -4,7 +4,7 @@ import { ahoraIso, diaSemana, FAMILIAS, hoy, type PlantillaControl, type Sesion,
 import { actualizar, guardar as guardarDoc, idNuevo, useColeccion, useDocumento } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
-import { Aviso, Boton, Campo, Casilla, Etiqueta, Segmentado, Selector, Tarjeta, Volver, useToast, Kicker } from '../../ui/base';
+import { Aviso, Boton, Campo, Casilla, ErrorCarga, Esqueleto, Etiqueta, Segmentado, Selector, Tarjeta, Volver, useToast, Kicker } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 import { useEntrenador } from './contexto';
 
@@ -22,6 +22,7 @@ export function FormSesion() {
   const [sel, setSel] = useState<string[]>([]);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState('');
+  const [errores, setErrores] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const s = existente.datos;
@@ -41,8 +42,16 @@ export function FormSesion() {
 
   async function guardar() {
     setError('');
-    if (!f.categoriaId || !f.fecha || !f.horaInicio || !f.horaFin || !f.lugar.trim()) return setError('Completa categoría, fecha, horario y lugar.');
-    if (f.tipo === 'control' && !sel.length) return setError('Selecciona al menos una prueba para el día de control.');
+    const e: Record<string, string> = {};
+    if (!f.categoriaId) e.categoriaId = 'Elige una categoría.';
+    if (!f.fecha) e.fecha = 'Elige la fecha.';
+    if (!f.horaInicio) e.horaInicio = 'Falta la hora de inicio.';
+    if (!f.horaFin) e.horaFin = 'Falta la hora de fin.';
+    else if (f.horaInicio && f.horaFin <= f.horaInicio) e.horaFin = 'Debe ser después de la hora de inicio.';
+    if (!f.lugar.trim()) e.lugar = 'Escribe el lugar.';
+    if (f.tipo === 'control' && !sel.length) e.pruebas = 'Selecciona al menos una prueba para el día de control.';
+    setErrores(e);
+    if (Object.keys(e).length) return setError('Revisa los campos marcados.');
     setGuardando(true);
     try {
       const datos = { ...f, lugar: f.lugar.trim(), tema: f.tema.trim(), pruebasSeleccionadas: f.tipo === 'control' ? sel : [], actualizadoEn: ahoraIso() };
@@ -60,6 +69,10 @@ export function FormSesion() {
     setGuardando(false);
   }
 
+  if (id && existente.cargando) return <Pantalla><Esqueleto alto={40} ancho={200} /><Esqueleto alto={300} className="!rounded-3xl" /></Pantalla>;
+  if (existente.error) return <Pantalla><Volver>Volver</Volver><ErrorCarga mensaje={existente.error} onReintentar={() => location.reload()} /></Pantalla>;
+  if (id && !existente.datos) return <Pantalla><Volver a="/e/sesiones">Sesiones</Volver><Aviso tono="error">La sesión no existe.</Aviso></Pantalla>;
+
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
 
   return (
@@ -68,13 +81,13 @@ export function FormSesion() {
       <div className="titulo text-[28px]">{id ? 'Editar sesión' : 'Nueva sesión'}</div>
       <Segmentado<TipoSesion> valor={f.tipo} onCambio={(t) => setF({ ...f, tipo: t })} opciones={[{ id: 'entrenamiento', etiqueta: 'Entrenamiento' }, { id: 'control', etiqueta: 'Día de control' }]} />
       <div className="grid grid-cols-2 gap-2.5">
-        <Etiqueta texto="Categoría" className="col-span-2">
+        <Etiqueta texto="Categoría" className="col-span-2" error={errores.categoriaId}>
           <Selector value={f.categoriaId} onChange={set('categoriaId')}>{activas.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</Selector>
         </Etiqueta>
-        <Etiqueta texto="Fecha" className="col-span-2"><Campo type="date" value={f.fecha} onChange={set('fecha')} /></Etiqueta>
-        <Etiqueta texto="Inicia"><Campo type="time" value={f.horaInicio} onChange={set('horaInicio')} /></Etiqueta>
-        <Etiqueta texto="Termina"><Campo type="time" value={f.horaFin} onChange={set('horaFin')} /></Etiqueta>
-        <Etiqueta texto="Lugar" className="col-span-2"><Campo value={f.lugar} onChange={set('lugar')} /></Etiqueta>
+        <Etiqueta texto="Fecha" className="col-span-2" error={errores.fecha}><Campo type="date" value={f.fecha} onChange={set('fecha')} /></Etiqueta>
+        <Etiqueta texto="Inicia" error={errores.horaInicio}><Campo type="time" value={f.horaInicio} onChange={set('horaInicio')} /></Etiqueta>
+        <Etiqueta texto="Termina" error={errores.horaFin}><Campo type="time" value={f.horaFin} onChange={set('horaFin')} /></Etiqueta>
+        <Etiqueta texto="Lugar" className="col-span-2" error={errores.lugar}><Campo value={f.lugar} onChange={set('lugar')} /></Etiqueta>
         <Etiqueta texto="Tema u objetivo (lo ven los padres)" className="col-span-2"><Campo value={f.tema} onChange={set('tema')} placeholder="Ej. Saltos y aterrizajes seguros" /></Etiqueta>
         <Etiqueta texto="Notas internas" className="col-span-2"><Campo value={f.notasGenerales} onChange={set('notasGenerales')} placeholder="Solo para ti" /></Etiqueta>
       </div>
@@ -98,6 +111,7 @@ export function FormSesion() {
           })}
         </Tarjeta>
       )}
+      {errores.pruebas && <Aviso tono="error">{errores.pruebas}</Aviso>}
       {error && <Aviso tono="error">{error}</Aviso>}
       <Boton alto="lg" onClick={guardar} cargando={guardando}>{id ? 'Guardar cambios' : 'Crear sesión'}</Boton>
     </Pantalla>

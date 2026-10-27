@@ -7,7 +7,7 @@ import {
 import { guardar, idNuevo, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
-import { Avatar, Boton, BotonIcono, COLOR, Kicker, Tarjeta, useToast } from '../../ui/base';
+import { Avatar, Boton, BotonIcono, COLOR, ErrorCarga, Esqueleto, Kicker, Tarjeta, useToast } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 import { alertaSalud, useEntrenador } from './contexto';
 
@@ -66,9 +66,14 @@ export function Panel() {
         </div>
       </div>
       <div className="titulo text-[34px]" style={{ lineHeight: 0.98 }}>
-        {deHoy.length ? <>Hoy entrenas<br /><span className="text-verde">{new Set(deHoy.map((s) => s.categoriaId)).size} {new Set(deHoy.map((s) => s.categoriaId)).size === 1 ? 'categoría.' : 'categorías.'}</span></> : <>Hoy no hay<br /><span className="text-verde">sesiones.</span></>}
+        {sesiones.cargando ? <Esqueleto alto={68} ancho="70%" />
+          : sesiones.error ? <>No pudimos<br /><span className="text-verde">cargar hoy.</span></>
+          : deHoy.length ? <>Hoy entrenas<br /><span className="text-verde">{new Set(deHoy.map((s) => s.categoriaId)).size} {new Set(deHoy.map((s) => s.categoriaId)).size === 1 ? 'categoría.' : 'categorías.'}</span></>
+          : <>Hoy no hay<br /><span className="text-verde">sesiones.</span></>}
       </div>
 
+      {sesiones.cargando && <Esqueleto alto={170} className="!rounded-4xl" />}
+      {sesiones.error && <ErrorCarga mensaje={sesiones.error} onReintentar={() => location.reload()} />}
       {deHoy.map((s) => {
         const cat = catPorId.get(s.categoriaId);
         const kids = activos.filter((n) => n.categoriaId === s.categoriaId);
@@ -85,8 +90,8 @@ export function Panel() {
             <div className="text-[13px] text-suave">{s.lugar}{s.tema ? ` · ${s.tema}` : ''}{control ? ` · ${s.pruebasSeleccionadas.length} pruebas` : ''}</div>
             {alertas > 0 && <div className="flex items-center gap-2 text-xs text-ambar"><Warning weight="bold" />{alertas} {alertas === 1 ? 'niño' : 'niños'} con alertas de salud</div>}
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-              <Boton className="flex-1 text-[13px] whitespace-nowrap px-3" icono={<CheckCircle weight="bold" />} onClick={() => nav(`/e/sesion/${s.id}/asistencia`)}>{s.asistenciaGuardada ? 'Ver asistencia' : 'Tomar asistencia'}</Boton>
-              {control && <Boton variante="claro" className="flex-1 text-[13px] whitespace-nowrap px-3" icono={<Timer weight="bold" />} onClick={() => nav(`/e/sesion/${s.id}/captura`)}>Registrar pruebas</Boton>}
+              <Boton className="flex-1 h-14 text-sm whitespace-nowrap px-3" icono={<CheckCircle weight="bold" size={20} />} onClick={() => nav(`/e/sesion/${s.id}/asistencia`)}>{s.asistenciaGuardada ? 'Ver asistencia' : 'Tomar asistencia'}</Boton>
+              {control && <Boton variante="claro" className="flex-1 h-14 text-sm whitespace-nowrap px-3" icono={<Timer weight="bold" />} onClick={() => nav(`/e/sesion/${s.id}/captura`)}>Registrar pruebas</Boton>}
             </div>
           </div>
         );

@@ -1,29 +1,36 @@
-/** Tokens del prototipo "Pequeños Atletas App" (design/). */
+/**
+ * Tokens del prototipo "Pequeños Atletas App" (design/).
+ * Los colores salen de variables CSS (--color-...) definidas en src/index.css.
+ * Cada variable guarda los canales "R G B" para que sigan funcionando las
+ * transparencias de Tailwind (ej. bg-verde/50). Así luego se puede hacer un tema claro.
+ */
+const c = (nombre) => `rgb(var(--color-${nombre}) / <alpha-value>)`;
+
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        exterior: '#07090D',
-        fondo: '#0A0D12',
-        sup: '#141924',
-        sup2: '#1B2130',
-        suph: '#181E2B',
-        pista: '#11151E',
-        campo: '#0F131B',
-        linea: '#232A3A',
-        texto: '#F2F4F8',
-        suave: '#C9CFDB',
-        tenue: '#8C95A8',
-        apagado: '#5E6678',
-        verde: { DEFAULT: '#3DDC6A', hover: '#5BE883', oscuro: '#1E8A39' },
-        tinta: '#06210F',
-        azul: { DEFAULT: '#4F7BFF', claro: '#9DB4FF', hielo: '#C8D5FF' },
-        marca: { DEFAULT: '#1F4FD8', oscuro: '#0F2A7A' },
-        ambar: '#F5A524',
-        rojo: { DEFAULT: '#E5484D', claro: '#FF8A8D' },
-        cielo: '#3E9BFF',
-        gris: '#9AA4B2',
+        exterior: c('exterior'),
+        fondo: c('fondo'),
+        sup: c('sup'),
+        sup2: c('sup2'),
+        suph: c('suph'),
+        pista: c('pista'),
+        campo: c('campo'),
+        linea: c('linea'),
+        texto: c('texto'),
+        suave: c('suave'),
+        tenue: c('tenue'),
+        apagado: c('apagado'), // contraste >= 4,5:1 sobre todas las superficies oscuras
+        verde: { DEFAULT: c('verde'), hover: c('verde-hover'), oscuro: c('verde-oscuro') },
+        tinta: c('tinta'),
+        azul: { DEFAULT: c('azul'), claro: c('azul-claro'), hielo: c('azul-hielo') },
+        marca: { DEFAULT: c('marca'), oscuro: c('marca-oscuro') },
+        ambar: c('ambar'),
+        rojo: { DEFAULT: c('rojo'), claro: c('rojo-claro') },
+        cielo: c('cielo'),
+        gris: c('gris'),
       },
       fontFamily: {
         sans: ['"Archivo Variable"', 'system-ui', 'sans-serif'],

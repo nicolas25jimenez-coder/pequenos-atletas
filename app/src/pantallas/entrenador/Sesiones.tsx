@@ -7,7 +7,7 @@ import {
 import { lote, obtener, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
 import { mensajeError } from '../../lib/errores';
-import { alfa, Boton, Chips, COLOR, Encabezado, Hoja, Segmentado, Selector, Etiqueta, Vacio, useToast } from '../../ui/base';
+import { alfa, Boton, Chips, COLOR, Encabezado, ErrorCarga, EsqueletoLista, Hoja, Segmentado, Selector, Etiqueta, Vacio, useToast } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 import { useEntrenador } from './contexto';
 
@@ -21,7 +21,7 @@ export function Sesiones() {
   const [generar, setGenerar] = useState(false);
   const hoyF = hoy();
   const filtro: [string, '>=' | '<', string][] = [['fecha', vista === 'proximas' ? '>=' : '<', hoyF]];
-  const { datos, cargando } = useColeccion<Sesion>('sesiones', filtro);
+  const { datos, cargando, error } = useColeccion<Sesion>('sesiones', filtro);
   const lista = datos.filter((s) => cat === 'todas' || s.categoriaId === cat)
     .sort((a, b) => (vista === 'proximas' ? 1 : -1) * (a.fecha + a.horaInicio).localeCompare(b.fecha + b.horaInicio))
     .slice(0, vista === 'proximas' ? 60 : 80);
@@ -35,8 +35,10 @@ export function Sesiones() {
       <Encabezado titulo="Sesiones" derecha={<Boton alto="sm" icono={<Plus weight="bold" />} onClick={() => nav('/e/sesiones/nueva')}>Nueva</Boton>} />
       <Segmentado<Vista> valor={vista} onCambio={setVista} opciones={[{ id: 'proximas', etiqueta: 'Próximas' }, { id: 'pasadas', etiqueta: 'Pasadas' }]} />
       <Chips valor={cat} onCambio={setCat} opciones={[{ id: 'todas', etiqueta: 'Todas' }, ...categorias.filter((c) => c.activa).map((c) => ({ id: c.id, etiqueta: c.nombre }))]} />
-      {vista === 'proximas' && <Boton variante="punteado" className="h-12" icono={<CalendarPlus weight="bold" />} onClick={() => setGenerar(true)}>Generar sesiones del mes desde los horarios</Boton>}
-      {!cargando && !lista.length && <Vacio titulo={vista === 'proximas' ? 'No hay sesiones programadas' : 'No hay sesiones pasadas'} />}
+      {vista === 'proximas' && <Boton variante="punteado" className="h-14" icono={<CalendarPlus weight="bold" />} onClick={() => setGenerar(true)}>Generar sesiones del mes desde los horarios</Boton>}
+      {cargando && <EsqueletoLista filas={4} alto={68} />}
+      {error && <ErrorCarga mensaje={error} onReintentar={() => location.reload()} />}
+      {!cargando && !error && !lista.length && <Vacio titulo={vista === 'proximas' ? 'No hay sesiones programadas' : 'No hay sesiones pasadas'} />}
       {[...grupos].map(([mes, ses]) => (
         <div key={mes} className="flex flex-col gap-2">
           <span className="kicker px-1">{nombreMes(mes, true)}</span>
@@ -52,13 +54,13 @@ export function FilaSesion({ s, cat, onClick }: { s: Sesion; cat: string; onClic
   const control = s.tipo === 'control';
   const estado = s.estado === 'cancelada' ? { t: 'Cancelada', c: COLOR.gris } : s.asistenciaGuardada ? { t: 'Asistencia ✓', c: COLOR.verde } : s.fecha < hoy() ? { t: 'Sin asistencia', c: COLOR.ambar } : s.fecha === hoy() ? { t: 'Hoy', c: COLOR.verde } : null;
   return (
-    <button onClick={onClick} className="flex items-center gap-3.5 rounded-[20px] px-4 py-3 bg-sup border border-white/[0.07] text-texto text-left cursor-pointer hover:bg-suph">
-      <div className="w-11 shrink-0 flex flex-col items-center leading-none"><span className="text-xl font-extrabold">{Number(s.fecha.slice(8))}</span><span className="text-[11px] text-tenue uppercase">{DIAS_CORTOS[diaSemana(s.fecha) - 1]}</span></div>
+    <button onClick={onClick} className="flex items-center gap-3.5 rounded-[20px] px-4 py-3 min-h-[64px] bg-sup border border-white/[0.07] text-texto text-left cursor-pointer hover:bg-suph">
+      <div className="w-11 shrink-0 flex flex-col items-center leading-none"><span className="text-xl font-extrabold">{Number(s.fecha.slice(8))}</span><span className="text-xs text-tenue uppercase">{DIAS_CORTOS[diaSemana(s.fecha) - 1]}</span></div>
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
         <span className="text-sm font-semibold"><span style={{ color: control ? COLOR.azul : undefined }}>{control ? 'Control' : 'Entrenamiento'}</span> · {cat}</span>
         <span className="text-xs text-tenue truncate">{hora12(s.horaInicio)} · {s.tema || s.lugar}</span>
       </div>
-      {estado && <span className="px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" style={{ background: alfa(estado.c, 0.15), color: estado.c }}>{estado.t}</span>}
+      {estado && <span className="px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap" style={{ background: alfa(estado.c, 0.15), color: estado.c }}>{estado.t}</span>}
       <CaretRight weight="bold" className="text-apagado shrink-0" />
     </button>
   );
