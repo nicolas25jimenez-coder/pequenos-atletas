@@ -4,5 +4,6 @@ export * from './imc';
 export * from './pagos';
 export * from './asistencia';
 export * from './catalogo';
+export * from './baterias';
 export * from './pruebas';
 export * from './formato';

@@ -1,4 +1,4 @@
-import { CalendarBlank, DotsThreeOutline, Lightning, UsersThree, Wallet } from '@phosphor-icons/react';
+import { CalendarBlank, ClipboardText, DotsThreeOutline, Lightning, UsersThree, Wallet } from '@phosphor-icons/react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Cargando } from '../../ui/base';
 import { BarraNav, Marco } from '../../ui/marco';
@@ -22,6 +22,7 @@ import { MediosPago } from './MediosPago';
 import { Catalogo, FormPrueba, Plantillas } from './Catalogo';
 import { EventosEntrenador, FormEvento } from './EventosEntrenador';
 import { AnunciosEntrenador, FormAnuncio } from './AnunciosEntrenador';
+import { DetalleTarea, Repositorio, RepositorioBateria, RepositorioPruebas } from './Repositorio';
 import { Reportes } from './Reportes';
 import { Configuracion } from './Configuracion';
 import { MasEntrenador } from './MasEntrenador';
@@ -31,6 +32,7 @@ const NAV = [
   { a: '/e/sesiones', etiqueta: 'Sesiones', icono: CalendarBlank },
   { a: '/e/ninos', etiqueta: 'Niños', icono: UsersThree },
   { a: '/e/pagos', etiqueta: 'Pagos', icono: Wallet },
+  { a: '/e/repositorio', etiqueta: 'Planilla', icono: ClipboardText },
   { a: '/e/mas', etiqueta: 'Más', icono: DotsThreeOutline },
 ];
 
@@ -63,6 +65,10 @@ function Rutas() {
         <Route path="pruebas" element={<Catalogo />} />
         <Route path="pruebas/:id" element={<FormPrueba />} />
         <Route path="plantillas" element={<Plantillas />} />
+        <Route path="repositorio" element={<Repositorio />} />
+        <Route path="repositorio/pruebas" element={<RepositorioPruebas />} />
+        <Route path="repositorio/pruebas/:bateria" element={<RepositorioBateria />} />
+        <Route path="repositorio/prueba/:id" element={<DetalleTarea />} />
         <Route path="eventos" element={<EventosEntrenador />} />
         <Route path="eventos/:id" element={<FormEvento />} />
         <Route path="anuncios" element={<AnunciosEntrenador />} />

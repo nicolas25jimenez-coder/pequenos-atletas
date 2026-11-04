@@ -60,6 +60,18 @@ en `IDEAS-ENTRENADOR.md` / `IDEAS-PADRE.md` y aprobadas por él antes de program
 | 5 | PADRE: mi hijo, asistencia, progreso, inscripción, pagos | ⏳ Pendiente |
 | 6 | PADRE: pulido final + rendimiento, PWA, seguridad, docs, CI y entrega v1.1 | ⏳ Pendiente |
 
+## Pulido por interfaz (nuevo esquema, desde 2026-11-04)
+
+Nicolás pule **una interfaz a la vez, por aspectos** (primero ENTRENADOR, luego PADRE). Cuando él diga "pasamos a la siguiente
+interfaz", dale el mensaje para copiar en una ventana nueva.
+
+- **Entrenador · Repositorio (hecho 2026-11-04):** botón principal "Planilla" (`/e/repositorio`) con *Repositorio de pruebas*
+  (baterías TGMD-3 y MOBAK-KG, agrupadas por área; detalle con descripción, materiales, qué se evalúa, unidad de medida, enlace de
+  video/imagen editable e historial con promedio, mediana y moda) y *Repositorio de ejercicios* (aún "Próximamente").
+  Datos en `shared/src/baterias.ts`; pantallas en `app/src/pantallas/entrenador/Repositorio.tsx`. Al abrir el repositorio se
+  agregan solas las 19 pruebas a la tabla `pruebas` (para usarlas en días de control). MOBAK-KG sale del manual oficial; los
+  criterios de TGMD-3 son un **resumen propio** que Nicolás debe confirmar con el manual de Ulrich (2019).
+
 ## Estado de las fases (proyecto original)
 
 | Fase | Qué es | Estado |

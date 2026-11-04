@@ -182,6 +182,7 @@ export interface Prueba extends Auditoria {
   escalaCualitativa?: string[];
   referencias: Referencia[];
   mediaEjemploUrl?: string;
+  bateria?: 'mobak' | 'tgmd3'; // si la prueba viene del repositorio de baterías
   esDelCatalogoBase: boolean;
   activa: boolean;
 }

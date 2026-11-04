@@ -142,3 +142,15 @@ describe('pruebas (SPEC §7.6)', () => {
     expect(perfil.manipulacion_pies).toBeNull();
   });
 });
+
+describe('baterías TGMD-3 y MOBAK-KG', () => {
+  it('MOBAK-KG tiene 8 tareas, los ids no se repiten y las estadísticas funcionan', async () => {
+    const { BATERIAS, estadisticas, pruebasDeBaterias } = await import('./baterias');
+    expect(BATERIAS.find((b) => b.id === 'mobak')!.tareas).toHaveLength(8);
+    const ids = pruebasDeBaterias().map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(estadisticas([])).toBeNull();
+    expect(estadisticas([2, 2, 1, 0])).toEqual({ n: 4, media: 1.25, mediana: 1.5, moda: [2] });
+    expect(estadisticas([1, 2, 3])!.moda).toEqual([]);
+  });
+});

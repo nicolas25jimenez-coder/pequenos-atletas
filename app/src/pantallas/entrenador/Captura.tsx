@@ -249,7 +249,7 @@ function Teclado({ unidad, decimales, onAgregar }: { unidad: string; decimales?:
 function Aciertos({ max, onElegir }: { max: number; onElegir: (v: number) => void }) {
   return (<>
     <div className="text-[13px] text-suave text-center">Aciertos de {max} intentos</div>
-    <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${max + 1}, 1fr)` }}>
+    <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${Math.min(max + 1, 6)}, 1fr)` }}>
       {Array.from({ length: max + 1 }, (_, i) => <button key={i} onClick={() => onElegir(i)} className="aspect-square rounded-2xl border border-white/10 bg-sup2 text-texto text-[22px] font-[850] cursor-pointer hover:bg-verde hover:text-tinta">{i}</button>)}
     </div>
   </>);
