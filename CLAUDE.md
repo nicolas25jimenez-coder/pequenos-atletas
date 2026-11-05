@@ -74,6 +74,17 @@ interfaz", dale el mensaje para copiar en una ventana nueva.
 
 - **Entrenador · Ejercicios para casa (hecho 2026-11-05):** Planilla → Repositorio de ejercicios (`/e/repositorio/ejercicios`): 3 tipos, buscador, añadir/editar, 9 ejemplos con 4 variantes (a mayor adaptación, más fácil), y **Asignar** (`/e/repositorio/asignar`: sesión → niños → 3 ejercicios → enviar). `/e/remotas` (tarjeta en Hoy) muestra el historial, los videos de las familias y los comentarios. Padre: Más → Ejercicios en casa (`/p/casa`), videos de máx. 30 s (50 MB). Migración `0007_ejercicios_remotas.sql` (tablas `ejercicios` y `sesiones_remotas`, bucket `remotas`, avisos). Datos en `shared/src/ejercicios.ts`.
 
+## Publicación en Cloudflare (desde 2026-11-05, porque Netlify tiene los créditos congelados)
+
+- Sitio: https://pequenos-atletas.nicolas25jimenez.workers.dev (proyecto Worker `pequenos-atletas`, configurado en `wrangler.jsonc`).
+- Cloudflare **no alcanza a armar la app** (error "EMFILE: too many open files"), así que **la carpeta `app/dist` ya armada va en git**.
+  Para publicar un cambio: `npm run build:app` → `git add -A` (la carpeta `app/dist` ya no está ignorada) → commit + push →
+  en Cloudflare: Workers & Pages → pequenos-atletas → Deployments → abrir el último "Build" → **Retry build**
+  (los push **no** lanzan la publicación solos). El comando de armado en Cloudflare es solo un `echo`; las variables
+  `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` ya están ahí (la app armada las lleva incluidas).
+- Netlify sigue siendo la entrega oficial; arma desde el código fuente, así que no le afecta `app/dist`.
+- No agregar un archivo `_redirects` (Cloudflare lo rechaza; `wrangler.jsonc` ya maneja las rutas de la app).
+
 ## Estado de las fases (proyecto original)
 
 | Fase | Qué es | Estado |
