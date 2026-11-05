@@ -27,18 +27,18 @@ function duracionVideo(f: File): Promise<number> {
 
 export function Casa() {
   const nav = useNavigate();
-  const { nino } = useFamilia();
-  const { datos, cargando } = useColeccion<SesionRemota>(nino ? 'sesionesRemotas' : null, [['ninoId', '==', nino?.id ?? '']]);
+  const { ninos } = useFamilia();
+  const { datos, cargando } = useColeccion<SesionRemota>('sesionesRemotas'); // la base solo entrega las de mis hijos
   const lista = [...datos].sort((a, b) => b.enviadaEn.localeCompare(a.enviadaEn));
   return (
     <Pantalla>
       <Volver a="/p">Inicio</Volver>
-      <Encabezado titulo="Ejercicios en casa" sub={nino ? nino.nombres : undefined} />
+      <Encabezado titulo="Ejercicios en casa" sub={ninos.map((n) => n.nombres).join(" y ")} />
       {cargando ? <Esqueleto alto={90} /> : !lista.length ? (
         <Vacio titulo="Aún no hay ejercicios" texto="Cuando el entrenador envíe ejercicios para hacer en casa, aparecerán aquí." />
       ) : lista.map((r) => (
         <Tarjeta key={r.id} onClick={() => nav(`/p/casa/${r.id}`)} className="gap-1.5">
-          <div className="flex items-center justify-between"><span className="text-base font-bold">Enviada {fechaCorta(r.fecha)}</span><Pildora color={COLOR_ESTADO[r.estado]}>{r.estado === 'enviada' ? 'Por hacer' : ETIQUETA_REMOTA[r.estado]}</Pildora></div>
+          <div className="flex items-center justify-between"><span className="text-base font-bold">{ninos.find((n) => n.id === r.ninoId)?.nombres ?? "Tu hijo"} · {fechaCorta(r.fecha)}</span><Pildora color={COLOR_ESTADO[r.estado]}>{r.estado === 'enviada' ? 'Por hacer' : ETIQUETA_REMOTA[r.estado]}</Pildora></div>
           {r.objetivo && <div className="text-[13px] text-suave">{r.objetivo}</div>}
           <div className="flex items-center justify-between text-xs text-tenue"><span>{r.ejercicios.filter((e) => e.video).length}/{r.ejercicios.length} videos subidos</span><CaretRight weight="bold" /></div>
         </Tarjeta>
