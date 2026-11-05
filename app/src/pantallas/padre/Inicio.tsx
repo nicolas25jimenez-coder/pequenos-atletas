@@ -1,9 +1,9 @@
-import { ArrowUpRight, Bell, Clock, MapPin, MegaphoneSimple, WhatsappLogo } from '@phosphor-icons/react';
+import { ArrowUpRight, Barbell, Bell, CaretRight, Clock, MapPin, MegaphoneSimple, WhatsappLogo } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   cop, enlaceWhatsApp, fechaChip, fechaCorta, fechaLarga, hora12, hoy, iniciales, resumirAsistencia, tendencia, formatoValor,
-  type Anuncio, type Notificacion,
+  type Anuncio, type Notificacion, type SesionRemota,
 } from '@pa/shared';
 import { useColeccion, useConfiguracion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
@@ -20,6 +20,7 @@ export function Inicio() {
   const { ninos, nino, elegir, categorias, sesiones, pagos, asistencias, resultados, pruebas } = useFamilia();
   const anuncios = useColeccion<Anuncio>('anuncios');
   const notis = useColeccion<Notificacion>('notificaciones', [['usuarioId', '==', usuario?.uid ?? '']]);
+  const remotas = useColeccion<SesionRemota>('sesionesRemotas'); // la base solo entrega las de mis hijos
   const sinLeer = notis.datos.some((n) => !n.leida);
   const ultimo = useUltimoResultado(resultados, pruebas);
   if (!nino) return null;
@@ -31,6 +32,7 @@ export function Inicio() {
   const resumen = resumirAsistencia(asistencias.filter((a) => a.fecha.startsWith(mes)).map((a) => a.estado));
   const anuncio = anunciosPara(anuncios.datos, [nino])[0];
   const inactivo = nino.estado === 'inactivo';
+  const pendientesCasa = [...remotas.datos].filter((r) => r.estado !== 'revisada').sort((a, b) => b.enviadaEn.localeCompare(a.enviadaEn));
 
   return (
     <Pantalla>
@@ -88,6 +90,19 @@ export function Inicio() {
               <span className="flex items-center gap-1.5"><MapPin weight="bold" />{prox.lugar}</span>
             </div>
           </>) : <div className="text-sm text-[#DCE4FF]">No hay sesiones programadas por ahora.</div>}
+        </div>
+      )}
+
+      {pendientesCasa.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Kicker icono={<Barbell weight="bold" size={16} className="text-verde" />} color={COLOR.verde}>Ejercicios en casa</Kicker>
+          {pendientesCasa.map((r) => (
+            <Tarjeta key={r.id} onClick={() => nav('/p/casa/' + r.id)} className="gap-1 border border-verde/40">
+              <div className="flex items-center justify-between"><span className="text-base font-bold">{ninos.find((k) => k.id === r.ninoId)?.nombres ?? 'Tu hijo'}</span><CaretRight weight="bold" className="text-verde" /></div>
+              <div className="text-[13px] text-suave">{r.objetivo || 'El entrenador envió ejercicios para hacer en casa.'}</div>
+              <div className="text-xs text-tenue">{r.ejercicios.filter((e) => e.video).length}/{r.ejercicios.length} videos subidos · toca para ver y subir</div>
+            </Tarjeta>
+          ))}
         </div>
       )}
 
