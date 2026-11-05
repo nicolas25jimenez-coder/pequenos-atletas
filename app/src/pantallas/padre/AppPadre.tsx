@@ -8,6 +8,7 @@ import { MiHijo } from './MiHijo';
 import { DetallePrueba } from './DetallePrueba';
 import { Asistencia } from './Asistencia';
 import { Pagos } from './Pagos';
+import { Casa, DetalleCasa } from './Casa';
 import { Eventos } from './Eventos';
 import { Mas } from './Mas';
 import { Anuncios } from './Anuncios';
@@ -44,6 +45,8 @@ function Rutas() {
           <Route path="prueba/:pruebaId" element={<DetallePrueba />} />
           <Route path="asistencia" element={<Asistencia />} />
           <Route path="pagos" element={<Pagos />} />
+          <Route path="casa" element={<Casa />} />
+          <Route path="casa/:id" element={<DetalleCasa />} />
           <Route path="eventos" element={<Eventos />} />
           <Route path="anuncios" element={<Anuncios />} />
           <Route path="invitar" element={<Invitar />} />

@@ -154,3 +154,21 @@ describe('baterías TGMD-3 y MOBAK-KG', () => {
     expect(estadisticas([1, 2, 3])!.moda).toEqual([]);
   });
 });
+
+describe('ejercicios para casa', () => {
+  it('trae 3 ejercicios por tipo, cada uno con 4 variantes', async () => {
+    const { EJERCICIOS_BASE, asignarEjercicio, estadoRemota, textoCarga } = await import('./ejercicios');
+    for (const t of ['locomocion', 'coordinativo', 'manipulacion']) {
+      expect(EJERCICIOS_BASE.filter((e) => e.tipo === t)).toHaveLength(3);
+    }
+    expect(EJERCICIOS_BASE.every((e) => e.variantes.length === 4 && e.puntosClave.length >= 3)).toBe(true);
+    expect(new Set(EJERCICIOS_BASE.map((e) => e.id)).size).toBe(EJERCICIOS_BASE.length);
+    const a = asignarEjercicio(EJERCICIOS_BASE[0], 2, { series: 2, tipo: 'tiempo', valor: 20, recuperacionS: 45 });
+    expect(a.nivelNombre).toBe('Adaptación ligera');
+    expect(textoCarga(a.carga)).toBe('2 series de 20 s · descanso 45 s');
+    expect(estadoRemota([a])).toBe('enviada');
+    const v = { ruta: 'x', duracionS: 10, subidoEn: '2026-11-05T10:00:00Z' };
+    expect(estadoRemota([{ ...a, video: v }])).toBe('entregada');
+    expect(estadoRemota([{ ...a, video: v, feedback: '¡Muy bien!' }])).toBe('revisada');
+  });
+});

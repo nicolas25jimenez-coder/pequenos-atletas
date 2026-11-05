@@ -1,5 +1,5 @@
-// Repositorio (planilla): pruebas (baterías TGMD-3 y MOBAK-KG) y, más adelante, ejercicios.
-import { Barbell, CaretRight, ClipboardText, MagnifyingGlass, PersonSimpleRun, Lock } from '@phosphor-icons/react';
+// Repositorio (planilla): pruebas (baterías TGMD-3 y MOBAK-KG) y ejercicios para casa.
+import { Barbell, CaretRight, ClipboardText, MagnifyingGlass, PersonSimpleRun } from '@phosphor-icons/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -40,11 +40,11 @@ export function Repositorio() {
           <span className="flex-1 flex flex-col"><span className="text-base font-bold">Repositorio de pruebas</span><span className="text-xs text-tenue">Baterías TGMD-3 y MOBAK-KG: protocolos e historial</span></span>
           <CaretRight weight="bold" className="text-apagado" />
         </button>
-        <div className="tarjeta p-[18px] flex items-center gap-3.5 opacity-60" aria-disabled="true">
+        <button onClick={() => nav('/e/repositorio/ejercicios')} className="tarjeta p-[18px] flex items-center gap-3.5 text-texto text-left cursor-pointer hover:bg-suph w-full">
           <span className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${COLOR.ambar}22`, color: COLOR.ambar }}><PersonSimpleRun size={26} weight="bold" /></span>
-          <span className="flex-1 flex flex-col"><span className="text-base font-bold">Repositorio de ejercicios</span><span className="text-xs text-tenue">Próximamente</span></span>
-          <Lock weight="bold" className="text-apagado" />
-        </div>
+          <span className="flex-1 flex flex-col"><span className="text-base font-bold">Repositorio de ejercicios</span><span className="text-xs text-tenue">Ejercicios para casa: añadir, buscar y asignar</span></span>
+          <CaretRight weight="bold" className="text-apagado" />
+        </button>
       </div>
     </Pantalla>
   );

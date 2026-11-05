@@ -369,7 +369,7 @@ export type TipoNotificacion =
   | 'pago_proximo' | 'pago_mes' | 'pago_vencido' | 'pago_registrado'
   | 'inasistencia' | 'resultados' | 'evento_proximo' | 'confirmar_evento'
   | 'anuncio' | 'sesion_cancelada' | 'inscripcion_resuelta' | 'solicitud_resuelta'
-  | 'nueva_inscripcion' | 'nueva_solicitud' | 'resumen_vencidos';
+  | 'nueva_inscripcion' | 'nueva_solicitud' | 'resumen_vencidos' | 'ejercicios_casa' | 'video_recibido';
 
 export interface Notificacion {
   id: string;

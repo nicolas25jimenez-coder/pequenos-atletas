@@ -23,6 +23,9 @@ import { Catalogo, FormPrueba, Plantillas } from './Catalogo';
 import { EventosEntrenador, FormEvento } from './EventosEntrenador';
 import { AnunciosEntrenador, FormAnuncio } from './AnunciosEntrenador';
 import { DetalleTarea, Repositorio, RepositorioBateria, RepositorioPruebas } from './Repositorio';
+import { AsignarEjercicios } from './AsignarEjercicios';
+import { DetalleEjercicio, FormEjercicio, ListaTipo, RepoEjercicios } from './Ejercicios';
+import { DetalleRemota, Remotas } from './Remotas';
 import { Reportes } from './Reportes';
 import { Configuracion } from './Configuracion';
 import { MasEntrenador } from './MasEntrenador';
@@ -69,6 +72,14 @@ function Rutas() {
         <Route path="repositorio/pruebas" element={<RepositorioPruebas />} />
         <Route path="repositorio/pruebas/:bateria" element={<RepositorioBateria />} />
         <Route path="repositorio/prueba/:id" element={<DetalleTarea />} />
+        <Route path="repositorio/ejercicios" element={<RepoEjercicios />} />
+        <Route path="repositorio/ejercicios/nuevo" element={<FormEjercicio />} />
+        <Route path="repositorio/ejercicios/tipo/:tipo" element={<ListaTipo />} />
+        <Route path="repositorio/ejercicio/:id" element={<DetalleEjercicio />} />
+        <Route path="repositorio/ejercicio/:id/editar" element={<FormEjercicio />} />
+        <Route path="repositorio/asignar" element={<AsignarEjercicios />} />
+        <Route path="remotas" element={<Remotas />} />
+        <Route path="remota/:id" element={<DetalleRemota />} />
         <Route path="eventos" element={<EventosEntrenador />} />
         <Route path="eventos/:id" element={<FormEvento />} />
         <Route path="anuncios" element={<AnunciosEntrenador />} />

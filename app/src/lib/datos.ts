@@ -23,6 +23,7 @@ const TABLAS: Record<string, string> = {
   configuracion: 'configuracion', asistencias: 'asistencias', medicionesFisicas: 'mediciones_fisicas', pagos: 'pagos',
   resultadosPruebas: 'resultados_pruebas', confirmacionesEvento: 'confirmaciones_evento',
   solicitudesCambio: 'solicitudes_cambio', invitaciones: 'invitaciones', notificaciones: 'notificaciones',
+  ejercicios: 'ejercicios', sesionesRemotas: 'sesiones_remotas',
 };
 
 const snake = (s: string) => s.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`);
@@ -47,6 +48,8 @@ const CAMPOS_COLUMNA: Record<string, string[]> = {
   solicitudesCambio: ['ninoId', 'estado', 'solicitadoPor', 'acudientesIds'],
   invitaciones: ['correo', 'estado', 'invitadoPor'],
   notificaciones: ['usuarioId', 'leida', 'fecha'],
+  ejercicios: ['tipo'],
+  sesionesRemotas: ['ninoId', 'acudientesIds', 'estado', 'fecha'],
 };
 
 /** Mapa COLUMNAS: colección → { campo camelCase → columna snake_case }. */

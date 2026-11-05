@@ -65,7 +65,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await admin.from('notificaciones').delete().in('usuario_id', Object.values(ids));
-  for (const t of ['confirmaciones_evento', 'solicitudes_cambio', 'resultados_pruebas', 'asistencias', 'pagos', 'ninos']) {
+  for (const t of ['sesiones_remotas', 'ejercicios', 'confirmaciones_evento', 'solicitudes_cambio', 'resultados_pruebas', 'asistencias', 'pagos', 'ninos']) {
     await admin.from(t).delete().like('id', 't\\_%');
   }
   for (const id of Object.values(ids)) await admin.auth.admin.deleteUser(id);
@@ -171,5 +171,42 @@ describe('Eventos y notificaciones', () => {
     expect(ajena.data).toHaveLength(0);
     expect(await permitida(clientes.beto.from('notificaciones').update({ datos: { usuarioId: ids.beto, leida: true, titulo: 'Hola' } }).eq('id', 't_notif').select())).toBe(true);
     expect(await bloqueada(clientes.beto.from('notificaciones').update({ datos: { usuarioId: ids.beto, leida: true, titulo: 'hack' } }).eq('id', 't_notif').select())).toBe(true);
+  });
+});
+
+describe('Ejercicios para casa (sesiones remotas)', () => {
+  const ej = (video: unknown = null) => ({ ejercicioId: 'x', nombre: 'Zigzag', carga: { series: 3 }, video });
+  const remota = (ninoId: string, acudientes: string[]) => ({ ninoId, acudientesIds: acudientes, estado: 'enviada', fecha: '2026-11-04', objetivo: 'o', ejercicios: [ej(), ej()] });
+  const conVideo = (r: ReturnType<typeof remota>, i: number) => ({ ...r, estado: 'entregada', ejercicios: r.ejercicios.map((e, j) => (j === i ? ej({ ruta: 'remotas/t_n_ana/v.mp4', duracionS: 12 }) : e)) });
+
+  it('solo el entrenador crea ejercicios y sesiones remotas', async () => {
+    expect(await permitida(clientes.coach.from('ejercicios').insert({ id: 't_ej1', datos: { nombre: 'Zigzag', tipo: 'locomocion' } }).select())).toBe(true);
+    expect(await bloqueada(clientes.ana.from('ejercicios').insert({ id: 't_ej2', datos: { nombre: 'X', tipo: 'locomocion' } }).select())).toBe(true);
+    expect(await permitida(clientes.coach.from('sesiones_remotas').insert({ id: 't_sr1', datos: remota('t_n_ana', [ids.ana]) }).select())).toBe(true);
+    expect(await bloqueada(clientes.ana.from('sesiones_remotas').insert({ id: 't_sr2', datos: remota('t_n_ana', [ids.ana]) }).select())).toBe(true);
+  });
+  it('el padre no lee el repositorio ni sesiones de otra familia', async () => {
+    expect((await clientes.ana.from('ejercicios').select('id')).data).toHaveLength(0);
+    expect((await clientes.beto.from('sesiones_remotas').select('id').eq('id', 't_sr1')).data).toHaveLength(0);
+    expect((await clientes.ana.from('sesiones_remotas').select('id').eq('id', 't_sr1')).data).toHaveLength(1);
+  });
+  it('el padre solo puede subir videos, nada más', async () => {
+    const base = remota('t_n_ana', [ids.ana]);
+    expect(await permitida(clientes.ana.from('sesiones_remotas').update({ datos: conVideo(base, 0) }).eq('id', 't_sr1').select())).toBe(true);
+    const hack1 = { ...conVideo(base, 0), objetivo: 'cambiado' };
+    expect(await bloqueada(clientes.ana.from('sesiones_remotas').update({ datos: hack1 }).eq('id', 't_sr1').select())).toBe(true);
+    const hack2 = { ...conVideo(base, 0), ejercicios: [{ ...ej(), nombre: 'otro' }, ej()] };
+    expect(await bloqueada(clientes.ana.from('sesiones_remotas').update({ datos: hack2 }).eq('id', 't_sr1').select())).toBe(true);
+    const hack3 = { ...conVideo(base, 0), estado: 'revisada' };
+    expect(await bloqueada(clientes.ana.from('sesiones_remotas').update({ datos: hack3 }).eq('id', 't_sr1').select())).toBe(true);
+  });
+  it('subir un video avisa al entrenador y el comentario avisa a la familia', async () => {
+    const av = await admin.from('notificaciones').select('datos').eq('usuario_id', ids.coach);
+    expect(av.data!.some((n) => (n.datos as { tipo: string }).tipo === 'video_recibido')).toBe(true);
+    const base = conVideo(remota('t_n_ana', [ids.ana]), 0);
+    const c = { ...base, estado: 'entregada', ejercicios: base.ejercicios.map((e, j) => (j === 0 ? { ...e, feedback: 'Muy bien' } : e)) };
+    expect(await permitida(clientes.coach.from('sesiones_remotas').update({ datos: c }).eq('id', 't_sr1').select())).toBe(true);
+    const fam = await admin.from('notificaciones').select('datos').eq('usuario_id', ids.ana);
+    expect(fam.data!.some((n) => (n.datos as { tipo: string }).tipo === 'ejercicios_casa')).toBe(true);
   });
 });

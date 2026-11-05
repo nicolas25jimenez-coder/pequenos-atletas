@@ -1,8 +1,8 @@
-import { Bell, CalendarStar, CheckCircle, NotePencil, Plus, Timer, UserPlus, Warning, WarningCircle } from '@phosphor-icons/react';
+import { Bell, CalendarStar, CheckCircle, NotePencil, Plus, Timer, UserPlus, VideoCamera, Warning, WarningCircle } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import {
   ahoraIso, cop, estadoEn, fechaChip, fechaLarga, hora12, hoy, nombreCorto,
-  type ConfirmacionEvento, type Evento, type Notificacion, type Pago, type Sesion, type SolicitudCambio,
+  type ConfirmacionEvento, type Evento, type Notificacion, type Pago, type Sesion, type SesionRemota, type SolicitudCambio,
 } from '@pa/shared';
 import { guardar, idNuevo, useColeccion } from '../../lib/datos';
 import { useSesion } from '../../lib/sesion';
@@ -21,6 +21,7 @@ export function Panel() {
   const solicitudes = useColeccion<SolicitudCambio>('solicitudesCambio', [['estado', '==', 'pendiente']]);
   const pagos = useColeccion<Pago>('pagos', [['estado', 'in', ['pendiente', 'vencido']]]);
   const eventos = useColeccion<Evento>('eventos', [['fechaInicio', '>=', hoyF]]);
+  const remotas = useColeccion<SesionRemota>('sesionesRemotas', [['estado', '==', 'entregada']]);
   const notis = useColeccion<Notificacion>('notificaciones', [['usuarioId', '==', usuario?.uid ?? '']]);
 
   const proximoEvento = [...eventos.datos].filter((e) => e.requiereConfirmacion).sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio))[0];
@@ -97,6 +98,11 @@ export function Panel() {
         );
       })}
       <Boton variante="punteado" className="h-12" icono={<Plus weight="bold" />} onClick={() => nav('/e/sesiones/nueva')}>Nueva sesión</Boton>
+
+      <Tarjeta como="/e/remotas" className="gap-1.5 flex-col">
+        <div className="flex items-center justify-between"><Kicker icono={<VideoCamera size={18} weight="bold" />} color={COLOR.verde}>Sesiones remotas</Kicker>{remotas.datos.length > 0 && <span className="text-xs font-bold text-ambar">{remotas.datos.length} por revisar</span>}</div>
+        <span className="text-[13px] text-suave">{remotas.datos.length ? 'Hay videos de ejercicios en casa esperando tu comentario.' : 'Historial de ejercicios enviados y videos de las familias.'}</span>
+      </Tarjeta>
 
       <div className="grid grid-cols-2 gap-2.5">
         {tiles.map((t) => (

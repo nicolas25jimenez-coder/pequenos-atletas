@@ -72,6 +72,8 @@ interfaz", dale el mensaje para copiar en una ventana nueva.
   agregan solas las 19 pruebas a la tabla `pruebas` (para usarlas en días de control). MOBAK-KG sale del manual oficial; los
   criterios de TGMD-3 son un **resumen propio** que Nicolás debe confirmar con el manual de Ulrich (2019).
 
+- **Entrenador · Ejercicios para casa (hecho 2026-11-05):** Planilla → Repositorio de ejercicios (): 3 tipos, buscador, añadir/editar, 9 ejemplos con 4 variantes (a mayor adaptación, más fácil), y **Asignar** (: sesión → niños → 3 ejercicios → enviar).  (tarjeta en Hoy) muestra el historial, los videos de las familias y los comentarios. Padre: Más → Ejercicios en casa (), videos de máx. 30 s (50 MB). Migración  (tablas  y , bucket , avisos). Datos en .
+
 ## Estado de las fases (proyecto original)
 
 | Fase | Qué es | Estado |
@@ -106,7 +108,7 @@ Notas de la Fase 1 (para las siguientes ventanas):
 - `shared/src/` — lógica de negocio sin base de datos (reutilizar tal cual).
 - `app/src/lib/` — conexión con la base de datos, sesión, archivos. `datos.ts` es el adaptador que usan las pantallas.
 - `app/src/pantallas/acceso|padre|entrenador|comun/` — pantallas.
-- `supabase/migrations/` — 0001 tablas, 0002 seguridad, 0003 avisos de la campanita, 0004 segundo acudiente, 0005 correo propio al crear perfil (pendiente de pegar en el SQL Editor).
+- `supabase/migrations/` — 0001 tablas, 0002 seguridad, 0003 avisos de la campanita, 0004 segundo acudiente, 0005 correo propio al crear perfil, 0006 endurecer, 0007 ejercicios y sesiones remotas.
 - `netlify/functions/` — `ciclo-nocturno`, `recordatorios` (programadas) y `ejecutar-tareas` (botón del entrenador).
 - `scripts/seed.ts` — datos de ejemplo y cuentas de demo.
 

@@ -1,5 +1,5 @@
 import {
-  Bell, CaretRight, FilePdf, FileText, MegaphoneSimple, SignOut, UserCircle, UserPlus, UsersThree, WhatsappLogo, type Icon,
+  Barbell, Bell, CaretRight, FilePdf, FileText, MegaphoneSimple, SignOut, UserCircle, UserPlus, UsersThree, WhatsappLogo, type Icon,
 } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { enlaceWhatsApp, iniciales } from '@pa/shared';
@@ -37,6 +37,7 @@ export function Mas() {
       </div>
       <div className="flex flex-col gap-2">
         {hay && <ItemMenu icono={MegaphoneSimple} titulo="Anuncios" sub="Mensajes del entrenador" onClick={() => nav('/p/anuncios')} />}
+        {hay && <ItemMenu icono={Barbell} titulo="Ejercicios en casa" sub="Videos de máx. 30 s para el entrenador" color={COLOR.verde} onClick={() => nav('/p/casa')} />}
         <ItemMenu icono={Bell} titulo="Notificaciones" onClick={() => nav('/p/notificaciones')} />
         <ItemMenu icono={UserPlus} titulo="Inscribir otro hijo" sub={solicitudes.some((s) => s.estado === 'pendiente_aprobacion') ? 'Tienes una inscripción pendiente' : undefined} color={COLOR.verde} onClick={() => nav('/p/inscribir')} />
         {hay && <ItemMenu icono={UsersThree} titulo="Invitar a otro acudiente" sub="Papá, mamá u otro familiar" onClick={() => nav('/p/invitar')} />}
