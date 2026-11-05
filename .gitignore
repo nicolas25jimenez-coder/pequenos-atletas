@@ -6,3 +6,5 @@ coverage/
 *.local
 .DS_Store
 Mobile app design form 1.zip
+# Carpeta ya armada que publica Cloudflare (ver CLAUDE.md)
+!app/dist/
