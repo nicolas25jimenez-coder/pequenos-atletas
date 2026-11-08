@@ -1,5 +1,5 @@
 import {
-  Barbell, Bell, CaretRight, FilePdf, FileText, MegaphoneSimple, SignOut, UserCircle, UserPlus, UsersThree, WhatsappLogo, type Icon,
+  Barbell, Bell, CaretRight, FilePdf, FileText, FirstAid, Medal, MegaphoneSimple, SignOut, UserCircle, UserPlus, UsersThree, WhatsappLogo, type Icon,
 } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { enlaceWhatsApp, iniciales } from '@pa/shared';
@@ -38,6 +38,8 @@ export function Mas() {
       <div className="flex flex-col gap-2">
         {hay && <ItemMenu icono={MegaphoneSimple} titulo="Anuncios" sub="Mensajes del entrenador" onClick={() => nav('/p/anuncios')} />}
         {hay && <ItemMenu icono={Barbell} titulo="Ejercicios en casa" sub="Videos de máx. 30 s para el entrenador" color={COLOR.verde} onClick={() => nav('/p/casa')} />}
+        {hay && <ItemMenu icono={FirstAid} titulo="Orientación médica" sub="Datos de salud y a quién llamar" color={COLOR.rojo} onClick={() => nav('/p/orientacion')} />}
+        <ItemMenu icono={Medal} titulo="Conoce a tu entrenador" sub="Estudios, experiencia y habilidades" color={COLOR.verde} onClick={() => nav('/p/entrenador')} />
         <ItemMenu icono={Bell} titulo="Notificaciones" onClick={() => nav('/p/notificaciones')} />
         <ItemMenu icono={UserPlus} titulo="Inscribir otro hijo" sub={solicitudes.some((s) => s.estado === 'pendiente_aprobacion') ? 'Tienes una inscripción pendiente' : undefined} color={COLOR.verde} onClick={() => nav('/p/inscribir')} />
         {hay && <ItemMenu icono={UsersThree} titulo="Invitar a otro acudiente" sub="Papá, mamá u otro familiar" onClick={() => nav('/p/invitar')} />}

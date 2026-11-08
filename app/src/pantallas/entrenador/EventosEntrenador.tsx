@@ -1,6 +1,6 @@
 // Eventos con confirmación de asistencia (RF-E36 a RF-E38).
 import { Plus } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ahoraIso, cop, fechaChip, hora12, hoy, sumarDias,
@@ -98,9 +98,9 @@ function DetalleEvento({ e, conf, onCerrar }: { e: Evento | null; conf: Confirma
   );
 }
 
-export function FormEvento() {
+export function FormEvento({ selector, forzarNuevo }: { selector?: ReactNode; forzarNuevo?: boolean } = {}) {
   const { id } = useParams();
-  const nuevo = id === 'nuevo';
+  const nuevo = forzarNuevo || id === 'nuevo';
   const nav = useNavigate();
   const toast = useToast();
   const { usuario } = useSesion();
@@ -134,8 +134,9 @@ export function FormEvento() {
 
   return (
     <Pantalla>
-      <Volver a="/e/eventos">Eventos</Volver>
-      <div className="titulo text-[28px]">{nuevo ? 'Nuevo evento' : 'Editar evento'}</div>
+      <Volver a={selector ? '/e' : '/e/eventos'}>{selector ? 'Hoy' : 'Eventos'}</Volver>
+      <div className="titulo text-[28px]">{selector ? 'Programar' : nuevo ? 'Nuevo evento' : 'Editar evento'}</div>
+      {selector}
       <Tarjeta className="gap-3">
         <Etiqueta texto="Tipo"><Selector value={e.tipo} onChange={(x) => set({ tipo: x.target.value as TipoEvento })}>{Object.entries(TIPO_EVENTO).map(([k, v]) => <option key={k} value={k}>{v.etiqueta}</option>)}</Selector></Etiqueta>
         <Etiqueta texto="Título"><Campo value={e.titulo} onChange={(x) => set({ titulo: x.target.value })} /></Etiqueta>

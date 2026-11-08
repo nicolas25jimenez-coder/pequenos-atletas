@@ -10,7 +10,11 @@ import { FormSesion } from './FormSesion';
 import { DetalleSesion } from './DetalleSesion';
 import { TomarAsistencia } from './TomarAsistencia';
 import { Captura } from './Captura';
-import { Mediciones } from './Mediciones';
+import { Medir } from './Mediciones';
+import { HistorialMediciones } from './HistorialMediciones';
+import { NuevaProgramacion } from './NuevaProgramacion';
+import { PerfilEntrenador } from './PerfilEntrenador';
+import { OrientacionMedica } from './OrientacionMedica';
 import { Ninos } from './Ninos';
 import { FichaNino } from './FichaNino';
 import { FormNino } from './FormNino';
@@ -47,13 +51,16 @@ function Rutas() {
       <Routes>
         <Route index element={<Panel />} />
         <Route path="sesiones" element={<Sesiones />} />
-        <Route path="sesiones/nueva" element={<FormSesion />} />
+        <Route path="sesiones/nueva" element={<NuevaProgramacion />} />
         <Route path="sesion/:id" element={<DetalleSesion />} />
         <Route path="sesion/:id/editar" element={<FormSesion />} />
         <Route path="sesion/:id/asistencia" element={<TomarAsistencia />} />
         <Route path="sesion/:id/captura" element={<Captura />} />
-        <Route path="sesion/:id/mediciones" element={<Mediciones />} />
-        <Route path="mediciones" element={<Mediciones />} />
+        <Route path="sesion/:id/mediciones" element={<Medir />} />
+        <Route path="medir" element={<Medir />} />
+        <Route path="mediciones" element={<HistorialMediciones />} />
+        <Route path="perfil" element={<PerfilEntrenador />} />
+        <Route path="orientacion-medica" element={<OrientacionMedica />} />
         <Route path="ninos" element={<Ninos />} />
         <Route path="ninos/nuevo" element={<FormNino />} />
         <Route path="nino/:id/editar" element={<FormNino />} />

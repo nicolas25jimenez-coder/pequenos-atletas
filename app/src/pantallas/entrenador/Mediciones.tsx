@@ -10,7 +10,7 @@ import { Aviso, Boton, Campo, Etiqueta, Selector, Volver, useToast } from '../..
 import { Pantalla } from '../../ui/marco';
 import { iniNino, nombreNino, useEntrenador } from './contexto';
 
-export function Mediciones() {
+export function Medir() {
   const { id } = useParams();
   const [params] = useSearchParams();
   const nav = useNavigate();
@@ -67,7 +67,7 @@ export function Mediciones() {
   return (
     <Pantalla>
       <Volver>Volver</Volver>
-      <div className="titulo text-[28px]">Mediciones</div>
+      <div className="titulo text-[28px]">Medir talla y peso</div>
       {!id && !soloNino && (
         <div className="grid grid-cols-2 gap-2.5">
           <Etiqueta texto="Categoría"><Selector value={cat} onChange={(e) => setCat(e.target.value)}>{categorias.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</Selector></Etiqueta>

@@ -18,6 +18,8 @@ import { Invitar } from './Invitar';
 import { Cuenta } from './Cuenta';
 import { Informe } from './Informe';
 import { SinHijos } from './SinHijos';
+import { ConoceEntrenador } from './ConoceEntrenador';
+import { Orientacion } from './Orientacion';
 
 const NAV = [
   { a: '/p', etiqueta: 'Inicio', icono: House, fin: true },
@@ -38,6 +40,8 @@ function Rutas() {
         <Route path="mas" element={<Mas />} />
         <Route path="notificaciones" element={<Notificaciones />} />
         <Route path="cuenta" element={<Cuenta />} />
+        <Route path="entrenador" element={<ConoceEntrenador />} />
+        {conHijos && <Route path="orientacion" element={<Orientacion />} />}
         {conHijos ? (<>
           <Route index element={<Inicio />} />
           <Route path="hijo" element={<MiHijo />} />

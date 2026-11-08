@@ -56,7 +56,7 @@ export function Ninos() {
           <option value="todas">Todas las categorías</option>
           {categorias.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
         </Selector>
-        <Boton variante="secundario" icono={<Ruler weight="bold" />} onClick={() => nav(`/e/mediciones${cat !== 'todas' ? `?categoria=${cat}` : ''}`)} className="h-[52px]">Medir</Boton>
+        <Boton variante="secundario" icono={<Ruler weight="bold" />} onClick={() => nav(`/e/medir${cat !== 'todas' ? `?categoria=${cat}` : ''}`)} className="h-[52px]">Medir</Boton>
       </div>
       {!lista.length && <Vacio titulo="No hay niños con ese filtro" />}
       <div className="flex flex-col gap-2">

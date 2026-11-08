@@ -1,5 +1,5 @@
 // Ficha completa del niño para el entrenador (RF-E06 a RF-E12).
-import { FilePdf, FilePlus, PencilSimple, Ruler, Warning, WhatsappLogo } from '@phosphor-icons/react';
+import { FilePdf, FilePlus, PencilSimple, Warning, WhatsappLogo } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import {
@@ -70,9 +70,8 @@ function Ficha({ nino }: { nino: Nino }) {
         </div>
       </div>
       {alerta && <Aviso tono="alerta"><Warning weight="bold" className="inline mr-1" />{alerta}</Aviso>}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <AccionIcono icono={<PencilSimple weight="bold" size={20} />} texto="Editar" onClick={() => nav(`/e/nino/${nino.id}/editar`)} />
-        <AccionIcono icono={<Ruler weight="bold" size={20} />} texto="Medir" onClick={() => nav(`/e/mediciones?nino=${nino.id}`)} />
         <AccionIcono icono={<FilePdf weight="bold" size={20} />} texto="Informe" onClick={() => setInforme(true)} />
         <AccionIcono icono={<WhatsappLogo weight="bold" size={20} />} texto="Acudiente" href={tel ? enlaceWhatsApp(tel.startsWith('57') ? tel : `57${tel}`, `Hola, le escribe el profe Nicolás de Pequeños Atletas sobre ${nino.nombres}. `) : undefined} />
       </div>

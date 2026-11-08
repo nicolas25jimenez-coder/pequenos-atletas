@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ahoraIso, diaSemana, FAMILIAS, hoy, type PlantillaControl, type Sesion, type TipoSesion } from '@pa/shared';
 import { actualizar, guardar as guardarDoc, idNuevo, useColeccion, useDocumento } from '../../lib/datos';
@@ -8,7 +8,7 @@ import { Aviso, Boton, Campo, Casilla, ErrorCarga, Esqueleto, Etiqueta, Segmenta
 import { Pantalla } from '../../ui/marco';
 import { useEntrenador } from './contexto';
 
-export function FormSesion() {
+export function FormSesion({ tipoInicial = 'entrenamiento', selector }: { tipoInicial?: TipoSesion; selector?: ReactNode } = {}) {
   const { id } = useParams();
   const nav = useNavigate();
   const toast = useToast();
@@ -18,7 +18,7 @@ export function FormSesion() {
   const plantillas = useColeccion<PlantillaControl>('plantillasControl');
   const activas = categorias.filter((c) => c.activa);
 
-  const [f, setF] = useState({ tipo: 'entrenamiento' as TipoSesion, categoriaId: activas[0]?.id ?? '', fecha: hoy(), horaInicio: '', horaFin: '', lugar: '', tema: '', notasGenerales: '' });
+  const [f, setF] = useState({ tipo: tipoInicial as TipoSesion, categoriaId: activas[0]?.id ?? '', fecha: hoy(), horaInicio: '', horaFin: '', lugar: '', tema: '', notasGenerales: '' });
   const [sel, setSel] = useState<string[]>([]);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState('');
@@ -78,8 +78,8 @@ export function FormSesion() {
   return (
     <Pantalla>
       <Volver>Volver</Volver>
-      <div className="titulo text-[28px]">{id ? 'Editar sesión' : 'Nueva sesión'}</div>
-      <Segmentado<TipoSesion> valor={f.tipo} onCambio={(t) => setF({ ...f, tipo: t })} opciones={[{ id: 'entrenamiento', etiqueta: 'Entrenamiento' }, { id: 'control', etiqueta: 'Día de control' }]} />
+      <div className="titulo text-[28px]">{id ? 'Editar sesión' : 'Programar'}</div>
+      {selector ?? <Segmentado<TipoSesion> valor={f.tipo} onCambio={(t) => setF({ ...f, tipo: t })} opciones={[{ id: 'entrenamiento', etiqueta: 'Entrenamiento' }, { id: 'control', etiqueta: 'Día de control' }]} />}
       <div className="grid grid-cols-2 gap-2.5">
         <Etiqueta texto="Categoría" className="col-span-2" error={errores.categoriaId}>
           <Selector value={f.categoriaId} onChange={set('categoriaId')}>{activas.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</Selector>
