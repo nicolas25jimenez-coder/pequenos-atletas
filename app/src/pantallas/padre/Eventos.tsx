@@ -11,6 +11,7 @@ import { mensajeError } from '../../lib/errores';
 import { Avatar, COLOR, Titulo, Vacio, useToast } from '../../ui/base';
 import { Pantalla } from '../../ui/marco';
 import { useFamilia } from './familia';
+import { TarjetaEntrenador } from './ConoceEntrenador';
 
 export const TIPO_EVENTO: Record<Evento['tipo'], { etiqueta: string; color: string }> = {
   control: { etiqueta: 'Día de control', color: COLOR.azul },
@@ -46,6 +47,7 @@ export function Eventos() {
   return (
     <Pantalla>
       <Titulo>Eventos</Titulo>
+      <TarjetaEntrenador />
       {!proximos.length && <Vacio titulo="No hay eventos próximos" texto="Aquí verás días de control, festivales y actividades especiales." />}
       {proximos.map(({ e, ninos: hijos }, idx) => {
         const t = TIPO_EVENTO[e.tipo];

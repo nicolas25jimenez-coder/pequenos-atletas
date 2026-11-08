@@ -3,7 +3,7 @@
 import { FirstAid, Phone, WhatsappLogo } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { ahoraIso, enlaceWhatsApp } from '@pa/shared';
-import { guardar, idNuevo, useConfiguracion } from '../../lib/datos';
+import { crear, idNuevo, useConfiguracion } from '../../lib/datos';
 import { mensajeError } from '../../lib/errores';
 import { useSesion } from '../../lib/sesion';
 import { Aviso, Boton, COLOR, Etiqueta, Kicker, Selector, Tarjeta, Volver } from '../../ui/base';
@@ -35,7 +35,7 @@ export function Orientacion() {
     setEnviando(true); setError('');
     try {
       const o: OrientacionMedica = { id: idNuevo('orientacionesMedicas'), ninoId: nino.id, acudientesIds: nino.acudientesIds, usuarioId: usuario.uid, motivo, fecha: ahoraIso() };
-      await guardar('orientacionesMedicas', o);
+      await crear('orientacionesMedicas', o);
       setHecho(true);
     } catch (e) { setError(mensajeError(e)); }
     setEnviando(false);

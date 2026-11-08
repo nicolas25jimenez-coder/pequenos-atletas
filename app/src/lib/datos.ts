@@ -201,6 +201,14 @@ export async function guardar<T extends { id: string }>(nombre: string, obj: T):
   avisar(tabla);
 }
 
+/** Crea un documento nuevo (solo insert, sin actualizar): para registros que el padre no puede editar. */
+export async function crear<T extends { id: string }>(nombre: string, obj: T): Promise<void> {
+  const tabla = tablaDe(nombre);
+  const { error } = await supabase.from(tabla).insert(sinId(obj));
+  if (error) throw traducirError(error);
+  avisar(tabla);
+}
+
 /** Crea o reemplaza varios documentos de una misma colección en una sola llamada. */
 export async function guardarVarios<T extends { id: string }>(nombre: string, objs: T[]): Promise<void> {
   if (!objs.length) return;

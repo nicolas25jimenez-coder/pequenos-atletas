@@ -1,4 +1,4 @@
-import { ArrowUpRight, Barbell, Bell, CaretRight, Clock, MapPin, MegaphoneSimple, WhatsappLogo } from '@phosphor-icons/react';
+import { ArrowUpRight, Barbell, Bell, CaretRight, Clock, FirstAid, MapPin, MegaphoneSimple, WhatsappLogo } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -141,6 +141,11 @@ export function Inicio() {
             </div>
           ))}
         </div>
+      </Tarjeta>
+
+      <Tarjeta como="/p/orientacion" className="gap-1.5 border border-rojo/40">
+        <div className="flex justify-between items-center w-full"><Kicker icono={<FirstAid weight="bold" size={18} className="text-rojo" />} color={COLOR.rojo}>Orientación médica</Kicker><CaretRight weight="bold" className="text-rojo" /></div>
+        <span className="text-[13px] text-suave">Datos de salud de {nino.nombres}, seguro y a quién llamar si pasa algo.</span>
       </Tarjeta>
 
       {anuncio && (
