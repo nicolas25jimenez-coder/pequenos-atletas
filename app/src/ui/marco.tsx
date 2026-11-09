@@ -1,6 +1,6 @@
 import type { Icon } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { cx } from './base';
 
 export function Logo({ tam = 26, conPunto = true }: { tam?: number; conPunto?: boolean }) {
@@ -15,11 +15,20 @@ export function Logo({ tam = 26, conPunto = true }: { tam?: number; conPunto?: b
 
 /** Columna principal tipo app móvil, centrada en pantallas grandes, con los halos del prototipo. */
 export function Marco({ children, ancho = 'normal' }: { children: ReactNode; ancho?: 'normal' | 'amplio' }) {
+  const conMarca = /^\/[pe](\/|$)/.test(useLocation().pathname); // solo dentro de la app (padre / entrenador)
   return (
     <div className="min-h-dvh flex justify-center bg-exterior">
       <div className={cx('relative w-full min-h-dvh bg-fondo overflow-x-clip', ancho === 'amplio' ? 'max-w-[960px]' : 'max-w-[480px]')}>
         <div className="pointer-events-none absolute -top-[180px] -right-[160px] w-[460px] h-[460px] rounded-full" style={{ background: 'radial-gradient(circle,rgba(31,79,216,0.38),rgba(31,79,216,0) 68%)' }} />
         <div className="pointer-events-none fixed -bottom-[200px] -left-[180px] w-[420px] h-[420px] rounded-full" style={{ background: 'radial-gradient(circle,rgba(61,220,106,0.10),rgba(61,220,106,0) 68%)' }} />
+        {/* Marca de agua: solo el círculo del logo, muy tenue, fija en la esquina inferior derecha */}
+        {conMarca && (
+          <div className="pointer-events-none fixed inset-0 flex justify-center overflow-hidden" aria-hidden="true">
+            <div className={cx('relative w-full h-full', ancho === 'amplio' ? 'max-w-[960px]' : 'max-w-[480px]')}>
+              <img src="/marca.png" alt="" className="absolute -right-[70px] bottom-[70px] w-[300px] h-[300px] opacity-[0.045] select-none" />
+            </div>
+          </div>
+        )}
         <div className="relative">{children}</div>
       </div>
     </div>
